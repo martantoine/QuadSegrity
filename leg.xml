@@ -15,11 +15,11 @@
 
   <asset>
     <texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2=".28 .28 .28" width="512" height="512" markrgb=".8 .8 .8"/>
-    <material name="matplane" reflectance="0.0" texture="texplane" texrepeat="1 1" texuniform="true"/>
+    <material name="matplane" reflectance="0.1" texture="texplane" texrepeat="1 1" texuniform="true"/>
   </asset>
 
   <worldbody>
-    <geom name="floor" pos="0 0 -1" size="0 0 1" type="plane" material="matplane"/>
+    <geom name="floor" rgba="1 1 1 1" pos="0 0 -0.35" size="0 0 1" type="plane" material="matplane"/>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
 
     <!--FORK-->
@@ -34,10 +34,10 @@
     <site name="y0_3" pos="0  0    -0.01"/>
 
     <!--QUAD FORK MIDDLE-->
-    <site name="y0_4" pos="0.025  0.01  0   " rgba="0 0 .7 1"/>
-    <site name="y0_5" pos="0.025 -0.01  0   " rgba="0 0 .7 1"/>
-    <site name="y0_6" pos="0.025  0     0.01" rgba="0 0 .7 1"/>
-    <site name="y0_7" pos="0.025  0    -0.01" rgba="0 0 .7 1"/>
+    <site name="y0_4" pos="0.05  0.01  0   " rgba="0 0 .7 1"/>
+    <site name="y0_5" pos="0.05 -0.01  0   " rgba="0 0 .7 1"/>
+    <site name="y0_6" pos="0.05  0     0.01" rgba="0 0 .7 1"/>
+    <site name="y0_7" pos="0.05  0    -0.01" rgba="0 0 .7 1"/>
 
     <!--QUAD FORK END-->
     <site name="y0_8" pos="0.1  0.05 0"/>
@@ -58,7 +58,7 @@
       <site name="x0_0v" pos=" 0       -0.01  0    " rgba="0 0 .7 1"/>
       <site name="x0_1v" pos=" 0        0.01  0    " rgba="0 0 .7 1"/>
       <site name="x0_2v" pos=" 0.02578  0     0.015" rgba="0 0 .7 1"/>
-      <site name="x0_3v" pos=" 0        0    -0.01 " rgba="0 0 .7 1"/>
+      <site name="x0_3v" pos=" 0        0    -0.03 " rgba="0 0 .7 1"/>
       <site name="x0_4v" pos="-0.02578  0     0.015" rgba="0 0 .7 1"/>
     </body>
     
@@ -73,8 +73,8 @@
       <!--QUAD FORK MIDDLE-->
       <site name="y1_4" pos="0.1  0.01  0   " rgba="0 0 .7 1"/>
       <site name="y1_5" pos="0.1 -0.01  0   " rgba="0 0 .7 1"/>
-      <site name="y1_6" pos="0.01  0     0.01"/>
-      <site name="y1_7" pos="0.01  0    -0.001"/>
+      <site name="y1_6" pos="0.1  0     0.01"/>
+      <site name="y1_7" pos="0.1  0    -0.01"/>
       <site name="y1_8" pos="0    0     0.01" rgba="0 0 .7 1"/>
       <site name="y1_9" pos="0    0    -0.01" rgba="0 0 .7 1"/>
       
@@ -201,12 +201,19 @@
     </spatial>
 
     <spatial limited="true" range="-0.01 0.01" group="0" name="J1_C" width="0.001">
-      <site site="y0_8"/> <site site="y1_A"/>
+      <site site="y0_8"/> <site site="y1_B"/>
     </spatial>
     <spatial limited="true" range="-0.01 0.01" group="0" name="J1_D" width="0.001">
-      <site site="y0_9"/> <site site="y1_B"/>
+      <site site="y0_9"/> <site site="y1_A"/>
     </spatial>
 
+
+    <spatial limited="true" range="-0.01 0.01" group="0" name="J2_C" width="0.001">
+      <site site="y2_0"/> <site site="y1_C"/>
+    </spatial>
+    <spatial limited="true" range="-0.01 0.01" group="0" name="J2_D" width="0.001">
+      <site site="y2_1"/> <site site="y1_D"/>
+    </spatial>
 
 
     <spatial group="1" rgba="0 2 5 1" stiffness="5000" damping="10" name="M0_0" width="0.001">
@@ -224,9 +231,9 @@
   </tendon>
   
   <actuator>
-    <muscle name="M0_0" tendon="M0_0" ctrllimited="false" lengthrange="-10 10" scale="5000" forcelimited="false" range="0.8 1.2"/>
-    <muscle name="M0_1" tendon="M0_1" ctrllimited="false" lengthrange="-10 10" scale="5000" forcelimited="false" range="0.8 1.2"/>
-    <muscle name="M1_0" tendon="M1_0" ctrllimited="false" lengthrange="0 1000" scale="5000" forcelimited="false" range="0.8 1.2"/>
-    <muscle name="M1_1" tendon="M1_1" ctrllimited="false" lengthrange="0 1000" scale="5000" forcelimited="false" range="0.8 1.2"/>
+    <muscle name="M0_0" tendon="M0_0" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-200 200" range="0.8 1"/>
+    <muscle name="M0_1" tendon="M0_1" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-200 200" range="0.8 1"/>
+    <muscle name="M1_0" tendon="M1_0" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-200 200" range="0.8 1"/>
+    <muscle name="M1_1" tendon="M1_1" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-2000 2000" range="0.8 1"/>
   </actuator>
 </mujoco>
