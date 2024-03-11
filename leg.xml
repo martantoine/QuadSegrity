@@ -8,8 +8,8 @@
 	  <!--<joint type="hinge" pos="0 0 0" axis="0 0 1" limited="true" range="0 120" damping="0.1"/>-->
     <joint type="ball"/>
     <muscle ctrllimited="true" ctrlrange="-1000 1000"/>
-    <geom size="0.003" mass="0.2"/>
-    <site size="0.005"/>
+    <geom size="0.003" mass="0.2" rgba=".5 .1 .1 1"/>
+    <site size="0.005" rgba="0 .7 0 1"/>
     <tendon rgba="0 1 0 1" stiffness="1000" damping="10"/>
   </default>
 
@@ -20,56 +20,106 @@
 
   <worldbody>
     <geom name="floor" pos="0 0 -1" size="0 0 1" type="plane" material="matplane"/>
-
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
 
-    <site name="s0" pos="-0.15 0    0"/>
-    <site name="w0" pos="0.1   0.05 0" rgba="0 .7 0 1" group="1"/>
-    <site name="w1" pos="0.1  -0.05 0" rgba="0 .7 0 1" group="1"/>
-    <site name="r0" pos="0.05   0 0" rgba="0 0 .7 1" group="1"/>
+    <!--FORK-->
+    <geom type="capsule" fromto="0    0 0  0.05 0    0"/>
+    <geom type="capsule" fromto="0.05 0 0  0.1  0.05 0"/>
+    <geom type="capsule" fromto="0.05 0 0  0.1 -0.05 0"/>
 
-    <geom type="capsule" fromto="0    0 0  0.05 0    0" rgba=".5 .1 .1 1"/>
-    <geom type="capsule" fromto="0.05 0 0  0.1 0.05  0" rgba=".5 .1 .1 1"/>
-    <geom type="capsule" fromto="0.05 0 0  0.1 -0.05 0" rgba=".5 .1 .1 1"/>
+    <!--QUAD FORK START-->
+    <site name="y0_0" pos="0  0.01  0   "/>
+    <site name="y0_1" pos="0 -0.01  0   "/>
+    <site name="y0_2" pos="0  0     0.01"/>
+    <site name="y0_3" pos="0  0    -0.01"/>
+
+    <!--QUAD FORK MIDDLE-->
+    <site name="y0_4" pos="0.05  0.01  0   " rgba="0 0 .7 1"/>
+    <site name="y0_5" pos="0.05 -0.01  0   " rgba="0 0 .7 1"/>
+    <site name="y0_6" pos="0.05  0     0.01" rgba="0 0 .7 1"/>
+    <site name="y0_7" pos="0.05  0    -0.01" rgba="0 0 .7 1"/>
+
+    <!--QUAD FORK END-->
+    <site name="y0_8" pos="0.1  0.05 0"/>
+    <site name="y0_9" pos="0.1 -0.05 0"/>
 
     <body pos="0.1 0 0">
       <joint type="free"/>
-      <geom type="capsule" fromto="0 0 0   0.05156 0  0.03" rgba=".5 .1 .1 1"/>
-      <geom type="capsule" fromto="0 0 0   0       0 -0.06" rgba=".5 .1 .1 1"/>
-      <geom type="capsule" fromto="0 0 0  -0.05156 0  0.03" rgba=".5 .1 .1 1"/>
+      <geom type="capsule" fromto="0 0 0   0.05156 0  0.03"/>
+      <geom type="capsule" fromto="0 0 0   0       0 -0.06"/>
+      <geom type="capsule" fromto="0 0 0  -0.05156 0  0.03"/>
 
-      <site name="x0" pos=" 0.05156 0  0.03" rgba="0 .7 0 1" group="1"/>
-      <site name="x1" pos=" 0       0 -0.06" rgba="0 .7 0 1" group="1"/>
-      <site name="x2" pos="-0.05156 0  0.03" rgba="0 .7 0 1" group="1"/>
-      <site name="r1" pos=" 0       0 -0.03" rgba="0 0 .7 1" group="1"/>
-      <site name="r3" pos=" 0.02578 0  0.015" rgba="0 0 .7 1" group="1"/>
-      <site name="r4" pos="-0.02578 0  0.015" rgba="0 0 .7 1" group="1"/>
+      
+      <site name="x0_1"  pos=" 0.05156 0  0.03 "/>
+      <site name="x0_2"  pos=" 0       0 -0.06 "/>
+      <site name="x0_3"  pos="-0.05156 0  0.03 "/>
+
+      <!--STAR MUSCLE'S TENDONS VIAS-->
+      <site name="x0_0v" pos=" 0       -0.01  0    " rgba="0 0 .7 1"/>
+      <site name="x0_1v" pos=" 0        0.01  0    " rgba="0 0 .7 1"/>
+      <site name="x0_2v" pos=" 0.02578  0     0.015" rgba="0 0 .7 1"/>
+      <site name="x0_3v" pos=" 0        0    -0.03 " rgba="0 0 .7 1"/>
+      <site name="x0_4v" pos="-0.02578  0     0.015" rgba="0 0 .7 1"/>
     </body>
     
-    <body pos="0.2 0 0" euler="0 0 180">
+    <body pos="0.25 0 0" euler="0 0 180">
       <joint type="free"/>
-      <geom type="capsule" fromto="0    0 0  0.05 0     0" rgba=".5 .1 .1 1"/>
-      <geom type="capsule" fromto="0.05 0 0  0.1  0.035 0" rgba=".5 .1 .1 1"/>
-      <geom type="capsule" fromto="0.05 0 0  0.1 -0.035 0" rgba=".5 .1 .1 1"/>
-      <site name="w01" pos="0.1  0.035 0" rgba="0 .7 0 1" group="1"/>
-      <site name="w11" pos="0.1 -0.035 0" rgba="0 .7 0 1" group="1"/>
-      <site name="r2" pos="0.05   0 0" rgba="0 0 .7 1" group="1"/>
-   </body>
-    
+      <geom type="capsule" fromto="0   0 0   0.1   0     0"/>
+      <geom type="capsule" fromto="0.1 0 0   0.15  0.035 0"/>
+      <geom type="capsule" fromto="0.1 0 0   0.15 -0.035 0"/>
+      <geom type="capsule" fromto="0   0 0  -0.05  0.035 0"/>
+      <geom type="capsule" fromto="0   0 0  -0.05 -0.035 0"/>
 
-   
-    <!--
-    <body pos="0 0 0">
-      <geom name="waist" type="capsule" size="0.045" fromto="0 0 0  0.05 0 0" rgba=".5 .1 .1 1"/>
-      <joint name="shoulder"/>
-      <geom name="shoulder" type="cylinder" pos="0 0 0" size=".1 .05" rgba=".5 .1 .8 .5" mass="0" group="1"/>
-
-      <site name="s1" pos="0.15 0.06 0" size="0.02"/>
-      <site name="s2" pos="0.15 -0.06 0" size="0.02"/>
+      <!--QUAD FORK MIDDLE-->
+      <site name="y1_4" pos="0.1  0.01  0   " rgba="0 0 .7 1"/>
+      <site name="y1_5" pos="0.1 -0.01  0   " rgba="0 0 .7 1"/>
+      <site name="y1_6" pos="0.1  0     0.01"/>
+      <site name="y1_7" pos="0.1  0    -0.01"/>
+      <site name="y1_8" pos="0    0     0.01" rgba="0 0 .7 1"/>
+      <site name="y1_9" pos="0    0    -0.01" rgba="0 0 .7 1"/>
+      
+      <!--QUAD FORK END-->
+      <site name="y1_A" pos=" 0.15  0.035 0"/>
+      <site name="y1_B" pos=" 0.15 -0.035 0"/>
+      <site name="y1_C" pos="-0.05  0.035 0"/>
+      <site name="y1_D" pos="-0.05 -0.035 0"/>
     </body>
-    -->
-  </worldbody>
+    
+    <body pos="0.3 0 0" euler="180 0 0">
+      <joint type="free"/>
+      <geom type="capsule" fromto="0 0 0   0.05156 0  0.03"/>
+      <geom type="capsule" fromto="0 0 0   0       0 -0.06"/>
+      <geom type="capsule" fromto="0 0 0  -0.05156 0  0.03"/>
 
+      
+      <site name="x1_1"  pos=" 0.05156 0  0.03 "/>
+      <site name="x1_2"  pos=" 0       0 -0.06 "/>
+      <site name="x1_3"  pos="-0.05156 0  0.03 "/>
+
+      <!--STAR MUSCLE'S TENDONS VIAS-->
+      <site name="x1_2v" pos=" 0.02578  0     0.015" rgba="0 0 .7 1"/>
+      <site name="x1_3v" pos=" 0        0    -0.03 " rgba="0 0 .7 1"/>
+      <site name="x1_4v" pos="-0.02578  0     0.015" rgba="0 0 .7 1"/>
+    </body>
+   
+
+    <body pos="0.45 0 0" euler="0 0 180">
+      <joint type="free"/>
+      <geom type="capsule" fromto="0   0 0  0.1   0    0"/>
+      <geom type="capsule" fromto="0.1 0 0  0.15  0.05 0"/>
+      <geom type="capsule" fromto="0.1 0 0  0.15 -0.05 0"/>
+      <geom type="sphere"  pos="0 0 0" size="0.015"/>
+    
+      <!--QUAD FORK END-->
+      <site name="y2_0" pos=" 0.15  0.05 0"/>
+      <site name="y2_1" pos=" 0.15 -0.05 0"/>
+
+      <!--QUAD FORK MIDDLE-->
+      <site name="y2_2" pos="0.1  0     0.01"/>
+      <site name="y2_3" pos="0.1  0    -0.01"/>
+    </body>
+  </worldbody>
+  <!--
   <tendon>
     <spatial name="T0a" width="0.001">
       <site site="w0"/>
@@ -137,6 +187,7 @@
       <site site="r2"/>
     </spatial>
   </tendon>
+  -->
   <!--
   <actuator>
     <muscle name="T6" tendon="T6" range="300 320"/>
