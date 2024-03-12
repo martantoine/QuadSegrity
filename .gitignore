@@ -1,3 +1,4 @@
 mujoco/
 mujoco-dev/
 MUJOCO_LOG.TXT
+leg_parametric.xml

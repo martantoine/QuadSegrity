@@ -4,8 +4,8 @@
 	<default>
 		<joint type="ball"/>
 		<muscle ctrllimited="true" ctrlrange="-1000 1000"/>
-		<geom size="0.003" mass="0.1" rgba=".5 .1 .1 1"/>
-		<site size="0.005" rgba="0 .7 0 1"/>
+		<geom size="0.0025" mass="0.1" rgba=".5 .1 .1 1"/>
+		<site size="0.0025" rgba="0 .7 0 1"/>
 		<tendon rgba="0 1 0 1" stiffness="1000" damping="15"/>
 	</default>
 	<asset>
@@ -15,5 +15,12 @@
 	<worldbody>
 		<geom name="floor" rgba="1 1 1 1" pos="0 0 -0.35" size="0 0 1" type="plane" material="matplane"/>
 		<light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+		<geom type="capsule" fromto="0.009999999999999998 0.0 0.0 0.0 0.015697711344427916 0.007319963015413336"/>
+		<geom type="capsule" fromto="-0.009999999999999998 0.0 0.0 0.0 0.015697711344427916 0.007319963015413336"/>
+		<geom type="capsule" fromto="0.0 0.04288694495552741 0.01999851086763432 0.0 0.015697711344427916 0.007319963015413336"/>
+		<site name="y0_0" pos="0.0 0.041830399301175665 0.022264280335225945"/>
+		<site name="y0_1" pos="0.0 0.043943490609879156 0.017732741400042693"/>
+		<site name="y0_2" pos="0.0025 0.04288694495552741 0.01999851086763432"/>
+		<site name="y0_3" pos="-0.0025 0.04288694495552741 0.01999851086763432"/>
 	</worldbody>
 </mujoco>
