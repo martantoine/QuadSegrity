@@ -1,3 +1,7 @@
+<a href="./LICENSE" alt="MIT">
+    <img src="https://img.shields.io/badge/license-MIT-white">
+</a>
+
 # QuadSegrity
 
 QuadSegrity is a quadruped robot using tensegrity based joints.
