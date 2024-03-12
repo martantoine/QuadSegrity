@@ -201,7 +201,7 @@ def addFork(name, parent, center, stick_length, angle_y, angle_opening, vias=[Tr
     site.setAttribute('pos', f'{B[0]} {B[1]} {B[2]}')
     parent.appendChild(site)
     
-    return (A + B) / 2, 2*D-(A+B) / 2
+    return (A + B) / 2, 2*D-((A+B)/2)
 
 tmp, _ = addFork('scapula', worldbody, np.array([0, 0, 0]), scapula_length, scapula_angle, teeth_opening_big)
 
@@ -212,19 +212,21 @@ worldbody.appendChild(humerus)
 _, tmp = addFork('humerus_start', humerus, tmp, humerus_length/2, 0, teeth_opening_small, vias=[False, False, False, False, True, True, True, True])
 tmp, _ = addFork('humerus_end'  , humerus, tmp, humerus_length/2, 180, teeth_opening_small, vias=[False, False, False, False, True, True, True, True])
 rotation = np.array([[1, 0              ,  0              ],
-                        [0, np.cos(np.deg2rad(knee_angle)), -np.sin(np.deg2rad(knee_angle))],
-                        [0, np.sin(np.deg2rad(knee_angle)),  np.cos(np.deg2rad(knee_angle))]])
+                     [0, np.cos(np.deg2rad(knee_angle)), -np.sin(np.deg2rad(knee_angle))],
+                     [0, np.sin(np.deg2rad(knee_angle)),  np.cos(np.deg2rad(knee_angle))]])
+
 tmp = np.dot(rotation, tmp)
 radius = root.createElement('body')
-radius.setAttribute('pos', '0 0 0')
-#radius.setAttribute('euler', '50 0 0')
+
+radius.setAttribute('pos', f'{tmp[0]} {tmp[1]} {tmp[2]}')
+radius.setAttribute('euler', '-130 0 0')
 worldbody.appendChild(radius)
-#addFork('radius'  , radius, tmp, radius_length, 0, teeth_opening_big, vias=[False, False, False, False, True, True, False, False])
+addFork('radius', radius, [0, 0, 0], radius_length, 0, teeth_opening_big, vias=[False, False, False, False, True, True, False, False])
 
 beam = root.createElement('geom')
 beam.setAttribute('type', 'sphere')
-beam.setAttribute('pos', f'{tmp[0]} {tmp[1]} {tmp[2]}')
-#worldbody.appendChild(beam)
+beam.setAttribute('pos', '0 0 0')
+worldbody.appendChild(beam)
 
 xml_str = root.toprettyxml(indent ="\t")  
   
