@@ -12,7 +12,21 @@ root = minidom.Document()
   
 xml = root.createElement('mujoco')  
 root.appendChild(xml) 
-  
+
+# CAMERA
+statistic = root.createElement('statistic')
+statistic.setAttribute('extent', '0.4')
+statistic.setAttribute('center', '0 0 -0.1')
+xml.appendChild(statistic)
+
+visual = root.createElement('visual')
+visual_global = root.createElement('global')
+visual_global.setAttribute('azimuth', '150')
+visual_global.setAttribute('elevation', '-30')
+visual.appendChild(visual_global)
+xml.appendChild(visual)
+
+
 # OPTION
 option = root.createElement('option') 
 option.setAttribute('timestep', '0.005')
@@ -92,7 +106,6 @@ light.setAttribute('dir', '0 0 -1')
 worldbody.appendChild(light)
 xml.appendChild(worldbody)
 
-
 def addFork(name, parent, center, stick_length, angle_y, angle_opening):
     # A
     #   \
@@ -127,12 +140,11 @@ def addFork(name, parent, center, stick_length, angle_y, angle_opening):
     beam.setAttribute('fromto', f'{D[0]} {D[1]} {D[2]} {C[0]} {C[1]} {C[2]}')
     parent.appendChild(beam)
 
-    #<!--QUAD FORK START-->
+    #QUAD FORK START
     s0 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [0, 0, site_space])
     s1 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [0, 0, -site_space])
     s2 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [ site_space, 0, 0])
     s3 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [-site_space, 0, 0])
-    
     site = root.createElement('site')
     site.setAttribute('name', name + '_0')
     site.setAttribute('pos', f'{s0[0]} {s0[1]} {s0[2]}')
@@ -150,18 +162,48 @@ def addFork(name, parent, center, stick_length, angle_y, angle_opening):
     site.setAttribute('pos', f'{s3[0]} {s3[1]} {s3[2]}')
     parent.appendChild(site)
 
-    #<!--QUAD FORK MIDDLE-->
-    #<site name="y0_4" pos="0.05  0.01  0   " rgba="0 0 .7 1"/>
-    #<site name="y0_5" pos="0.05 -0.01  0   " rgba="0 0 .7 1"/>
-    #<site name="y0_6" pos="0.05  0     0.01" rgba="0 0 .7 1"/>
-    #<site name="y0_7" pos="0.05  0    -0.01" rgba="0 0 .7 1"/>
-#
-    #<!--QUAD FORK END-->
-    #<site name="y0_8" pos="0.1  0.05 0"/>
-    #<site name="y0_9" pos="0.1 -0.05 0"/>
+    #QUAD FORK MIDDLE
+    s4 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [0, 0, site_space])
+    s5 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [0, 0, -site_space])
+    s6 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [ site_space, 0, 0])
+    s7 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [-site_space, 0, 0])
+    site = root.createElement('site')
+    site.setAttribute('name', name + '_4')
+    site.setAttribute('pos', f'{s4[0]} {s4[1]} {s4[2]}')
+    parent.appendChild(site)
+    site = root.createElement('site')
+    site.setAttribute('name', name + '_5')
+    site.setAttribute('pos', f'{s5[0]} {s5[1]} {s5[2]}')
+    parent.appendChild(site)
+    site = root.createElement('site')
+    site.setAttribute('name', name + '_6')
+    site.setAttribute('pos', f'{s6[0]} {s6[1]} {s6[2]}')
+    parent.appendChild(site)
+    site = root.createElement('site')
+    site.setAttribute('name', name + '_7')
+    site.setAttribute('pos', f'{s7[0]} {s7[1]} {s7[2]}')
+    parent.appendChild(site)
 
+    #QUAD FORK END
+    site = root.createElement('site')
+    site.setAttribute('name', name + '_9')
+    site.setAttribute('pos', f'{A[0]} {A[1]} {A[2]}')
+    parent.appendChild(site)
+    site = root.createElement('site')
+    site.setAttribute('name', name + '_8')
+    site.setAttribute('pos', f'{B[0]} {B[1]} {B[2]}')
+    parent.appendChild(site)
+    
 
-addFork('y0', worldbody, np.array([0, 0, 0]), 0.03, 25, 30)
+addFork('scapula', worldbody, np.array([0, 0, 0]), 0.03, 25, 30)
+
+humerus = root.createElement('body')
+humerus.setAttribute('pos', '0 0 0')
+humerus.setAttribute('euler', '-45 0 0')
+worldbody.appendChild(humerus)
+addFork('humerus_start', humerus, np.array([0, 0, 0]), 0.03, 0, 25)
+addFork('humerus_end'  , humerus, np.array([0, -2*teeth_length-0.06*np.cos(np.deg2rad(25)), 0]), 0.03, 180, 25)
+
 xml_str = root.toprettyxml(indent ="\t")  
   
 save_path_file = "leg_parametric.xml"
