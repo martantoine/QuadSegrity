@@ -3,10 +3,17 @@ import numpy as np
 import os  
   
 # MODEL PARAMETERS (S.I. units)
-teeth_length = 0.02
+teeth_length = 0.03
+teeth_opening_big = 40
+teeth_opening_small = 25
 site_space = 0.0025
 site_radius = 0.0025
 beam_radius = 0.0025
+scapula_length = 0.05
+scapula_angle = 25
+humerus_length = 0.10
+radius_length = 0.05
+knee_angle = -45
 
 root = minidom.Document() 
   
@@ -106,7 +113,7 @@ light.setAttribute('dir', '0 0 -1')
 worldbody.appendChild(light)
 xml.appendChild(worldbody)
 
-def addFork(name, parent, center, stick_length, angle_y, angle_opening):
+def addFork(name, parent, center, stick_length, angle_y, angle_opening, vias=[True, True, True, True, True, True, True, True]):
     # A
     #   \
     #    C -- D
@@ -119,11 +126,10 @@ def addFork(name, parent, center, stick_length, angle_y, angle_opening):
                          [0, np.cos(angle_y), -np.sin(angle_y)],
                          [0, np.sin(angle_y),  np.cos(angle_y)]])
                          
-    print(center + [ np.sin(angle_opening) * teeth_length, 0, 0])
-    A = np.dot(rotation, center + [ np.sin(angle_opening) * teeth_length, 0, 0])
-    B = np.dot(rotation, center + [-np.sin(angle_opening) * teeth_length, 0, 0])
-    C = np.dot(rotation, center + [ 0.0                                 , np.cos(angle_opening) * teeth_length, 0])
-    D = np.dot(rotation, center + [ 0.0                                 , np.cos(angle_opening) * teeth_length + stick_length, 0])
+    A = center + np.dot(rotation, [ np.sin(angle_opening) * teeth_length, 0, 0])
+    B = center + np.dot(rotation, [-np.sin(angle_opening) * teeth_length, 0, 0])
+    C = center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length, 0])
+    D = center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length + stick_length, 0])
     
     beam = root.createElement('geom')
     beam.setAttribute('type', 'capsule')
@@ -141,48 +147,49 @@ def addFork(name, parent, center, stick_length, angle_y, angle_opening):
     parent.appendChild(beam)
 
     #QUAD FORK START
-    s0 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [0, 0, site_space])
-    s1 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [0, 0, -site_space])
-    s2 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [ site_space, 0, 0])
-    s3 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length + stick_length, 0] + [-site_space, 0, 0])
+    s = np.cos(angle_opening) * teeth_length + stick_length
+    s0 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, site_space]))
+    s1 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, -site_space]))
+    s2 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([ site_space, 0, 0]))
+    s3 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([-site_space, 0, 0]))
     site = root.createElement('site')
     site.setAttribute('name', name + '_0')
     site.setAttribute('pos', f'{s0[0]} {s0[1]} {s0[2]}')
-    parent.appendChild(site)
+    if vias[0]: parent.appendChild(site)
     site = root.createElement('site')
     site.setAttribute('name', name + '_1')
     site.setAttribute('pos', f'{s1[0]} {s1[1]} {s1[2]}')
-    parent.appendChild(site)
+    if vias[1]: parent.appendChild(site)
     site = root.createElement('site')
     site.setAttribute('name', name + '_2')
     site.setAttribute('pos', f'{s2[0]} {s2[1]} {s2[2]}')
-    parent.appendChild(site)
+    if vias[2]: parent.appendChild(site)
     site = root.createElement('site')
     site.setAttribute('name', name + '_3')
     site.setAttribute('pos', f'{s3[0]} {s3[1]} {s3[2]}')
-    parent.appendChild(site)
+    if vias[3]: parent.appendChild(site)
 
     #QUAD FORK MIDDLE
-    s4 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [0, 0, site_space])
-    s5 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [0, 0, -site_space])
-    s6 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [ site_space, 0, 0])
-    s7 = np.dot(rotation, center + [0.0, np.cos(angle_opening) * teeth_length, 0] + [-site_space, 0, 0])
+    s4 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([0, 0, site_space]))
+    s5 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([0, 0, -site_space]))
+    s6 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([ site_space, 0, 0]))
+    s7 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([-site_space, 0, 0]))
     site = root.createElement('site')
     site.setAttribute('name', name + '_4')
     site.setAttribute('pos', f'{s4[0]} {s4[1]} {s4[2]}')
-    parent.appendChild(site)
+    if vias[4]: parent.appendChild(site)
     site = root.createElement('site')
     site.setAttribute('name', name + '_5')
     site.setAttribute('pos', f'{s5[0]} {s5[1]} {s5[2]}')
-    parent.appendChild(site)
+    if vias[5]: parent.appendChild(site)
     site = root.createElement('site')
     site.setAttribute('name', name + '_6')
     site.setAttribute('pos', f'{s6[0]} {s6[1]} {s6[2]}')
-    parent.appendChild(site)
+    if vias[6]: parent.appendChild(site)
     site = root.createElement('site')
     site.setAttribute('name', name + '_7')
     site.setAttribute('pos', f'{s7[0]} {s7[1]} {s7[2]}')
-    parent.appendChild(site)
+    if vias[7]: parent.appendChild(site)
 
     #QUAD FORK END
     site = root.createElement('site')
@@ -194,15 +201,30 @@ def addFork(name, parent, center, stick_length, angle_y, angle_opening):
     site.setAttribute('pos', f'{B[0]} {B[1]} {B[2]}')
     parent.appendChild(site)
     
+    return (A + B) / 2, 2*D-(A+B) / 2
 
-addFork('scapula', worldbody, np.array([0, 0, 0]), 0.03, 25, 30)
+tmp, _ = addFork('scapula', worldbody, np.array([0, 0, 0]), scapula_length, scapula_angle, teeth_opening_big)
 
 humerus = root.createElement('body')
 humerus.setAttribute('pos', '0 0 0')
-humerus.setAttribute('euler', '-45 0 0')
+humerus.setAttribute('euler', f'{knee_angle} 0 0')
 worldbody.appendChild(humerus)
-addFork('humerus_start', humerus, np.array([0, 0, 0]), 0.03, 0, 25)
-addFork('humerus_end'  , humerus, np.array([0, -2*teeth_length-0.06*np.cos(np.deg2rad(25)), 0]), 0.03, 180, 25)
+_, tmp = addFork('humerus_start', humerus, tmp, humerus_length/2, 0, teeth_opening_small, vias=[False, False, False, False, True, True, True, True])
+tmp, _ = addFork('humerus_end'  , humerus, tmp, humerus_length/2, 180, teeth_opening_small, vias=[False, False, False, False, True, True, True, True])
+rotation = np.array([[1, 0              ,  0              ],
+                        [0, np.cos(np.deg2rad(knee_angle)), -np.sin(np.deg2rad(knee_angle))],
+                        [0, np.sin(np.deg2rad(knee_angle)),  np.cos(np.deg2rad(knee_angle))]])
+tmp = np.dot(rotation, tmp)
+radius = root.createElement('body')
+radius.setAttribute('pos', '0 0 0')
+#radius.setAttribute('euler', '50 0 0')
+worldbody.appendChild(radius)
+#addFork('radius'  , radius, tmp, radius_length, 0, teeth_opening_big, vias=[False, False, False, False, True, True, False, False])
+
+beam = root.createElement('geom')
+beam.setAttribute('type', 'sphere')
+beam.setAttribute('pos', f'{tmp[0]} {tmp[1]} {tmp[2]}')
+#worldbody.appendChild(beam)
 
 xml_str = root.toprettyxml(indent ="\t")  
   
