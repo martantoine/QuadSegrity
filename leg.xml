@@ -8,7 +8,7 @@
 	  <!--<joint type="hinge" pos="0 0 0" axis="0 0 1" limited="true" range="0 120" damping="0.1"/>-->
     <joint type="ball"/>
     <muscle ctrllimited="true" ctrlrange="-1000 1000"/>
-    <geom size="0.003" mass="0.1" rgba=".5 .1 .1 1"/>
+    <geom size="0.003" mass="0.05" rgba=".5 .1 .1 1"/>
     <site size="0.005" rgba="0 .7 0 1"/>
     <tendon rgba="0 1 0 1" stiffness="1000" damping="15"/>
   </default>
@@ -216,24 +216,24 @@
     </spatial>
 
 
-    <spatial group="1" rgba="0 2 5 1" stiffness="5000" damping="10" name="M0_0" width="0.001">
+    <spatial group="1" rgba="0 2 5 1" stiffness="650" damping="10" name="M0_0" width="0.001">
       <site site="y0_2"/> <site site="y0_6"/> <site site="x0_4v"/> <site site="x0_2v"/> <site site="y1_6"/>
     </spatial>
-    <spatial group="1" rgba="0 2 5 1" stiffness="5000" damping="10" name="M0_1" width="0.001">
+    <spatial group="1" rgba="0 2 5 1" stiffness="650" damping="10" name="M0_1" width="0.001">
       <site site="y0_3"/> <site site="y0_7"/> <site site="x0_3v"/> <site site="y1_7"/>
     </spatial>
-    <spatial group="1" rgba="0 2 5 1" stiffness="5000" damping="10" name="M1_0" width="0.001">
+    <spatial group="1" rgba="0 2 5 1" stiffness="650" damping="10" name="M1_0" width="0.001">
       <site site="y0_0"/> <site site="y0_4"/> <site site="x0_1v"/> <site site="y1_5"/> <site site="y1_8"/> <site site="x1_3v"/> <site site="y2_2"/>
     </spatial>
-    <spatial group="1" rgba="0 2 5 1" stiffness="5000" damping="10" name="M1_1" width="0.001">
+    <spatial group="1" rgba="0 2 5 1" stiffness="650" damping="10" name="M1_1" width="0.001">
       <site site="y0_1"/> <site site="y0_5"/> <site site="x0_0v"/> <site site="y1_4"/> <site site="y1_9"/> <site site="x1_4v"/> <site site="x1_2v"/> <site site="y2_3"/>
     </spatial>
   </tendon>
   
   <actuator>
-    <muscle name="M0_0" tendon="M0_0" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-200 200" range="0.8 1"/>
-    <muscle name="M0_1" tendon="M0_1" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-200 200" range="0.8 1"/>
-    <muscle name="M1_0" tendon="M1_0" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-200 200" range="0.8 1"/>
-    <muscle name="M1_1" tendon="M1_1" ctrllimited="false" lengthrange="-10 10" scale="2000" forcelimited="true" forcerange="-2000 2000" range="0.8 1"/>
+    <muscle name="M0_0" tendon="M0_0" ctrllimited="false" lengthrange="-10.15 10.25" forcelimited="true" forcerange="-20 20" range="0.7 1.3"/>
+    <muscle name="M0_1" tendon="M0_1" ctrllimited="false" lengthrange="-10.15 10.25" forcelimited="true" forcerange="-20 20" range="0.7 1.3"/>
+    <muscle name="M1_0" tendon="M1_0" ctrllimited="false" lengthrange="-10.15 10.25" forcelimited="true" forcerange="-20 20" range="0.7 1.3"/>
+    <muscle name="M1_1" tendon="M1_1" ctrllimited="false" lengthrange="-10.15 10.25" forcelimited="true" forcerange="-20 20" range="0.7 1.3"/>
   </actuator>
 </mujoco>
