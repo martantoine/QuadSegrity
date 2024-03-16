@@ -3,12 +3,15 @@ import numpy as np
 import os  
 
 root = minidom.Document() 
-  
+
 xml = root.createElement('mujoco')  
 root.appendChild(xml) 
 
+tendon = root.createElement('tendon')
+xml.appendChild(tendon)
+
 class Fork:
-    def __init__(self, name, parent, center, mode, stick_length, angle_y, angle_opening):
+    def __init__(self, name, parent, center, mode, stick_length, angle_y, angle_opening, free=True):
         self.name = name
         self.parent = parent
         self.center = center
@@ -16,6 +19,7 @@ class Fork:
         self.stick_length = stick_length
         self.angle_y = angle_y
         self.angle_opening = angle_opening
+        self.free = free
         self.create_fork()
 
     def create_fork(self):
@@ -56,6 +60,20 @@ class Fork:
         beam.setAttribute('fromto', f'{self.D[0]} {self.D[1]} {self.D[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
         self.parent.appendChild(beam)
 
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_A')
+        site.setAttribute('pos', f'{self.A[0]} {self.A[1]} {self.A[2]}')
+        self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_B')
+        site.setAttribute('pos', f'{self.B[0]} {self.B[1]} {self.B[2]}')
+        self.parent.appendChild(site)
+
+        if self.free:
+            free_joint = root.createElement('joint')
+            free_joint.setAttribute('type', 'free')
+            self.parent.appendChild(free_joint)
+
     def getAB(self):
         return (self.A + self.B) / 2
 
@@ -83,25 +101,43 @@ class Star:
                              [0, np.cos(angle_y), -np.sin(angle_y)],
                              [0, np.sin(angle_y),  np.cos(angle_y)]])
                             
-        A = self.center
-        B = self.center + np.dot(rotation, teeth_length * np.array([0, np.cos(angle_opening),  np.sin(angle_opening)]))
-        C = self.center + np.dot(rotation, teeth_length * np.array([0, np.cos(angle_opening), -np.sin(angle_opening)]))
-        D = self.center + np.dot(rotation, teeth_length * np.array([0, 1                    ,  0                    ]))
+        self.A = self.center
+        self.B = self.center + np.dot(rotation, teeth_length * np.array([0, np.cos(angle_opening),  np.sin(angle_opening)]))
+        self.C = self.center + np.dot(rotation, teeth_length * np.array([0, np.cos(angle_opening), -np.sin(angle_opening)]))
+        self.D = self.center + np.dot(rotation, teeth_length * np.array([0, 1                    ,  0                    ]))
         
         beam = root.createElement('geom')
         beam.setAttribute('type', 'capsule')
-        beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {B[0]} {B[1]} {B[2]}')
+        beam.setAttribute('fromto', f'{self.A[0]} {self.A[1]} {self.A[2]} {self.B[0]} {self.B[1]} {self.B[2]}')
         self.parent.appendChild(beam)
 
         beam = root.createElement('geom')
         beam.setAttribute('type', 'capsule')
-        beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {C[0]} {C[1]} {C[2]}')
+        beam.setAttribute('fromto', f'{self.A[0]} {self.A[1]} {self.A[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
         self.parent.appendChild(beam)
 
         beam = root.createElement('geom')
         beam.setAttribute('type', 'capsule')
-        beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {D[0]} {D[1]} {D[2]}')
+        beam.setAttribute('fromto', f'{self.A[0]} {self.A[1]} {self.A[2]} {self.D[0]} {self.D[1]} {self.D[2]}')
         self.parent.appendChild(beam)
+
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_B')
+        site.setAttribute('pos', f'{self.B[0]} {self.B[1]} {self.B[2]}')
+        self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_C')
+        site.setAttribute('pos', f'{self.C[0]} {self.C[1]} {self.C[2]}')
+        self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_D')
+        site.setAttribute('pos', f'{self.D[0]} {self.D[1]} {self.D[2]}')
+        self.parent.appendChild(site)
+
+
+        free_joint = root.createElement('joint')
+        free_joint.setAttribute('type', 'free')
+        self.parent.appendChild(free_joint)
 
 class Leg:
     def __init__(self, name, parent, center):
@@ -110,15 +146,50 @@ class Leg:
         self.center = center
         self.create_leg()
     
+    def link_joint(self, forkA, forkB, star):
+        def link(site0, site1, i):
+            
+            spatial = root.createElement('spatial')
+            spatial.setAttribute('limited', 'true')
+            spatial.setAttribute('name', star.name + '_' + str(i))
+            spatial.setAttribute('range', '-0.01 0.01')
+            spatial.setAttribute('width', '0.001')
+            tendon.appendChild(spatial)
+            
+            site = root.createElement('site')
+            site.setAttribute('site', site0)
+            spatial.appendChild(site)
+
+            site = root.createElement('site')
+            site.setAttribute('site', site1)
+            spatial.appendChild(site)
+            return i + 1
+        
+        i = 0
+        i = link(forkA.name + '_A', star.name + '_B', i)
+        i = link(forkA.name + '_B', star.name + '_B', i)
+        i = link(forkA.name + '_A', star.name + '_C', i)
+        i = link(forkA.name + '_B', star.name + '_C', i)
+        i = link(forkA.name + '_A', star.name + '_D', i)
+        i = link(forkA.name + '_B', star.name + '_D', i)
+
+        i = link(forkB.name + '_A', star.name + '_B', i)
+        i = link(forkB.name + '_B', star.name + '_B', i)
+        i = link(forkB.name + '_A', star.name + '_C', i)
+        i = link(forkB.name + '_B', star.name + '_C', i)
+        i = link(forkB.name + '_A', star.name + '_D', i)
+        i = link(forkB.name + '_B', star.name + '_D', i)
+
+
     def create_leg(self):
-        self.scalupa     = Fork(self.name + '_scalupa'    , self.parent      , self.center            , 'D' , 0.1, 225, 45)
+        self.scalupa     = Fork(self.name + '_scalupa'    , self.parent      , self.center            , 'D' , 0.1, 225, 45, free=False)
         
         self.humerus_body = root.createElement('body')
         humerus_origin = self.scalupa.getAB()
         self.humerus_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
         self.parent.appendChild(self.humerus_body)
         self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, np.array([0, 0, 0])   , 'AB', 0.1, -45, 28)
-        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , 0.1, -45, 28)
+        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , 0.1, -45, 28, free=False)
 
         self.radius_body = root.createElement('body')
         radius_origin = humerus_origin + self.humerus_bot.getAB()
@@ -135,6 +206,9 @@ class Leg:
         self.knee_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
         self.knee = Star(self.name + '_knee', self.knee_body, np.array([0, 0, 0]), 180)
         self.parent.appendChild(self.knee_body)
+
+        self.link_joint(self.scalupa, self.humerus_top, self.hip)
+        self.link_joint(self.radius , self.humerus_bot, self.knee)
 
 
 # MODEL PARAMETERS (S.I. units)
@@ -199,11 +273,11 @@ site.setAttribute('size', f'{site_radius}')
 site.setAttribute('rgba', '0 .7 0 1')
 default.appendChild(site)
 
-tendon = root.createElement('tendon')
-tendon.setAttribute('rgba', '0 1 0 1')
-tendon.setAttribute('stiffness', '1000')
-tendon.setAttribute('damping', '15')
-default.appendChild(tendon)
+tendon2 = root.createElement('tendon')
+tendon2.setAttribute('rgba', '0 1 0 1')
+tendon2.setAttribute('stiffness', '1000')
+tendon2.setAttribute('damping', '15')
+default.appendChild(tendon2)
 xml.appendChild(default)
 
 # ASSET
@@ -260,27 +334,7 @@ xml.appendChild(worldbody)
 #    rotation = np.array([[1, 0              ,  0              ],
 #                         [0, np.cos(angle_y), -np.sin(angle_y)],
 #                         [0, np.sin(angle_y),  np.cos(angle_y)]])
-#                         
-#    A = center + np.dot(rotation, [ np.sin(angle_opening) * teeth_length, 0, 0])
-#    B = center + np.dot(rotation, [-np.sin(angle_opening) * teeth_length, 0, 0])
-#    C = center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length, 0])
-#    D = center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length + stick_length, 0])
-#    
-#    beam = root.createElement('geom')
-#    beam.setAttribute('type', 'capsule')
-#    beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {C[0]} {C[1]} {C[2]}')
-#    parent.appendChild(beam)
-#
-#    beam = root.createElement('geom')
-#    beam.setAttribute('type', 'capsule')
-#    beam.setAttribute('fromto', f'{B[0]} {B[1]} {B[2]} {C[0]} {C[1]} {C[2]}')
-#    parent.appendChild(beam)
-#
-#    beam = root.createElement('geom')
-#    beam.setAttribute('type', 'capsule')
-#    beam.setAttribute('fromto', f'{D[0]} {D[1]} {D[2]} {C[0]} {C[1]} {C[2]}')
-#    parent.appendChild(beam)
-#
+#                        
 #    #QUAD FORK START
 #    s = np.cos(angle_opening) * teeth_length + stick_length
 #    s0 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, site_space]))
@@ -325,52 +379,7 @@ xml.appendChild(worldbody)
 #    site.setAttribute('name', name + '_7')
 #    site.setAttribute('pos', f'{s7[0]} {s7[1]} {s7[2]}')
 #    if vias[7]: parent.appendChild(site)
-#
-#    #QUAD FORK END
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_9')
-#    site.setAttribute('pos', f'{A[0]} {A[1]} {A[2]}')
-#    parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_8')
-#    site.setAttribute('pos', f'{B[0]} {B[1]} {B[2]}')
-#    parent.appendChild(site)
-#    
-#    return (A + B) / 2, 2*D-((A+B)/2)
 
-
-#def addStar(name, parent, center, angle_y):
-#    # B
-#    #   \
-#    #    A -- D
-#    #   /
-#    # C
-#    # center at A
-#    angle_y = np.deg2rad(angle_y)
-#    angle_opening = np.deg2rad(120)
-#    rotation = np.array([[1, 0              ,  0              ],
-#                         [0, np.cos(angle_y), -np.sin(angle_y)],
-#                         [0, np.sin(angle_y),  np.cos(angle_y)]])
-#                         
-#    A = center
-#    B = center + np.dot(rotation, teeth_length * np.array([0, np.cos(angle_opening),  np.sin(angle_opening)]))
-#    C = center + np.dot(rotation, teeth_length * np.array([0, np.cos(angle_opening), -np.sin(angle_opening)]))
-#    D = center + np.dot(rotation, teeth_length * np.array([0, 1                    ,  0                    ]))
-#    
-#    beam = root.createElement('geom')
-#    beam.setAttribute('type', 'capsule')
-#    beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {B[0]} {B[1]} {B[2]}')
-#    parent.appendChild(beam)
-#
-#    beam = root.createElement('geom')
-#    beam.setAttribute('type', 'capsule')
-#    beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {C[0]} {C[1]} {C[2]}')
-#    parent.appendChild(beam)
-#
-#    beam = root.createElement('geom')
-#    beam.setAttribute('type', 'capsule')
-#    beam.setAttribute('fromto', f'{A[0]} {A[1]} {A[2]} {D[0]} {D[1]} {D[2]}')
-#    parent.appendChild(beam)
 
 ## SCAPULA
 #tmp, _ = addFork('scapula', worldbody, np.array([0, 0, 0]), scapula_length, scapula_angle, teeth_opening_big)
