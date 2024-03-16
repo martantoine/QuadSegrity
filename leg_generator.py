@@ -11,7 +11,7 @@ tendon = root.createElement('tendon')
 xml.appendChild(tendon)
 
 class Fork:
-    def __init__(self, name, parent, center, mode, stick_length, angle_y, angle_opening, free=True):
+    def __init__(self, name, parent, center, mode, stick_length, angle_y, angle_opening, free=True, vias=[True, True, True, True, True, True, True, True]):
         self.name = name
         self.parent = parent
         self.center = center
@@ -20,6 +20,7 @@ class Fork:
         self.angle_y = angle_y
         self.angle_opening = angle_opening
         self.free = free
+        self.vias = vias
         self.create_fork()
 
     def create_fork(self):
@@ -35,18 +36,40 @@ class Fork:
         rotation = np.array([[1, 0, 0],
                              [0, np.cos(angle_y), -np.sin(angle_y)],
                              [0, np.sin(angle_y), np.cos(angle_y)]])
+        s = np.cos(angle_opening) * teeth_length + self.stick_length
 
         if self.mode == 'AB':
-            self.A = self.center + np.dot(rotation, [ np.sin(angle_opening) * teeth_length, 0                                                       , 0])
-            self.B = self.center + np.dot(rotation, [-np.sin(angle_opening) * teeth_length, 0                                                       , 0])
-            self.C = self.center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length                    , 0])
-            self.D = self.center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length + self.stick_length, 0])
-        elif self.mode == 'D':
-            self.A = self.center + np.dot(rotation, [ np.sin(angle_opening) * teeth_length, np.cos(angle_opening) * teeth_length + self.stick_length, 0])
-            self.B = self.center + np.dot(rotation, [-np.sin(angle_opening) * teeth_length, np.cos(angle_opening) * teeth_length + self.stick_length, 0])
-            self.C = self.center + np.dot(rotation, [ 0.0                                 , self.stick_length                                       , 0])
-            self.D = self.center + np.dot(rotation, [ 0.0                                 , 0                                                       , 0])
+            self.A = self.center + np.dot(rotation, [ np.sin(angle_opening) * teeth_length, 0                                   , 0])
+            self.B = self.center + np.dot(rotation, [-np.sin(angle_opening) * teeth_length, 0                                   , 0])
+            self.C = self.center + np.dot(rotation, [ 0.0                                 , np.cos(angle_opening) * teeth_length, 0])
+            self.D = self.center + np.dot(rotation, [ 0.0                                 , s                                   , 0])
 
+            # FORK END
+            s0     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, site_space]))
+            s1     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, -site_space]))
+            s2     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([ site_space, 0, 0]))
+            s3     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([-site_space, 0, 0]))
+            # FORK MIDDLE
+            s4     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([0, 0, site_space]))
+            s5     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([0, 0, -site_space]))
+            s6     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([ site_space, 0, 0]))
+            s7     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([-site_space, 0, 0]))
+        elif self.mode == 'D':
+            self.A = self.center + np.dot(rotation, [ np.sin(angle_opening) * teeth_length, s                , 0])
+            self.B = self.center + np.dot(rotation, [-np.sin(angle_opening) * teeth_length, s                , 0])
+            self.C = self.center + np.dot(rotation, [ 0.0                                 , self.stick_length, 0])
+            self.D = self.center + np.dot(rotation, [ 0.0                                 , 0                , 0])
+
+            # FORK END
+            s0     = self.center + np.dot(rotation, np.array([0, 0, 0]) + np.array([0, 0, site_space]))
+            s1     = self.center + np.dot(rotation, np.array([0, 0, 0]) + np.array([0, 0, -site_space]))
+            s2     = self.center + np.dot(rotation, np.array([0, 0, 0]) + np.array([ site_space, 0, 0]))
+            s3     = self.center + np.dot(rotation, np.array([0, 0, 0]) + np.array([-site_space, 0, 0]))
+            # FORK MIDDLE
+            s4     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([0, 0, site_space]))
+            s5     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([0, 0, -site_space]))
+            s6     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([ site_space, 0, 0]))
+            s7     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([-site_space, 0, 0]))
         beam = root.createElement('geom')
         beam.setAttribute('type', 'capsule')
         beam.setAttribute('fromto', f'{self.A[0]} {self.A[1]} {self.A[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
@@ -68,6 +91,41 @@ class Fork:
         site.setAttribute('name', self.name + '_B')
         site.setAttribute('pos', f'{self.B[0]} {self.B[1]} {self.B[2]}')
         self.parent.appendChild(site)
+
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_0')
+        site.setAttribute('pos', f'{s0[0]} {s0[1]} {s0[2]}')
+        if self.vias[0]: self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_1')
+        site.setAttribute('pos', f'{s1[0]} {s1[1]} {s1[2]}')
+        if self.vias[1]: self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_2')
+        site.setAttribute('pos', f'{s2[0]} {s2[1]} {s2[2]}')
+        if self.vias[2]: self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_3')
+        site.setAttribute('pos', f'{s3[0]} {s3[1]} {s3[2]}')
+        if self.vias[3]: self.parent.appendChild(site)
+
+        #QUAD FORK MIDDLE
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_4')
+        site.setAttribute('pos', f'{s4[0]} {s4[1]} {s4[2]}')
+        if self.vias[4]: self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_5')
+        site.setAttribute('pos', f'{s5[0]} {s5[1]} {s5[2]}')
+        if self.vias[5]: self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_6')
+        site.setAttribute('pos', f'{s6[0]} {s6[1]} {s6[2]}')
+        if self.vias[6]: self.parent.appendChild(site)
+        site = root.createElement('site')
+        site.setAttribute('name', self.name + '_7')
+        site.setAttribute('pos', f'{s7[0]} {s7[1]} {s7[2]}')
+        if self.vias[7]: self.parent.appendChild(site)
 
         if self.free:
             free_joint = root.createElement('joint')
@@ -188,14 +246,14 @@ class Leg:
         humerus_origin = self.scalupa.getAB()
         self.humerus_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
         self.parent.appendChild(self.humerus_body)
-        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, np.array([0, 0, 0])   , 'AB', 0.1, -45, 28)
-        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , 0.1, -45, 28, free=False)
+        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, np.array([0, 0, 0])   , 'AB', 0.1, -45, 28, vias=[False, False, False, False, True, True, True, True])
+        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , 0.1, -45, 28, free=False, vias=[False, False, False, False, True, True, True, True])
 
         self.radius_body = root.createElement('body')
         radius_origin = humerus_origin + self.humerus_bot.getAB()
         self.radius_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
         self.parent.appendChild(self.radius_body)
-        self.radius      = Fork(self.name + '_radius', self.radius_body, np.array([0, 0, 0]), 'AB' , 0.15, 225, 45)
+        self.radius      = Fork(self.name + '_radius', self.radius_body, np.array([0, 0, 0]), 'AB' , 0.15, 225, 45, vias=[False, False, False, False, True, True, False, False])
 
         self.hip_body = root.createElement('body')
         self.hip_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
@@ -307,7 +365,7 @@ worldbody = root.createElement('worldbody')
 geom = root.createElement('geom')
 geom.setAttribute('name', 'floor')
 geom.setAttribute('rgba', '1 1 1 1')
-geom.setAttribute('pos', '0 0 -0.5')
+geom.setAttribute('pos', '0 0 -0.7')
 geom.setAttribute('size', '0 0 1')
 geom.setAttribute('type', 'plane')
 geom.setAttribute('material', 'matplane')
@@ -335,50 +393,6 @@ xml.appendChild(worldbody)
 #                         [0, np.cos(angle_y), -np.sin(angle_y)],
 #                         [0, np.sin(angle_y),  np.cos(angle_y)]])
 #                        
-#    #QUAD FORK START
-#    s = np.cos(angle_opening) * teeth_length + stick_length
-#    s0 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, site_space]))
-#    s1 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([0, 0, -site_space]))
-#    s2 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([ site_space, 0, 0]))
-#    s3 = center + np.dot(rotation, np.array([0, s, 0]) + np.array([-site_space, 0, 0]))
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_0')
-#    site.setAttribute('pos', f'{s0[0]} {s0[1]} {s0[2]}')
-#    if vias[0]: parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_1')
-#    site.setAttribute('pos', f'{s1[0]} {s1[1]} {s1[2]}')
-#    if vias[1]: parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_2')
-#    site.setAttribute('pos', f'{s2[0]} {s2[1]} {s2[2]}')
-#    if vias[2]: parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_3')
-#    site.setAttribute('pos', f'{s3[0]} {s3[1]} {s3[2]}')
-#    if vias[3]: parent.appendChild(site)
-#
-#    #QUAD FORK MIDDLE
-#    s4 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([0, 0, site_space]))
-#    s5 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([0, 0, -site_space]))
-#    s6 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([ site_space, 0, 0]))
-#    s7 = center + np.dot(rotation, np.array([0, np.cos(angle_opening) * teeth_length, 0]) + np.array([-site_space, 0, 0]))
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_4')
-#    site.setAttribute('pos', f'{s4[0]} {s4[1]} {s4[2]}')
-#    if vias[4]: parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_5')
-#    site.setAttribute('pos', f'{s5[0]} {s5[1]} {s5[2]}')
-#    if vias[5]: parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_6')
-#    site.setAttribute('pos', f'{s6[0]} {s6[1]} {s6[2]}')
-#    if vias[6]: parent.appendChild(site)
-#    site = root.createElement('site')
-#    site.setAttribute('name', name + '_7')
-#    site.setAttribute('pos', f'{s7[0]} {s7[1]} {s7[2]}')
-#    if vias[7]: parent.appendChild(site)
 
 
 ## SCAPULA
@@ -438,12 +452,17 @@ xml.appendChild(worldbody)
 #worldbody.appendChild(beam)
 
 
-leg = Leg('leg', worldbody, np.array([0.2, 0.2, 0]))
+leg = Leg('rl', worldbody, np.array([ 0.15,  0.2, 0]))
+leg = Leg('rr', worldbody, np.array([-0.15,  0.2, 0]))
+leg = Leg('fr', worldbody, np.array([ 0.15, -0.2, 0]))
+leg = Leg('fl', worldbody, np.array([-0.15, -0.2, 0]))
+
 beam = root.createElement('geom')
 beam.setAttribute('type', 'sphere')
 beam.setAttribute('pos', '0.2 0.2 0')
 beam.setAttribute('size', '0.04')
-worldbody.appendChild(beam)
+#worldbody.appendChild(beam)
+
 xml_str = root.toprettyxml(indent ="\t")  
   
 save_path_file = "leg_parametric.xml"
