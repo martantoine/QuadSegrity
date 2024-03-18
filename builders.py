@@ -281,11 +281,12 @@ class Leg:
             muscle.setAttribute('name', name)
             muscle.setAttribute('tendon', name)
             muscle.setAttribute('ctrllimited', 'false')
+            muscle.setAttribute('forcelimited', 'false')
             muscle.setAttribute('lengthrange', env.constants['muscle_lengthrange'])
-            muscle.setAttribute('forcelimited', 'true')
-            muscle.setAttribute('forcerange', env.constants['muscle_forcerange'])
+            muscle.setAttribute('force', f'{env.constants['muscle_force']}')
+            muscle.setAttribute('scale', f'{env.constants['muscle_scale']}')
             muscle.setAttribute('range', env.constants['muscle_range'])
-                
+            
             for s in sites:
                 self.add_site(spatial, s)
 

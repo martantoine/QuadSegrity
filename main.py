@@ -8,23 +8,28 @@ root = minidom.Document()
 
 env = Env(root)
 env.constants = {
-    'density': 1000,
+    'air_density': 1.2,
+    'geom_density': 2000,
+    'integrator': 'RK4', #implicitfast
+    'viscosity': 0.2,
     
-    'tendon_stiffness': 100,
-    'tendon_damping': 10,
+    
+    'tendon_stiffness': 2000,
+    'tendon_damping': 1,
     'tendon_rgba': '0.5 0.5 0.5 1',
     'tendon_range': '-0.01 0.01',
     'tendon_limited': 'true',
 
-    'muscle_tendon_stiffness': 100,
-    'muscle_tendon_damping': 10,
+    'muscle_tendon_stiffness': 500,
+    'muscle_tendon_damping': 1,
     'muscle_tendon_rgba': '1 1 1 1',
     'muscle_tendon_range': '-0.01 0.01',
-    'muscle_tendon_limited': 'true',
-
-    'muscle_lengthrange': '-10.15 10.25',
-    'muscle_forcerange': '-20 20',
-    'muscle_range': '0.7 1.3',
+    'muscle_tendon_limited': 'false',
+    
+    'muscle_lengthrange': '-1 1',
+    'muscle_scale': 200,
+    'muscle_force': 20,
+    'muscle_range': '0.9 1.05',
 
     'teeth_length': 0.03,
     'teeth_opening_big': 40,
