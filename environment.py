@@ -39,8 +39,10 @@ class Env:
         self.xml.appendChild(option) 
         option.setAttribute('timestep', '0.005')
         option.setAttribute('iterations', '50')
-        option.setAttribute('integrator', 'RK4')
-        option.setAttribute('tolerance', '1e-10') 
+        option.setAttribute('integrator', self.constants["integrator"])
+        option.setAttribute('tolerance', '1e-10')
+        option.setAttribute('viscosity', f'{self.constants["viscosity"]}')
+        option.setAttribute('density', f'{self.constants["air_density"]}')
         
         # DEFAULT
         default = self.root.createElement('default') 
@@ -55,7 +57,7 @@ class Env:
 
         geom = self.root.createElement('geom')
         geom.setAttribute('size', f'{self.constants["beam_radius"]}')
-        geom.setAttribute('density', f'{self.constants["density"]}')
+        geom.setAttribute('density', f'{self.constants["geom_density"]}')
         geom.setAttribute('rgba', self.constants["geom_rgba"])
         default.appendChild(geom)
 
@@ -71,7 +73,7 @@ class Env:
         #default.appendChild(tendon2)
         self.xml.appendChild(default)
 
-        # ASSET
+        # ASSET         
         asset = self.root.createElement('asset')
         self.xml.appendChild(asset)
         texture = self.root.createElement('texture')
