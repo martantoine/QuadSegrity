@@ -3,3 +3,6 @@ mujoco-dev/
 MUJOCO_LOG.TXT
 leg_parametric.xml
 __pycache__/
+MJDATA.TXT
+MJMODEL.TXT
+mjmodel.mjb

@@ -8,10 +8,17 @@ class Env:
         self.root.appendChild(self.xml)
 
     def init(self):
+        # ACTUATOR
+        self.actuator = self.root.createElement('actuator')
+        self.xml.appendChild(self.actuator)
+
         # TENDON
         self.tendon = self.root.createElement('tendon')
         self.xml.appendChild(self.tendon)
-
+        #self.tendon.setAttribute('rgba', '1 1 1 1')
+        #self.tendon.setAttribute('stiffness', '100')
+        #self.tendon.setAttribute('damping', '15')
+        #self.tendon.appendChild(tendon2)
 
         # CAMERA
         statistic = self.root.createElement('statistic')
@@ -48,8 +55,8 @@ class Env:
 
         geom = self.root.createElement('geom')
         geom.setAttribute('size', f'{self.constants["beam_radius"]}')
-        geom.setAttribute('density', '10000')
-        geom.setAttribute('rgba', '.5 .1 .1 1')
+        geom.setAttribute('density', f'{self.constants["density"]}')
+        geom.setAttribute('rgba', self.constants["geom_rgba"])
         default.appendChild(geom)
 
         site = self.root.createElement('site')
@@ -57,11 +64,11 @@ class Env:
         site.setAttribute('rgba', '0 .7 0 1')
         default.appendChild(site)
 
-        tendon2 = self.root.createElement('tendon')
-        tendon2.setAttribute('rgba', '0 1 0 1')
-        tendon2.setAttribute('stiffness', '1000')
-        tendon2.setAttribute('damping', '15')
-        default.appendChild(tendon2)
+        #tendon2 = self.root.createElement('tendon')
+        #tendon2.setAttribute('rgba', '0 1 0 1')
+        #tendon2.setAttribute('stiffness', '100')
+        #tendon2.setAttribute('damping', '1')
+        #default.appendChild(tendon2)
         self.xml.appendChild(default)
 
         # ASSET

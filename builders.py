@@ -221,6 +221,7 @@ class Leg:
         self.center = center
         self.create_leg()
     
+
     def add_site(self, spatial, site_name):
         site = env.root.createElement('site')
         site.setAttribute('site', site_name)
@@ -231,10 +232,13 @@ class Leg:
         def link(site0, site1, i):
             
             spatial = env.root.createElement('spatial')
-            spatial.setAttribute('limited', 'true')
+            spatial.setAttribute('limited', env.constants['tendon_limited'])
             spatial.setAttribute('name', star.name + '_' + str(i))
-            spatial.setAttribute('range', '-0.01 0.01')
+            spatial.setAttribute('range', env.constants['tendon_range'])
             spatial.setAttribute('width', '0.001')
+            spatial.setAttribute('rgba', env.constants['tendon_rgba'])
+            spatial.setAttribute('stiffness', f'{env.constants["tendon_stiffness"]}')
+            spatial.setAttribute('damping', f'{env.constants["tendon_damping"]}')
             env.tendon.appendChild(spatial)
             
             self.add_site(spatial, site0)
@@ -260,84 +264,84 @@ class Leg:
         i = link(forkA.name + '_A', forkB.name + '_A', i)
 
 
+    def muscle_joint(self):
+        def add_muscle(name, sites):
+            spatial = env.root.createElement('spatial')
+            env.tendon.appendChild(spatial)
+            spatial.setAttribute('limited', env.constants['muscle_tendon_limited'])
+            spatial.setAttribute('name', name)
+            spatial.setAttribute('range', env.constants['muscle_tendon_range'])
+            spatial.setAttribute('width', '0.001')
+            spatial.setAttribute('rgba', env.constants['muscle_tendon_rgba'])
+            spatial.setAttribute('stiffness', f'{env.constants["muscle_tendon_stiffness"]}')
+            spatial.setAttribute('damping', f'{env.constants["muscle_tendon_damping"]}')
+            
+            muscle = env.root.createElement('muscle')
+            env.actuator.appendChild(muscle)
+            muscle.setAttribute('name', name)
+            muscle.setAttribute('tendon', name)
+            muscle.setAttribute('ctrllimited', 'false')
+            muscle.setAttribute('lengthrange', env.constants['muscle_lengthrange'])
+            muscle.setAttribute('forcelimited', 'true')
+            muscle.setAttribute('forcerange', env.constants['muscle_forcerange'])
+            muscle.setAttribute('range', env.constants['muscle_range'])
+                
+            for s in sites:
+                self.add_site(spatial, s)
+
+        add_muscle(self.name + '_hip_flexor',   [self.scalupa.name + '_0',
+                                                 self.scalupa.name + '_4',
+                                                 self.hip.name + '_2',
+                                                 self.humerus_top.name + '_4'])
+        add_muscle(self.name + '_hip_extensor', [self.scalupa.name + '_1',
+                                                 self.scalupa.name + '_5',
+                                                 self.hip.name + '_0',
+                                                 self.hip.name + '_1',
+                                                 self.humerus_top.name + '_5'])
+        
+        add_muscle(self.name + '_knee_flexor', [self.scalupa.name + '_2',
+                                                self.scalupa.name + '_6',
+                                                self.hip.name + '_3',
+                                                self.humerus_top.name + '_6',
+                                                self.humerus_bot.name + '_5',
+                                                self.knee.name + '_2',
+                                                self.radius.name + '_5'])
+        add_muscle(self.name + '_knee_extensor', [self.scalupa.name + '_3',
+                                                  self.scalupa.name + '_7',
+                                                  self.hip.name + '_4',
+                                                  self.humerus_top.name + '_7',
+                                                  self.humerus_bot.name + '_4',
+                                                  self.knee.name + '_1',
+                                                  self.knee.name + '_0',
+                                                  self.radius.name + '_4'])
+        
+
     def create_leg(self):
-        self.scalupa     = Fork(self.name + '_scalupa'    , env.worldbody      , self.center            , 'D' , 0.1, 225, 45, free=False)
+        self.scalupa = Fork(self.name + '_scalupa', env.worldbody, self.center, 'D', env.constants['scapula_length'], env.constants['scapula_angle'], env.constants['teeth_opening_big'], free=False)
         
         self.humerus_body = env.root.createElement('body')
         humerus_origin = self.scalupa.getAB()
         self.humerus_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
         env.worldbody.appendChild(self.humerus_body)
-        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, np.array([0, 0, 0])   , 'AB', 0.1, -45, 28, vias=[False, False, False, False, True, True, True, True])
-        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , 0.1, -45, 28, free=False, vias=[False, False, False, False, True, True, False, False])
+        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, [0, 0, 0]              , 'AB', env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['teeth_opening_small'], vias=[False, False, False, False, True, True, True, True])
+        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['teeth_opening_small'], vias=[False, False, False, False, True, True, False, False], free=False)
 
         self.radius_body = env.root.createElement('body')
         radius_origin = humerus_origin + self.humerus_bot.getAB()
         self.radius_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
         env.worldbody.appendChild(self.radius_body)
-        self.radius      = Fork(self.name + '_radius', self.radius_body, np.array([0, 0, 0]), 'AB' , 0.15, 225, 45, vias=[False, False, False, False, True, True, False, False])
+        self.radius = Fork(self.name + '_radius', self.radius_body, [0, 0, 0], 'AB', env.constants['radius_length'], env.constants['radius_angle'], env.constants['teeth_opening_big'], vias=[False, False, False, False, True, True, False, False])
 
         self.hip_body = env.root.createElement('body')
         self.hip_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
-        self.hip  = Star(self.name + '_hip' , self.hip_body, np.array([0, 0, 0]), 0)
+        self.hip  = Star(self.name + '_hip' , self.hip_body, [0, 0, 0], env.constants['hip_angle'])
         env.worldbody.appendChild(self.hip_body)
         
         self.knee_body = env.root.createElement('body')
         self.knee_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
-        self.knee = Star(self.name + '_knee', self.knee_body, np.array([0, 0, 0]), 180)
+        self.knee = Star(self.name + '_knee', self.knee_body, [0, 0, 0], env.constants['knee_angle'])
         env.worldbody.appendChild(self.knee_body)
 
         self.link_joint(self.scalupa, self.humerus_top, self.hip)
         self.link_joint(self.radius , self.humerus_bot, self.knee)
-
-
-        spatial = env.root.createElement('spatial')
-        spatial.setAttribute('limited', 'true')
-        spatial.setAttribute('name', self.name + '_hip_flexor')
-        spatial.setAttribute('range', '-0.01 0.01')
-        spatial.setAttribute('width', '0.001')
-        env.tendon.appendChild(spatial)
-        self.add_site(spatial, self.scalupa.name + '_0')
-        self.add_site(spatial, self.scalupa.name + '_4')
-        self.add_site(spatial, self.hip.name + '_2')
-        self.add_site(spatial, self.humerus_top.name + '_4')
-
-        spatial = env.root.createElement('spatial')
-        spatial.setAttribute('limited', 'true')
-        spatial.setAttribute('name', self.name + '_hip_extensor')
-        spatial.setAttribute('range', '-0.01 0.01')
-        spatial.setAttribute('width', '0.001')
-        env.tendon.appendChild(spatial)
-        self.add_site(spatial, self.scalupa.name + '_1')
-        self.add_site(spatial, self.scalupa.name + '_5')
-        self.add_site(spatial, self.hip.name + '_0')
-        self.add_site(spatial, self.hip.name + '_1')
-        self.add_site(spatial, self.humerus_top.name + '_5')
-
-        spatial = env.root.createElement('spatial')
-        spatial.setAttribute('limited', 'true')
-        spatial.setAttribute('name', self.name + '_knee_flexor')
-        spatial.setAttribute('range', '-0.01 0.01')
-        spatial.setAttribute('width', '0.001')
-        env.tendon.appendChild(spatial)
-        self.add_site(spatial, self.scalupa.name + '_2')
-        self.add_site(spatial, self.scalupa.name + '_6')
-        self.add_site(spatial, self.hip.name + '_3')
-        self.add_site(spatial, self.humerus_top.name + '_6')
-        self.add_site(spatial, self.humerus_bot.name + '_5')
-        self.add_site(spatial, self.knee.name + '_2')
-        self.add_site(spatial, self.radius.name + '_5')
-
-        spatial = env.root.createElement('spatial')
-        spatial.setAttribute('limited', 'true')
-        spatial.setAttribute('name', self.name + '_knee_extensor')
-        spatial.setAttribute('range', '-0.01 0.01')
-        spatial.setAttribute('width', '0.001')
-        env.tendon.appendChild(spatial)
-        self.add_site(spatial, self.scalupa.name + '_3')
-        self.add_site(spatial, self.scalupa.name + '_7')
-        self.add_site(spatial, self.hip.name + '_4')
-        self.add_site(spatial, self.humerus_top.name + '_7')
-        self.add_site(spatial, self.humerus_bot.name + '_4')
-        self.add_site(spatial, self.knee.name + '_1')
-        self.add_site(spatial, self.knee.name + '_0')
-        self.add_site(spatial, self.radius.name + '_4')
+        self.muscle_joint()
