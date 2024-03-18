@@ -49,14 +49,15 @@ env.constants = {
 }
 env.init()
 
-builders.env = env
-leg = builders.Leg('rl', [ 0, 0, 0])
-#leg = builders.Leg('rl', [ 0.15,  0.2, 0])
-#leg = builders.Leg('rr', [-0.15,  0.2, 0])
-#leg = builders.Leg('fr', [ 0.15, -0.2, 0])
-#leg = builders.Leg('fl', [-0.15, -0.2, 0])
+if __name__ == "__main__":
+    builders.env = env
+    leg = builders.Leg('rl', [ 0, 0, 0])
+    #leg = builders.Leg('rl', [ 0.15,  0.2, 0])
+    #leg = builders.Leg('rr', [-0.15,  0.2, 0])
+    #leg = builders.Leg('fr', [ 0.15, -0.2, 0])
+    #leg = builders.Leg('fl', [-0.15, -0.2, 0])
 
-xml_str = root.toprettyxml(indent ="\t")
-save_path_file = "leg_parametric.xml"
-with open(save_path_file, "w") as f:
-    f.write(xml_str)
+    xml_str = root.toprettyxml(indent ="\t")
+    save_path_file = "leg_parametric.xml"
+    with open(save_path_file, "w") as f:
+        f.write(xml_str)

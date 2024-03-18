@@ -6,3 +6,4 @@ __pycache__/
 MJDATA.TXT
 MJMODEL.TXT
 mjmodel.mjb
+.DS_Store
