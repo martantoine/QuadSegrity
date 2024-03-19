@@ -381,3 +381,29 @@ class Leg:
         self.link_joint(self.scalupa, self.humerus_top, self.hip)
         self.link_joint(self.radius , self.humerus_bot, self.knee)
         self.muscle_joint()
+
+class Quadruped:
+    def __init__(self, name, center):
+        self.name = name
+        self.center = center
+
+        robot = env.root.createElement('body')
+        robot.setAttribute('pos', '0 0 0')
+        env.worldbody.appendChild(robot)
+        free_joint = env.root.createElement('joint')
+        free_joint.setAttribute('type', 'free')
+        robot.appendChild(free_joint)
+        box = env.root.createElement('geom')
+        box.setAttribute('type', 'box')
+        box.setAttribute('mass', f'{env.constants["core_mass"]}')
+        box.setAttribute('rgba', '0.3 0.3 0.3 0.5')
+        box.setAttribute('pos', f'{str(self.center)[1:-1].replace(',', '')}')
+        box.setAttribute('size', f'0.15 0.2 {env.constants["beam_radius"]}')
+        robot.appendChild(box)
+
+
+        #leg = builders.Leg('rl', [ 0, 0, 0])
+        legRL = Leg(self.name + 'rl', robot, np.array([ 0.15,  0.2, -0.0]) + np.array(self.center))
+        legRR = Leg(self.name + 'rr', robot, np.array([-0.15,  0.2, -0.0]) + np.array(self.center))
+        legFR = Leg(self.name + 'fr', robot, np.array([ 0.15, -0.2, -0.0]) + np.array(self.center))
+        legFL = Leg(self.name + 'fl', robot, np.array([-0.15, -0.2, -0.0]) + np.array(self.center))
