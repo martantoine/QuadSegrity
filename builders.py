@@ -210,14 +210,39 @@ class Star:
         site.setAttribute('pos', f'{s4[0]} {s4[1]} {s4[2]}')
         self.parent.appendChild(site)
         
+        box = env.root.createElement('geom')
+        box.setAttribute('type', 'box')
+        box.setAttribute('mass', '0')
+        box.setAttribute('rgba', '0 0 0 0')
+        box.setAttribute('pos', f'{s0[0]} {s0[1]} {s0[2]}')
+        box.setAttribute('size', f'0.01 0.01 {env.constants["beam_radius"]}')
+        box.setAttribute('euler', f'-60 0 0')
+        self.parent.appendChild(box)
+        box = env.root.createElement('geom')
+        box.setAttribute('type', 'box')
+        box.setAttribute('mass', '0')
+        box.setAttribute('rgba', '0 0 0 0')
+        box.setAttribute('pos', f'{s1[0]} {s1[1]} {s1[2]}')
+        box.setAttribute('size', f'0.01 0.01 {env.constants["beam_radius"]}')
+        box.setAttribute('euler', f'60 0 0')
+        self.parent.appendChild(box)
+        box = env.root.createElement('geom')
+        box.setAttribute('type', 'box')
+        box.setAttribute('mass', '0')
+        box.setAttribute('rgba', '0 0 0 0')
+        box.setAttribute('pos', f'{s2[0]} {s2[1]} {s2[2]}')
+        box.setAttribute('size', f'0.01 0.01 {env.constants["beam_radius"]}')
+        box.setAttribute('euler', f'180 0 0')
+        self.parent.appendChild(box)
 
         free_joint = env.root.createElement('joint')
         free_joint.setAttribute('type', 'free')
         self.parent.appendChild(free_joint)
 
 class Leg:
-    def __init__(self, name, center):
+    def __init__(self, name, parent, center):
         self.name = name
+        self.parent = parent
         self.center = center
         self.create_leg()
     
@@ -287,6 +312,16 @@ class Leg:
             muscle.setAttribute('scale', f'{env.constants['muscle_scale']}')
             muscle.setAttribute('range', env.constants['muscle_range'])
             
+            actuatorforce = env.root.createElement('actuatorfrc')
+            env.sensor1.appendChild(actuatorforce)
+            actuatorforce.setAttribute('name', name)
+            actuatorforce.setAttribute('actuator', name)
+
+            actuatorpos = env.root.createElement('actuatorpos')
+            env.sensor2.appendChild(actuatorpos)
+            actuatorpos.setAttribute('name', name + '_pos')
+            actuatorpos.setAttribute('actuator', name)
+            
             for s in sites:
                 self.add_site(spatial, s)
 
@@ -318,7 +353,7 @@ class Leg:
         
 
     def create_leg(self):
-        self.scalupa = Fork(self.name + '_scalupa', env.worldbody, self.center, 'D', env.constants['scapula_length'], env.constants['scapula_angle'], env.constants['teeth_opening_big'], free=False)
+        self.scalupa = Fork(self.name + '_scalupa', self.parent, self.center, 'D', env.constants['scapula_length'], env.constants['scapula_angle'], env.constants['teeth_opening_big'], free=False)
         
         self.humerus_body = env.root.createElement('body')
         humerus_origin = self.scalupa.getAB()

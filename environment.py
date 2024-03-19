@@ -8,6 +8,12 @@ class Env:
         self.root.appendChild(self.xml)
 
     def init(self):
+        # SENSOR
+        self.sensor1 = self.root.createElement('sensor')
+        self.xml.appendChild(self.sensor1)
+        self.sensor2 = self.root.createElement('sensor')
+        self.xml.appendChild(self.sensor2)
+
         # ACTUATOR
         self.actuator = self.root.createElement('actuator')
         self.xml.appendChild(self.actuator)
@@ -15,10 +21,6 @@ class Env:
         # TENDON
         self.tendon = self.root.createElement('tendon')
         self.xml.appendChild(self.tendon)
-        #self.tendon.setAttribute('rgba', '1 1 1 1')
-        #self.tendon.setAttribute('stiffness', '100')
-        #self.tendon.setAttribute('damping', '15')
-        #self.tendon.appendChild(tendon2)
 
         # CAMERA
         statistic = self.root.createElement('statistic')
@@ -37,7 +39,7 @@ class Env:
         # OPTION
         option = self.root.createElement('option')
         self.xml.appendChild(option) 
-        option.setAttribute('timestep', '0.005')
+        option.setAttribute('timestep', f'{self.constants["timestep"]}')
         option.setAttribute('iterations', '50')
         option.setAttribute('integrator', self.constants["integrator"])
         option.setAttribute('tolerance', '1e-10')
