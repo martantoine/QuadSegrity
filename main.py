@@ -13,13 +13,8 @@ env.constants = {
     'integrator': 'RK4', #implicitfast
     'timestep': 0.001,
     'viscosity': 0.002,
-    
-    'tendon_stiffness': 2000,
-    'tendon_damping': 1,
-    'tendon_rgba': '0.5 0.5 0.5 1',
-    'tendon_range': '-0.1 0.1',
-    'tendon_limited': 'true',
 
+    'hinge_stiffness': 0.75,
     'muscle_tendon_stiffness': 500,
     'muscle_tendon_damping': 1,
     'muscle_tendon_rgba': '1 1 1 1',
