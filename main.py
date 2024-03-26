@@ -12,12 +12,12 @@ env.constants = {
     'geom_density': 2000,
     'integrator': 'RK4', #implicitfast
     'timestep': 0.001,
-    'viscosity': 0.2,
+    'viscosity': 0.002,
     
     'tendon_stiffness': 2000,
     'tendon_damping': 1,
     'tendon_rgba': '0.5 0.5 0.5 1',
-    'tendon_range': '-0.01 0.01',
+    'tendon_range': '-0.1 0.1',
     'tendon_limited': 'true',
 
     'muscle_tendon_stiffness': 500,

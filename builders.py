@@ -227,24 +227,24 @@ class Star:
         box.setAttribute('type', 'box')
         box.setAttribute('mass', '0')
         box.setAttribute('rgba', '0 0 0 0')
-        box.setAttribute('pos', f'{s0[0]} {s0[1]} {s0[2]}')
-        box.setAttribute('size', f'0.01 0.01 {env.constants["beam_radius"]}')
+        box.setAttribute('pos', f'{self.B[0]} {self.B[1]} {self.B[2]}')
+        box.setAttribute('size', f'0.02 0.02 {2*env.constants["beam_radius"]}')
         box.setAttribute('euler', f'-60 0 0')
         self.parent.appendChild(box)
         box = env.root.createElement('geom')
         box.setAttribute('type', 'box')
         box.setAttribute('mass', '0')
         box.setAttribute('rgba', '0 0 0 0')
-        box.setAttribute('pos', f'{s1[0]} {s1[1]} {s1[2]}')
-        box.setAttribute('size', f'0.01 0.01 {env.constants["beam_radius"]}')
+        box.setAttribute('pos', f'{self.C[0]} {self.C[1]} {self.C[2]}')
+        box.setAttribute('size', f'0.02 0.02 {2*env.constants["beam_radius"]}')
         box.setAttribute('euler', f'60 0 0')
         self.parent.appendChild(box)
         box = env.root.createElement('geom')
         box.setAttribute('type', 'box')
         box.setAttribute('mass', '0')
         box.setAttribute('rgba', '0 0 0 0')
-        box.setAttribute('pos', f'{s2[0]} {s2[1]} {s2[2]}')
-        box.setAttribute('size', f'0.01 0.01 {env.constants["beam_radius"]}')
+        box.setAttribute('pos', f'{self.D[0]} {self.D[1]} {self.D[2]}')
+        box.setAttribute('size', f'0.02 0.02 {2*env.constants["beam_radius"]}')
         box.setAttribute('euler', f'180 0 0')
         self.parent.appendChild(box)
 
@@ -300,7 +300,7 @@ class Leg:
 
         i = link(forkA.name + '_B', forkB.name + '_B', i)
         i = link(forkA.name + '_A', forkB.name + '_A', i)
-
+        
 
     def muscle_joint(self):
         def add_muscle(name, sites):
@@ -371,15 +371,27 @@ class Leg:
         self.humerus_body = env.root.createElement('body')
         humerus_origin = self.scalupa.getAB()
         self.humerus_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
-        env.worldbody.appendChild(self.humerus_body)
-        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, [0, 0, 0]              , 'AB', env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['fork_opening_small'], vias=[False, False, False, False, True, True, True, True])
+        self.parent.appendChild(self.humerus_body)
+        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, [0, 0, 0]              , 'AB', env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['fork_opening_small'], vias=[False, False, False, False, True, True, True, True], free=False)
         self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['fork_opening_small'], vias=[False, False, False, False, True, True, False, False], free=False)
+        self.humerus_body
+
+        hinge_joint = env.root.createElement('joint')
+        hinge_joint.setAttribute('type', 'ball')
+        hinge_joint.setAttribute('stiffness', '1')
+        self.humerus_body.appendChild(hinge_joint)
 
         self.radius_body = env.root.createElement('body')
-        radius_origin = humerus_origin + self.humerus_bot.getAB()
+        radius_origin = self.humerus_bot.getAB()
         self.radius_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
-        env.worldbody.appendChild(self.radius_body)
-        self.radius = Fork(self.name + '_radius', self.radius_body, [0, 0, 0], 'AB', env.constants['radius_length'], env.constants['radius_angle'], env.constants['fork_opening_big'], vias=[False, False, False, False, True, True, False, False])
+        self.humerus_body.appendChild(self.radius_body)
+        self.radius = Fork(self.name + '_radius', self.radius_body, [0, 0, 0], 'AB', env.constants['radius_length'], env.constants['radius_angle'], env.constants['fork_opening_big'], vias=[False, False, False, False, True, True, False, False], free=False)
+
+        hinge_joint = env.root.createElement('joint')
+        hinge_joint.setAttribute('type', 'ball')
+        hinge_joint.setAttribute('stiffness', '1')
+        self.radius_body.appendChild(hinge_joint)
+
 
         self.hip_body = env.root.createElement('body')
         self.hip_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
@@ -387,13 +399,13 @@ class Leg:
         env.worldbody.appendChild(self.hip_body)
         
         self.knee_body = env.root.createElement('body')
-        self.knee_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
+        self.knee_body.setAttribute('pos', str(humerus_origin + radius_origin)[1:-1].replace(',', ''))
         self.knee = Star(self.name + '_knee', self.knee_body, [0, 0, 0], env.constants['knee_angle'])
         env.worldbody.appendChild(self.knee_body)
 
         self.link_joint(self.scalupa, self.humerus_top, self.hip)
         self.link_joint(self.radius , self.humerus_bot, self.knee)
-        #self.muscle_joint()
+        self.muscle_joint()
 
 class Quadruped:
     def __init__(self, name, center):
