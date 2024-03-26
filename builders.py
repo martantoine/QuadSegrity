@@ -3,14 +3,14 @@ import numpy as np
 env = None
 
 class Fork:
-    def __init__(self, name, parent, center, mode, stick_length, angle_y, angle_opening, free=True, vias=[True, True, True, True, True, True, True, True]):
+    def __init__(self, name, parent, center, mode, stick_length, angle_y, opening, free=True, vias=[True, True, True, True, True, True, True, True]):
         self.name = name
         self.parent = parent
         self.center = center
         self.mode = mode
         self.stick_length = stick_length
         self.angle_y = angle_y
-        self.angle_opening = angle_opening
+        self.opening = opening
         self.free = free
         self.vias = vias
         self.create_fork()
@@ -24,17 +24,16 @@ class Fork:
         # mode: 'AB': center between A and B
         # mode: 'D' : center at D
         angle_y = np.deg2rad(self.angle_y)
-        angle_opening = np.deg2rad(self.angle_opening)
         rotation = np.array([[1, 0, 0],
                              [0, np.cos(angle_y), -np.sin(angle_y)],
                              [0, np.sin(angle_y), np.cos(angle_y)]])
-        s = np.cos(angle_opening) * env.constants["teeth_length"] + self.stick_length
+        s = env.constants["fork_teeth_length"] + self.stick_length
 
         if self.mode == 'AB':
-            self.A = self.center + np.dot(rotation, [ np.sin(angle_opening) * env.constants["teeth_length"], 0                                        , 0])
-            self.B = self.center + np.dot(rotation, [-np.sin(angle_opening) * env.constants["teeth_length"], 0                                        , 0])
-            self.C = self.center + np.dot(rotation, [ 0.0                                      , np.cos(angle_opening) * env.constants["teeth_length"], 0])
-            self.D = self.center + np.dot(rotation, [ 0.0                                      , s                                        , 0])
+            self.A = self.center + np.dot(rotation, [ self.opening/2, 0                                 , 0])
+            self.B = self.center + np.dot(rotation, [-self.opening/2, 0                                 , 0])
+            self.C = self.center + np.dot(rotation, [ 0.0           , env.constants["fork_teeth_length"], 0])
+            self.D = self.center + np.dot(rotation, [ 0.0           , s                                 , 0])
 
             # FORK END
             s0     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([ 0              , 0, env.constants["site_space"]]))
@@ -42,15 +41,15 @@ class Fork:
             s2     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([ env.constants["site_space"], 0, 0]))
             s3     = self.center + np.dot(rotation, np.array([0, s, 0]) + np.array([-env.constants["site_space"], 0, 0]))
             # FORK MIDDLE
-            s4     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * env.constants["teeth_length"], 0]) + np.array([ 0              , 0, env.constants["site_space"]]))
-            s5     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * env.constants["teeth_length"], 0]) + np.array([ 0              , 0, -env.constants["site_space"]]))
-            s6     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * env.constants["teeth_length"], 0]) + np.array([ env.constants["site_space"], 0, 0]))
-            s7     = self.center + np.dot(rotation, np.array([0, np.cos(angle_opening) * env.constants["teeth_length"], 0]) + np.array([-env.constants["site_space"], 0, 0]))
+            s4     = self.center + np.dot(rotation, np.array([0, env.constants["fork_teeth_length"], 0]) + np.array([ 0                          , 0, env.constants["site_space"]]))
+            s5     = self.center + np.dot(rotation, np.array([0, env.constants["fork_teeth_length"], 0]) + np.array([ 0                          , 0, -env.constants["site_space"]]))
+            s6     = self.center + np.dot(rotation, np.array([0, env.constants["fork_teeth_length"], 0]) + np.array([ env.constants["site_space"], 0, 0]))
+            s7     = self.center + np.dot(rotation, np.array([0, env.constants["fork_teeth_length"], 0]) + np.array([-env.constants["site_space"], 0, 0]))
         elif self.mode == 'D':
-            self.A = self.center + np.dot(rotation, [ np.sin(angle_opening) * env.constants["teeth_length"] , s                , 0])
-            self.B = self.center + np.dot(rotation, [-np.sin(angle_opening) * env.constants["teeth_length"] , s                , 0])
-            self.C = self.center + np.dot(rotation, [ 0.0                                       , self.stick_length, 0])
-            self.D = self.center + np.dot(rotation, [ 0.0                                       , 0                , 0])
+            self.A = self.center + np.dot(rotation, [ self.opening/2, s                , 0])
+            self.B = self.center + np.dot(rotation, [-self.opening/2, s                , 0])
+            self.C = self.center + np.dot(rotation, [ 0.0           , self.stick_length, 0])
+            self.D = self.center + np.dot(rotation, [ 0.0           , 0                , 0])
 
             # FORK END
             s0     = self.center + np.dot(rotation, np.array([0, 0, 0]) + np.array([               0, 0, env.constants["site_space"]]))
@@ -62,14 +61,28 @@ class Fork:
             s5     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([0, 0, -env.constants["site_space"]]))
             s6     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([ env.constants["site_space"], 0, 0]))
             s7     = self.center + np.dot(rotation, np.array([0, self.stick_length, 0]) + np.array([-env.constants["site_space"], 0, 0]))
+        
+        self.E = self.C + self.A - (self.A + self.B)/2
+        self.F = self.C - self.A + (self.A + self.B)/2
+        
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
-        beam.setAttribute('fromto', f'{self.A[0]} {self.A[1]} {self.A[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
+        beam.setAttribute('fromto', f'{self.A[0]} {self.A[1]} {self.A[2]} {self.E[0]} {self.E[1]} {self.E[2]}')
         self.parent.appendChild(beam)
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
-        beam.setAttribute('fromto', f'{self.B[0]} {self.B[1]} {self.B[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
+        beam.setAttribute('fromto', f'{self.E[0]} {self.E[1]} {self.E[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
         self.parent.appendChild(beam)
+        
+        beam = env.root.createElement('geom')
+        beam.setAttribute('type', 'capsule')
+        beam.setAttribute('fromto', f'{self.B[0]} {self.B[1]} {self.B[2]} {self.F[0]} {self.F[1]} {self.F[2]}')
+        self.parent.appendChild(beam)
+        beam = env.root.createElement('geom')
+        beam.setAttribute('type', 'capsule')
+        beam.setAttribute('fromto', f'{self.F[0]} {self.F[1]} {self.F[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
+        self.parent.appendChild(beam)
+        
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
         beam.setAttribute('fromto', f'{self.D[0]} {self.D[1]} {self.D[2]} {self.C[0]} {self.C[1]} {self.C[2]}')
@@ -152,9 +165,9 @@ class Star:
                              [0, np.sin(angle_y),  np.cos(angle_y)]])
                             
         self.A = self.center
-        self.B = self.center + np.dot(rotation, env.constants["teeth_length"] * np.array([0, np.cos(angle_opening),  np.sin(angle_opening)]))
-        self.C = self.center + np.dot(rotation, env.constants["teeth_length"] * np.array([0, np.cos(angle_opening), -np.sin(angle_opening)]))
-        self.D = self.center + np.dot(rotation, env.constants["teeth_length"] * np.array([0, 1                    ,  0                    ]))
+        self.B = self.center + np.dot(rotation, env.constants["star_teeth_length"] * np.array([0, np.cos(angle_opening),  np.sin(angle_opening)]))
+        self.C = self.center + np.dot(rotation, env.constants["star_teeth_length"] * np.array([0, np.cos(angle_opening), -np.sin(angle_opening)]))
+        self.D = self.center + np.dot(rotation, env.constants["star_teeth_length"] * np.array([0, 1                    ,  0                    ]))
         
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
@@ -353,20 +366,20 @@ class Leg:
         
 
     def create_leg(self):
-        self.scalupa = Fork(self.name + '_scalupa', self.parent, self.center, 'D', env.constants['scapula_length'], env.constants['scapula_angle'], env.constants['teeth_opening_big'], free=False)
+        self.scalupa = Fork(self.name + '_scalupa', self.parent, self.center, 'D', env.constants['scapula_length'], env.constants['scapula_angle'], env.constants['fork_opening_big'], free=False)
         
         self.humerus_body = env.root.createElement('body')
         humerus_origin = self.scalupa.getAB()
         self.humerus_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
         env.worldbody.appendChild(self.humerus_body)
-        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, [0, 0, 0]              , 'AB', env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['teeth_opening_small'], vias=[False, False, False, False, True, True, True, True])
-        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['teeth_opening_small'], vias=[False, False, False, False, True, True, False, False], free=False)
+        self.humerus_top = Fork(self.name + '_humerus_top', self.humerus_body, [0, 0, 0]              , 'AB', env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['fork_opening_small'], vias=[False, False, False, False, True, True, True, True])
+        self.humerus_bot = Fork(self.name + '_humerus_bot', self.humerus_body, self.humerus_top.getD(), 'D' , env.constants['humerus_length'] / 2, env.constants['humerus_angle'], env.constants['fork_opening_small'], vias=[False, False, False, False, True, True, False, False], free=False)
 
         self.radius_body = env.root.createElement('body')
         radius_origin = humerus_origin + self.humerus_bot.getAB()
         self.radius_body.setAttribute('pos', str(radius_origin)[1:-1].replace(',', ''))
         env.worldbody.appendChild(self.radius_body)
-        self.radius = Fork(self.name + '_radius', self.radius_body, [0, 0, 0], 'AB', env.constants['radius_length'], env.constants['radius_angle'], env.constants['teeth_opening_big'], vias=[False, False, False, False, True, True, False, False])
+        self.radius = Fork(self.name + '_radius', self.radius_body, [0, 0, 0], 'AB', env.constants['radius_length'], env.constants['radius_angle'], env.constants['fork_opening_big'], vias=[False, False, False, False, True, True, False, False])
 
         self.hip_body = env.root.createElement('body')
         self.hip_body.setAttribute('pos', str(humerus_origin)[1:-1].replace(',', ''))
@@ -380,7 +393,7 @@ class Leg:
 
         self.link_joint(self.scalupa, self.humerus_top, self.hip)
         self.link_joint(self.radius , self.humerus_bot, self.knee)
-        self.muscle_joint()
+        #self.muscle_joint()
 
 class Quadruped:
     def __init__(self, name, center):
@@ -401,8 +414,6 @@ class Quadruped:
         box.setAttribute('size', f'0.15 0.2 {env.constants["beam_radius"]}')
         robot.appendChild(box)
 
-
-        #leg = builders.Leg('rl', [ 0, 0, 0])
         legRL = Leg(self.name + 'rl', robot, np.array([ 0.15,  0.2, -0.0]) + np.array(self.center))
         legRR = Leg(self.name + 'rr', robot, np.array([-0.15,  0.2, -0.0]) + np.array(self.center))
         legFR = Leg(self.name + 'fr', robot, np.array([ 0.15, -0.2, -0.0]) + np.array(self.center))

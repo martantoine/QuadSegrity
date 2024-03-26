@@ -12,7 +12,7 @@ env.constants = {
     'geom_density': 2000,
     'integrator': 'RK4', #implicitfast
     'timestep': 0.001,
-    'viscosity': 0.0002,
+    'viscosity': 0.2,
     
     'tendon_stiffness': 2000,
     'tendon_damping': 1,
@@ -27,17 +27,18 @@ env.constants = {
     'muscle_tendon_limited': 'false',
     
     'muscle_lengthrange': '-1 1', #exact value not revelant, must be big enough for stability
-    'muscle_scale': 2000, #200 is the default scale
-    'muscle_force': 20,
-    'muscle_range': '0.5 1.1',
+    'muscle_scale': 200, #200 is the default scale
+    'muscle_force': 80,
+    'muscle_range': '0.2 1.1',
 
-    'teeth_length': 0.03,
-    'teeth_opening_big': 42,
-    'teeth_opening_small': 22,
+    'star_teeth_length': 0.06,
+    'fork_teeth_length': 0.04,
+    'fork_opening_big': 0.06,
+    'fork_opening_small': 0.04,
 
     'site_space': 0.0025,
     'site_radius': 0.003,
-    'beam_radius': 0.0025,
+    'beam_radius': 0.004,
     'geom_rgba': '0.3 0.3 0.3 1',
 
     'scapula_length': 0.1,
@@ -52,7 +53,7 @@ env.constants = {
     'hip_angle': 0,
     'knee_angle': 180,
 
-    'core_mass': 0.05,
+    'core_mass': 1,
     'core_pos': [0, 0, -0.25]
 }
 env.init()
@@ -60,8 +61,8 @@ env.init()
 if __name__ == "__main__":
     builders.env = env
     
-    robot1 = builders.Quadruped('QuadSegrity1', env.constants['core_pos'])
-
+    robot = builders.Quadruped('QuadSegrity1', env.constants['core_pos'])
+    #leg = builders.Leg('leg', env.worldbody, [0, 0, 0])
     xml_str = root.toprettyxml(indent ="\t")
     save_path_file = "leg_parametric.xml"
     with open(save_path_file, "w") as f:
