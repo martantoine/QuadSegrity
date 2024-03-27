@@ -16,13 +16,13 @@ env.constants = {
     
     'tendon_stiffness': 2000,
     'tendon_damping': 1,
-    'tendon_rgba': '0.5 0.5 0.5 1',
+    'tendon_rgba': '0.8 0.05 0.05 1',
     'tendon_range': '-0.1 0.1',
     'tendon_limited': 'true',
 
     'muscle_tendon_stiffness': 500,
     'muscle_tendon_damping': 1,
-    'muscle_tendon_rgba': '1 1 1 1',
+    'muscle_tendon_rgba': '0.05 0.05 0.8 1',
     'muscle_tendon_range': '-0.01 0.01',
     'muscle_tendon_limited': 'false',
     
@@ -42,7 +42,7 @@ env.constants = {
     'geom_rgba': '0.3 0.3 0.3 1',
 
     'scapula_length': 0.1,
-    'scapula_angle': 225,
+    'scapula_angle': -90,
     
     'humerus_length': 0.2,
     'humerus_angle': -45,
@@ -54,7 +54,7 @@ env.constants = {
     'knee_angle': 180,
 
     'core_mass': 1,
-    'core_pos': [0, 0, -0.25]
+    'core_pos': [0, 0, 0]
 }
 env.init()
 
