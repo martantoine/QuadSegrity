@@ -15,16 +15,16 @@ env.constants = {
     'viscosity': 0.002,
 
     'hinge_stiffness': 0.75,
-    'muscle_tendon_stiffness': 500,
+    'muscle_tendon_stiffness': 0,
     'muscle_tendon_damping': 1,
     'muscle_tendon_rgba': '1 1 1 1',
     'muscle_tendon_range': '-0.01 0.01',
     'muscle_tendon_limited': 'false',
     
-    'muscle_lengthrange': '-1 1', #exact value not revelant, must be big enough for stability
+    'muscle_lengthrange': '-10 10', #exact value not revelant, must be big enough for stability
     'muscle_scale': 200, #200 is the default scale
     'muscle_force': 80,
-    'muscle_range': '0.2 1.1',
+    'muscle_range': '0.1 1.8',
 
     'star_teeth_length': 0.06,
     'fork_teeth_length': 0.04,
@@ -32,7 +32,7 @@ env.constants = {
     'fork_opening_small': 0.04,
 
     'site_space': 0.0025,
-    'site_radius': 0.003,
+    'site_radius': 0.0041,
     'beam_radius': 0.004,
     'geom_rgba': '0.3 0.3 0.3 1',
 
@@ -49,7 +49,7 @@ env.constants = {
     'knee_angle': 180,
 
     'core_mass': 1,
-    'core_pos': [0, 0, -0.25]
+    'core_pos': [0, 0, -0.15]
 }
 env.init()
 

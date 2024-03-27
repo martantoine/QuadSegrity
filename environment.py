@@ -35,6 +35,14 @@ class Env:
         visual_global.setAttribute('elevation', '-30')
         visual.appendChild(visual_global)
 
+        headlight = self.root.createElement('headlight')
+        headlight.setAttribute('ambient', '0.3 0.3 0.3')
+        visual.appendChild(headlight)
+
+        rgba = self.root.createElement('rgba')
+        rgba.setAttribute('haze', '0.3 0.3 0.5 1')
+        visual.appendChild(rgba)
+
 
         # OPTION
         option = self.root.createElement('option')
@@ -87,6 +95,18 @@ class Env:
         texture.setAttribute('width', '512')
         texture.setAttribute('height', '512')
         texture.setAttribute('markrgb', '.8 .8 .8')
+        asset.appendChild(texture)
+
+        texture = self.root.createElement('texture')
+        texture.setAttribute('name', 'skybox')
+        texture.setAttribute('type', 'skybox')
+        texture.setAttribute('builtin', 'gradient')
+        texture.setAttribute('rgb1', '0.7 0.7 1.0')
+        texture.setAttribute('rgb2', '.3 .3 .5')
+        texture.setAttribute('width', '800')
+        texture.setAttribute('height', '800')
+        texture.setAttribute('mark', 'none')
+        texture.setAttribute('markrgb', '1 1 1')
         asset.appendChild(texture)
 
         material = self.root.createElement('material')
