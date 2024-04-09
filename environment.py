@@ -40,7 +40,7 @@ class Env:
         visual.appendChild(headlight)
 
         rgba = self.root.createElement('rgba')
-        rgba.setAttribute('haze', '0.3 0.3 0.5 1')
+        rgba.setAttribute('haze', '1 1 1 1')
         visual.appendChild(rgba)
 
 
@@ -73,7 +73,7 @@ class Env:
 
         site = self.root.createElement('site')
         site.setAttribute('size', f'{self.constants["site_radius"]}')
-        site.setAttribute('rgba', '0 .7 0 1')
+        site.setAttribute('rgba', '0.1 0.4 0.1 1')
         default.appendChild(site)
 
         #tendon2 = self.root.createElement('tendon')
@@ -101,8 +101,8 @@ class Env:
         texture.setAttribute('name', 'skybox')
         texture.setAttribute('type', 'skybox')
         texture.setAttribute('builtin', 'gradient')
-        texture.setAttribute('rgb1', '0.7 0.7 1.0')
-        texture.setAttribute('rgb2', '.3 .3 .5')
+        texture.setAttribute('rgb1', '1 1 1')
+        texture.setAttribute('rgb2', '1 1 1')
         texture.setAttribute('width', '800')
         texture.setAttribute('height', '800')
         texture.setAttribute('mark', 'none')
@@ -128,6 +128,7 @@ class Env:
         geom.setAttribute('type', 'plane')
         geom.setAttribute('material', 'matplane')
         self.worldbody.appendChild(geom)
+
 
         light = self.root.createElement('light')
         light.setAttribute('directional', 'true')

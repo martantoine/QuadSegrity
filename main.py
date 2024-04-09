@@ -17,9 +17,15 @@ env.constants = {
     'hinge_stiffness': 0.75,
     'muscle_tendon_stiffness': 0,
     'muscle_tendon_damping': 1,
-    'muscle_tendon_rgba': '1 1 1 1',
+    'muscle_tendon_rgba': '0.05 0.05 0.8 1',
     'muscle_tendon_range': '-0.01 0.01',
     'muscle_tendon_limited': 'false',
+
+    'tendon_stiffness': 2000,
+    'tendon_damping': 1,
+    'tendon_rgba': '0.8 0.05 0.05 1',
+    'tendon_range': '-0.1 0.1',
+    'tendon_limited': 'true',
     
     'muscle_lengthrange': '-10 10', #exact value not revelant, must be big enough for stability
     'muscle_scale': 200, #200 is the default scale
@@ -42,20 +48,29 @@ env.constants = {
     'humerus_length': 0.2,
     'humerus_angle': -45,
     
-    'radius_length': 0.15,
-    'radius_angle': -135,
+    'radius_length': 0.25,
+    'radius_angle': -110,
     
     'hip_angle': 0,
     'knee_angle': 180,
 
     'core_mass': 1,
-    'core_pos': [0, 0, -0.15]
+    'core_pos': [0, 0, -0.1]
 }
 env.init()
 
 if __name__ == "__main__":
     builders.env = env
     
+
+    geom = env.root.createElement('geom')
+    geom.setAttribute('name', 'floor2')
+    geom.setAttribute('rgba', '1 1 1 1')
+    geom.setAttribute('pos', '0.15 0 -0.7')
+    geom.setAttribute('size', '0.2 0.1 0.4')
+    geom.setAttribute('type', 'box')
+    env.worldbody.appendChild(geom)
+
     robot = builders.Quadruped('QuadSegrity1', env.constants['core_pos'])
     #leg = builders.Leg('leg', env.worldbody, [0, 0, 0])
     xml_str = root.toprettyxml(indent ="\t")

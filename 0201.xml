@@ -1,0 +1,282 @@
+<?xml version="1.0" ?>
+<mujoco>
+	<sensor/>
+	<sensor/>
+	<actuator>
+		<muscle name="QuadSegrity1rl_hip_flexor" tendon="QuadSegrity1rl_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="-10 10" force="80" scale="200" range="0.1 1.8"/>
+		<muscle name="QuadSegrity1rl_hip_extensor" tendon="QuadSegrity1rl_hip_extensor" ctrllimited="false" forcelimited="false" lengthrange="-10 10" force="80" scale="200" range="0.1 1.8"/>
+		<muscle name="QuadSegrity1rl_knee_flexor" tendon="QuadSegrity1rl_knee_flexor" ctrllimited="false" forcelimited="false" lengthrange="-10 10" force="80" scale="200" range="0.1 1.8"/>
+		<muscle name="QuadSegrity1rl_knee_extensor" tendon="QuadSegrity1rl_knee_extensor" ctrllimited="false" forcelimited="false" lengthrange="-10 10" force="80" scale="200" range="0.1 1.8"/>
+	</actuator>
+	<tendon>
+		<spatial name="QuadSegrity1rl_hip_0" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_5"/>
+			<site site="QuadSegrity1rl_hip_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_1" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_4"/>
+			<site site="QuadSegrity1rl_hip_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_2" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_5"/>
+			<site site="QuadSegrity1rl_hip_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_3" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_4"/>
+			<site site="QuadSegrity1rl_hip_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_4" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_A"/>
+			<site site="QuadSegrity1rl_hip_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_5" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_B"/>
+			<site site="QuadSegrity1rl_hip_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_6" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_A"/>
+			<site site="QuadSegrity1rl_hip_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_7" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_B"/>
+			<site site="QuadSegrity1rl_hip_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_8" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_A"/>
+			<site site="QuadSegrity1rl_hip_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_9" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_B"/>
+			<site site="QuadSegrity1rl_hip_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_10" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_A"/>
+			<site site="QuadSegrity1rl_hip_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_11" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_B"/>
+			<site site="QuadSegrity1rl_hip_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_12" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_A"/>
+			<site site="QuadSegrity1rl_hip_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_13" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_scalupa_B"/>
+			<site site="QuadSegrity1rl_hip_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_14" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_A"/>
+			<site site="QuadSegrity1rl_hip_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_hip_15" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_top_B"/>
+			<site site="QuadSegrity1rl_hip_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_0" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_5"/>
+			<site site="QuadSegrity1rl_knee_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_1" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_4"/>
+			<site site="QuadSegrity1rl_knee_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_2" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_5"/>
+			<site site="QuadSegrity1rl_knee_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_3" width="0.001" rgba="0.8 0.05 0.05 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_4"/>
+			<site site="QuadSegrity1rl_knee_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_4" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_A"/>
+			<site site="QuadSegrity1rl_knee_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_5" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_B"/>
+			<site site="QuadSegrity1rl_knee_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_6" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_A"/>
+			<site site="QuadSegrity1rl_knee_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_7" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_B"/>
+			<site site="QuadSegrity1rl_knee_B"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_8" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_A"/>
+			<site site="QuadSegrity1rl_knee_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_9" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_B"/>
+			<site site="QuadSegrity1rl_knee_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_10" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_A"/>
+			<site site="QuadSegrity1rl_knee_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_11" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_B"/>
+			<site site="QuadSegrity1rl_knee_C"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_12" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_A"/>
+			<site site="QuadSegrity1rl_knee_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_13" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_humerus_bot_B"/>
+			<site site="QuadSegrity1rl_knee_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_14" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_A"/>
+			<site site="QuadSegrity1rl_knee_D"/>
+		</spatial>
+		<spatial name="QuadSegrity1rl_knee_15" width="0.001" rgba="0.05 0.8 0.8 1.0" stiffness="1500" damping="10">
+			<site site="QuadSegrity1rl_radius_B"/>
+			<site site="QuadSegrity1rl_knee_D"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1rl_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1rl_scalupa_0"/>
+			<site site="QuadSegrity1rl_scalupa_4"/>
+			<site site="QuadSegrity1rl_hip_2"/>
+			<site site="QuadSegrity1rl_humerus_top_4"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1rl_hip_extensor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1rl_scalupa_1"/>
+			<site site="QuadSegrity1rl_scalupa_5"/>
+			<site site="QuadSegrity1rl_hip_0"/>
+			<site site="QuadSegrity1rl_hip_1"/>
+			<site site="QuadSegrity1rl_humerus_top_5"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1rl_knee_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1rl_scalupa_2"/>
+			<site site="QuadSegrity1rl_scalupa_6"/>
+			<site site="QuadSegrity1rl_hip_3"/>
+			<site site="QuadSegrity1rl_humerus_top_6"/>
+			<site site="QuadSegrity1rl_humerus_bot_5"/>
+			<site site="QuadSegrity1rl_knee_2"/>
+			<site site="QuadSegrity1rl_radius_5"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1rl_knee_extensor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1rl_scalupa_3"/>
+			<site site="QuadSegrity1rl_scalupa_7"/>
+			<site site="QuadSegrity1rl_hip_4"/>
+			<site site="QuadSegrity1rl_humerus_top_7"/>
+			<site site="QuadSegrity1rl_humerus_bot_4"/>
+			<site site="QuadSegrity1rl_knee_1"/>
+			<site site="QuadSegrity1rl_knee_0"/>
+			<site site="QuadSegrity1rl_radius_4"/>
+		</spatial>
+	</tendon>
+	<statistic extent="0.4" center="0 0 -0.1"/>
+	<visual>
+		<global azimuth="150" elevation="-30"/>
+		<headlight ambient="0.3 0.3 0.3"/>
+		<rgba haze="1 1 1 1"/>
+	</visual>
+	<option timestep="0.001" iterations="50" integrator="RK4" tolerance="1e-10" viscosity="0.002" density="1.2"/>
+	<default>
+		<joint type="ball"/>
+		<muscle ctrllimited="true" ctrlrange="-1000 1000"/>
+		<geom size="0.004" density="2000" rgba="0.3 0.3 0.3 1"/>
+		<site size="0.0041" rgba="0.1 0.4 0.1 1"/>
+	</default>
+	<asset>
+		<texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2=".28 .28 .28" width="512" height="512" markrgb=".8 .8 .8"/>
+		<texture name="skybox" type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="1 1 1" width="800" height="800" mark="none" markrgb="1 1 1"/>
+		<material name="matplane" reflectance="0.1" texture="texplane" texrepeat="1 1" texuniform="true"/>
+	</asset>
+	<worldbody>
+		<geom name="floor" rgba="1 1 1 1" pos="0 0 -0.7" size="0 0 1" type="plane" material="matplane"/>
+		<light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+		<geom name="floor2" rgba="1 1 1 1" pos="0.15 0 -0.7" size="0.2 0.1 0.4" type="box"/>
+		<body pos="0 0 0">
+			<geom type="capsule" fromto="0.18 0.10100505063388332 -0.19899494936611667 0.17999999999999997 0.12928932188134523 -0.17071067811865476"/>
+			<geom type="capsule" fromto="0.17999999999999997 0.12928932188134523 -0.17071067811865476 0.15 0.12928932188134523 -0.17071067811865476"/>
+			<geom type="capsule" fromto="0.12 0.10100505063388332 -0.19899494936611667 0.12 0.12928932188134523 -0.17071067811865476"/>
+			<geom type="capsule" fromto="0.12 0.12928932188134523 -0.17071067811865476 0.15 0.12928932188134523 -0.17071067811865476"/>
+			<geom type="capsule" fromto="0.15 0.2 -0.1 0.15 0.12928932188134523 -0.17071067811865476"/>
+			<site name="QuadSegrity1rl_scalupa_A" pos="0.18 0.10100505063388332 -0.19899494936611667"/>
+			<site name="QuadSegrity1rl_scalupa_B" pos="0.12 0.10100505063388332 -0.19899494936611667"/>
+			<site name="QuadSegrity1rl_scalupa_0" pos="0.15 0.2017677669529664 -0.10176776695296637"/>
+			<site name="QuadSegrity1rl_scalupa_1" pos="0.15 0.19823223304703363 -0.09823223304703364"/>
+			<site name="QuadSegrity1rl_scalupa_2" pos="0.1525 0.2 -0.1"/>
+			<site name="QuadSegrity1rl_scalupa_3" pos="0.1475 0.2 -0.1"/>
+			<site name="QuadSegrity1rl_scalupa_4" pos="0.15 0.1310570888343116 -0.17247844507162113"/>
+			<site name="QuadSegrity1rl_scalupa_5" pos="0.15 0.12752155492837888 -0.16894291116568838"/>
+			<site name="QuadSegrity1rl_scalupa_6" pos="0.1525 0.12928932188134523 -0.17071067811865476"/>
+			<site name="QuadSegrity1rl_scalupa_7" pos="0.1475 0.12928932188134523 -0.17071067811865476"/>
+			<body pos=" 0.15        0.10100505 -0.19899495" euler="0 0 0">
+				<geom type="capsule" fromto="0.02 0.0 0.0 0.02 0.028284271247461905 -0.028284271247461898"/>
+				<geom type="capsule" fromto="0.02 0.028284271247461905 -0.028284271247461898 0.0 0.028284271247461905 -0.028284271247461898"/>
+				<geom type="capsule" fromto="-0.02 0.0 0.0 -0.02 0.028284271247461905 -0.028284271247461898"/>
+				<geom type="capsule" fromto="-0.02 0.028284271247461905 -0.028284271247461898 0.0 0.028284271247461905 -0.028284271247461898"/>
+				<geom type="capsule" fromto="0.0 0.09899494936611666 -0.09899494936611665 0.0 0.028284271247461905 -0.028284271247461898"/>
+				<site name="QuadSegrity1rl_humerus_top_A" pos="0.02 0.0 0.0"/>
+				<site name="QuadSegrity1rl_humerus_top_B" pos="-0.02 0.0 0.0"/>
+				<site name="QuadSegrity1rl_humerus_top_4" pos="0.0 0.030052038200428274 -0.02651650429449553"/>
+				<site name="QuadSegrity1rl_humerus_top_5" pos="0.0 0.026516504294495535 -0.030052038200428267"/>
+				<site name="QuadSegrity1rl_humerus_top_6" pos="0.0025 0.028284271247461905 -0.028284271247461898"/>
+				<site name="QuadSegrity1rl_humerus_top_7" pos="-0.0025 0.028284271247461905 -0.028284271247461898"/>
+				<geom type="capsule" fromto="0.02 0.19798989873223333 -0.1979898987322333 0.02 0.16970562748477142 -0.16970562748477144"/>
+				<geom type="capsule" fromto="0.02 0.16970562748477142 -0.16970562748477144 0.0 0.16970562748477142 -0.16970562748477142"/>
+				<geom type="capsule" fromto="-0.02 0.19798989873223333 -0.1979898987322333 -0.02 0.16970562748477142 -0.16970562748477142"/>
+				<geom type="capsule" fromto="-0.02 0.16970562748477142 -0.16970562748477142 0.0 0.16970562748477142 -0.16970562748477142"/>
+				<geom type="capsule" fromto="0.0 0.09899494936611666 -0.09899494936611665 0.0 0.16970562748477142 -0.16970562748477142"/>
+				<site name="QuadSegrity1rl_humerus_bot_A" pos="0.02 0.19798989873223333 -0.1979898987322333"/>
+				<site name="QuadSegrity1rl_humerus_bot_B" pos="-0.02 0.19798989873223333 -0.1979898987322333"/>
+				<site name="QuadSegrity1rl_humerus_bot_4" pos="0.0 0.1714733944377378 -0.16793786053180504"/>
+				<site name="QuadSegrity1rl_humerus_bot_5" pos="0.0 0.16793786053180507 -0.17147339443773776"/>
+				<body pos=" 0.         0.1979899 -0.1979899">
+					<geom type="capsule" fromto="0.03 0.0 0.0 0.03 -0.01368080573302675 -0.037587704831436336"/>
+					<geom type="capsule" fromto="0.03 -0.01368080573302675 -0.037587704831436336 0.0 -0.01368080573302675 -0.037587704831436336"/>
+					<geom type="capsule" fromto="-0.03 0.0 0.0 -0.03 -0.01368080573302675 -0.037587704831436336"/>
+					<geom type="capsule" fromto="-0.03 -0.01368080573302675 -0.037587704831436336 0.0 -0.01368080573302675 -0.037587704831436336"/>
+					<geom type="capsule" fromto="0.0 -0.04788282006559363 -0.1315569669100272 0.0 -0.01368080573302675 -0.037587704831436336"/>
+					<site name="QuadSegrity1rl_radius_A" pos="0.03 0.0 0.0"/>
+					<site name="QuadSegrity1rl_radius_B" pos="-0.03 0.0 0.0"/>
+					<site name="QuadSegrity1rl_radius_4" pos="0.0 -0.011331574181061978 -0.03844275518975051"/>
+					<site name="QuadSegrity1rl_radius_5" pos="0.0 -0.01603003728499152 -0.03673265447312216"/>
+					<joint type="hinge" axis="1 0 0" stiffness="0"/>
+				</body>
+				<body pos=" 0.         0.1979899 -0.1979899" euler="0 0 0">
+					<geom type="capsule" fromto="0 0 0 0.0 0.02999999999999998 -0.051961524227066326"/>
+					<geom type="capsule" fromto="0 0 0 0.0 0.029999999999999995 0.05196152422706631"/>
+					<geom type="capsule" fromto="0 0 0 0.0 -0.06 7.347880794884118e-18"/>
+					<site name="QuadSegrity1rl_knee_B" pos="0.0 0.02999999999999998 -0.051961524227066326"/>
+					<site name="QuadSegrity1rl_knee_C" pos="0.0 0.029999999999999995 0.05196152422706631"/>
+					<site name="QuadSegrity1rl_knee_D" pos="0.0 -0.06 7.347880794884118e-18"/>
+					<site name="QuadSegrity1rl_knee_0" pos="0.0 0.01499999999999999 -0.025980762113533163"/>
+					<site name="QuadSegrity1rl_knee_1" pos="0.0 0.014999999999999998 0.025980762113533156"/>
+					<site name="QuadSegrity1rl_knee_2" pos="0.0 -0.03 3.673940397442059e-18"/>
+					<site name="QuadSegrity1rl_knee_3" pos="0.0025 0.0 0.0"/>
+					<site name="QuadSegrity1rl_knee_4" pos="-0.0025 0.0 0.0"/>
+					<geom type="box" mass="0" rgba="0 0 0 0" pos="0.0 0.02999999999999998 -0.051961524227066326" size="0.02 0.02 0.008" euler="-60 0 0"/>
+					<geom type="box" mass="0" rgba="0 0 0 0" pos="0.0 0.029999999999999995 0.05196152422706631" size="0.02 0.02 0.008" euler="60 0 0"/>
+					<geom type="box" mass="0" rgba="0 0 0 0" pos="0.0 -0.06 7.347880794884118e-18" size="0.02 0.02 0.008" euler="180 0 0"/>
+					<joint type="hinge" axis="1 0 0" stiffness="0"/>
+				</body>
+				<joint type="hinge" axis="1 0 0" stiffness="0"/>
+			</body>
+			<body pos=" 0.15        0.10100505 -0.19899495" euler="0 0 0">
+				<geom type="capsule" fromto="0 0 0 0.0 -0.02999999999999999 0.05196152422706632"/>
+				<geom type="capsule" fromto="0 0 0 0.0 -0.02999999999999999 -0.05196152422706632"/>
+				<geom type="capsule" fromto="0 0 0 0.0 0.06 0.0"/>
+				<site name="QuadSegrity1rl_hip_B" pos="0.0 -0.02999999999999999 0.05196152422706632"/>
+				<site name="QuadSegrity1rl_hip_C" pos="0.0 -0.02999999999999999 -0.05196152422706632"/>
+				<site name="QuadSegrity1rl_hip_D" pos="0.0 0.06 0.0"/>
+				<site name="QuadSegrity1rl_hip_0" pos="0.0 -0.014999999999999994 0.02598076211353316"/>
+				<site name="QuadSegrity1rl_hip_1" pos="0.0 -0.014999999999999994 -0.02598076211353316"/>
+				<site name="QuadSegrity1rl_hip_2" pos="0.0 0.03 0.0"/>
+				<site name="QuadSegrity1rl_hip_3" pos="0.0025 0.0 0.0"/>
+				<site name="QuadSegrity1rl_hip_4" pos="-0.0025 0.0 0.0"/>
+				<geom type="box" mass="0" rgba="0 0 0 0" pos="0.0 -0.02999999999999999 0.05196152422706632" size="0.02 0.02 0.008" euler="-60 0 0"/>
+				<geom type="box" mass="0" rgba="0 0 0 0" pos="0.0 -0.02999999999999999 -0.05196152422706632" size="0.02 0.02 0.008" euler="60 0 0"/>
+				<geom type="box" mass="0" rgba="0 0 0 0" pos="0.0 0.06 0.0" size="0.02 0.02 0.008" euler="180 0 0"/>
+				<joint type="hinge" axis="1 0 0" stiffness="0"/>
+			</body>
+		</body>
+	</worldbody>
+</mujoco>
