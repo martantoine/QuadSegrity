@@ -264,60 +264,17 @@ class Leg:
 
 
     def link_joint(self, forkA, forkB, star, type):
-        def link(site0, site1, i, rgba):        
-            spatial = env.root.createElement('spatial')
-            #spatial.setAttribute('limited', env.constants['tendon_limited'])
-            spatial.setAttribute('name', star.name + '_' + str(i))
-            #spatial.setAttribute('range', env.constants['tendon_range'])
-            spatial.setAttribute('width', '0.001')
-            #spatial.setAttribute('rgba', env.constants['tendon_rgba'])
-            spatial.setAttribute('rgba', rgba)
-            spatial.setAttribute('stiffness', '1500')
-            spatial.setAttribute('damping', '10')
-            env.tendon.appendChild(spatial)
-            
-            self.add_site(spatial, site0)
-            self.add_site(spatial, site1)
-            return i + 1
-        
         hinge_joint = env.root.createElement('joint')
         hinge_joint.setAttribute('type', 'hinge')
         hinge_joint.setAttribute('axis', '1 0 0')
-        hinge_joint.setAttribute('stiffness', '0')#f'{env.constants['hinge_stiffness']}')
+        hinge_joint.setAttribute('stiffness', f'{env.constants["hinge_stiffness"]/3}')
         forkB.parent.appendChild(hinge_joint)
 
         hinge_joint = env.root.createElement('joint')
         hinge_joint.setAttribute('type', 'hinge')
         hinge_joint.setAttribute('axis', '1 0 0')
-        hinge_joint.setAttribute('stiffness', '0')#f'{env.constants['hinge_stiffness']}')
+        hinge_joint.setAttribute('stiffness', f'{env.constants["hinge_stiffness"]*2/3}')
         star.parent.appendChild(hinge_joint)
-
-        i = 0
-        if type == 'A':
-            i = link(forkA.name + '_5', star.name + '_B', i, '0.8 0.05 0.05 1.0')
-            i = link(forkA.name + '_4', star.name + '_D', i, '0.8 0.05 0.05 1.0')
-            i = link(forkB.name + '_5', star.name + '_D', i, '0.8 0.05 0.05 1.0')
-            i = link(forkB.name + '_4', star.name + '_C', i, '0.8 0.05 0.05 1.0')
-        elif type == 'B':
-            i = link(forkA.name + '_5', star.name + '_D', i, '0.8 0.05 0.05 1.0')
-            i = link(forkA.name + '_4', star.name + '_C', i, '0.8 0.05 0.05 1.0')
-            i = link(forkB.name + '_5', star.name + '_B', i, '0.8 0.05 0.05 1.0')
-            i = link(forkB.name + '_4', star.name + '_D', i, '0.8 0.05 0.05 1.0')
-        
-        i = link(forkA.name + '_A', star.name + '_B', i, '0.05 0.8 0.8 1.0')
-        i = link(forkA.name + '_B', star.name + '_B', i, '0.05 0.8 0.8 1.0')
-        i = link(forkB.name + '_A', star.name + '_B', i, '0.05 0.8 0.8 1.0')
-        i = link(forkB.name + '_B', star.name + '_B', i, '0.05 0.8 0.8 1.0')
-
-        i = link(forkA.name + '_A', star.name + '_C', i, '0.05 0.8 0.8 1.0')
-        i = link(forkA.name + '_B', star.name + '_C', i, '0.05 0.8 0.8 1.0')
-        i = link(forkB.name + '_A', star.name + '_C', i, '0.05 0.8 0.8 1.0')
-        i = link(forkB.name + '_B', star.name + '_C', i, '0.05 0.8 0.8 1.0')
-
-        i = link(forkA.name + '_A', star.name + '_D', i, '0.05 0.8 0.8 1.0')
-        i = link(forkA.name + '_B', star.name + '_D', i, '0.05 0.8 0.8 1.0')
-        i = link(forkB.name + '_A', star.name + '_D', i, '0.05 0.8 0.8 1.0')
-        i = link(forkB.name + '_B', star.name + '_D', i, '0.05 0.8 0.8 1.0')
 
     def muscle_joint(self):
         def add_muscle(name, sites):
@@ -338,8 +295,8 @@ class Leg:
             muscle.setAttribute('ctrllimited', 'false')
             muscle.setAttribute('forcelimited', 'false')
             muscle.setAttribute('lengthrange', env.constants['muscle_lengthrange'])
-            muscle.setAttribute('force', f'{env.constants['muscle_force']}')
-            muscle.setAttribute('scale', f'{env.constants['muscle_scale']}')
+            muscle.setAttribute('force', f'{env.constants["muscle_force"]}')
+            muscle.setAttribute('scale', f'{env.constants["muscle_scale"]}')
             muscle.setAttribute('range', env.constants['muscle_range'])
             
             actuatorforce = env.root.createElement('actuatorfrc')
@@ -429,17 +386,17 @@ class Quadruped:
         env.worldbody.appendChild(robot)
         free_joint = env.root.createElement('joint')
         free_joint.setAttribute('type', 'free')
-        #robot.appendChild(free_joint)
+        robot.appendChild(free_joint)
         box = env.root.createElement('geom')
         box.setAttribute('type', 'box')
-        #box.setAttribute('mass', f'{env.constants["core_mass"]}')
-        box.setAttribute('mass', f'0')
+        box.setAttribute('mass', f'{env.constants["core_mass"]}')
         box.setAttribute('rgba', '0.3 0.3 0.3 0.5')
-        box.setAttribute('pos', f'{str(self.center)[1:-1].replace(',', '')}')
+        box_center = np.array(self.center) + np.array([0, 0.0, 0.0])
+        box.setAttribute('pos', f'{str(box_center)[1:-1].replace(",", "")}')
         box.setAttribute('size', f'0.15 0.2 {env.constants["beam_radius"]}')
-        #robot.appendChild(box)
+        robot.appendChild(box)
 
         legRL = Leg(self.name + 'rl', robot, np.array([ 0.15,  0.2, -0.0]) + np.array(self.center), 0)
-        #legRR = Leg(self.name + 'rr', robot, np.array([-0.15,  0.2, -0.0]) + np.array(self.center), 0)
-        #legFR = Leg(self.name + 'fr', robot, np.array([ 0.15, -0.2, -0.0]) + np.array(self.center), 0)
-        #legFL = Leg(self.name + 'fl', robot, np.array([-0.15, -0.2, -0.0]) + np.array(self.center), 0)
+        legRR = Leg(self.name + 'rr', robot, np.array([-0.15,  0.2, -0.0]) + np.array(self.center), 0)
+        legFR = Leg(self.name + 'fr', robot, np.array([ 0.15, -0.2, -0.0]) + np.array(self.center), 0)
+        legFL = Leg(self.name + 'fl', robot, np.array([-0.15, -0.2, -0.0]) + np.array(self.center), 0)

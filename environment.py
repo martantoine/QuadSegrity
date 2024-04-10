@@ -132,6 +132,7 @@ class Env:
 
         light = self.root.createElement('light')
         light.setAttribute('directional', 'true')
+        light.setAttribute('castshadow', 'false')
         light.setAttribute('diffuse', '.8 .8 .8')
         light.setAttribute('specular', '.2 .2 .2')
         light.setAttribute('pos', '0 0 5')
