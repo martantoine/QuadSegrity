@@ -299,15 +299,15 @@ class Leg:
             muscle.setAttribute('scale', f'{env.constants["muscle_scale"]}')
             muscle.setAttribute('range', env.constants['muscle_range'])
             
-            actuatorforce = env.root.createElement('actuatorfrc')
+            #actuatorforce = env.root.createElement('actuatorfrc')
             #env.sensor1.appendChild(actuatorforce)
-            actuatorforce.setAttribute('name', name)
-            actuatorforce.setAttribute('actuator', name)
+            #actuatorforce.setAttribute('name', name)
+            #actuatorforce.setAttribute('actuator', name)
 
-            actuatorpos = env.root.createElement('actuatorpos')
+            #actuatorpos = env.root.createElement('actuatorpos')
             #env.sensor2.appendChild(actuatorpos)
-            actuatorpos.setAttribute('name', name + '_pos')
-            actuatorpos.setAttribute('actuator', name)
+            #actuatorpos.setAttribute('name', name + '_pos')
+            #actuatorpos.setAttribute('actuator', name)
             
             for s in sites:
                 self.add_site(spatial, s)
@@ -316,6 +316,16 @@ class Leg:
                                                  self.scalupa.name + '_4',
                                                  self.hip.name + '_2',
                                                  self.humerus_top.name + '_4'])
+        actuatorpos = env.root.createElement('actuatorpos')
+        env.sensor2.appendChild(actuatorpos)
+        actuatorpos.setAttribute('name', self.name + '_hip_flexor' + '_pos')
+        actuatorpos.setAttribute('actuator', self.name + '_hip_flexor')
+
+        actuatorfrc = env.root.createElement('actuatorfrc')
+        env.sensor2.appendChild(actuatorfrc)
+        actuatorfrc.setAttribute('name', self.name + '_hip_flexor' + '_frc')
+        actuatorfrc.setAttribute('actuator', self.name + '_hip_flexor')
+        
         add_muscle(self.name + '_hip_extensor', [self.scalupa.name + '_1',
                                                  self.scalupa.name + '_5',
                                                  self.hip.name + '_0',

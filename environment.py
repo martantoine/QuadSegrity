@@ -26,13 +26,13 @@ class Env:
         statistic = self.root.createElement('statistic')
         self.xml.appendChild(statistic)
         statistic.setAttribute('extent', '0.4')
-        statistic.setAttribute('center', '0 0 -0.1')
+        statistic.setAttribute('center', '0.2 0 -0.2')
 
         visual = self.root.createElement('visual')
         self.xml.appendChild(visual)
         visual_global = self.root.createElement('global')
-        visual_global.setAttribute('azimuth', '150')
-        visual_global.setAttribute('elevation', '-30')
+        visual_global.setAttribute('azimuth', '180')
+        visual_global.setAttribute('elevation', '0')
         visual.appendChild(visual_global)
 
         headlight = self.root.createElement('headlight')
@@ -51,6 +51,7 @@ class Env:
         option.setAttribute('iterations', '50')
         option.setAttribute('integrator', self.constants["integrator"])
         option.setAttribute('tolerance', '1e-10')
+        option.setAttribute('gravity', f'{self.constants["gravity"]}')
         option.setAttribute('viscosity', f'{self.constants["viscosity"]}')
         option.setAttribute('density', f'{self.constants["air_density"]}')
         
@@ -127,7 +128,7 @@ class Env:
         geom.setAttribute('size', '0 0 1')
         geom.setAttribute('type', 'plane')
         geom.setAttribute('material', 'matplane')
-        self.worldbody.appendChild(geom)
+        #self.worldbody.appendChild(geom)
 
 
         light = self.root.createElement('light')
