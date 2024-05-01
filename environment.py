@@ -128,7 +128,7 @@ class Env:
         geom.setAttribute('size', '0 0 1')
         geom.setAttribute('type', 'plane')
         geom.setAttribute('material', 'matplane')
-        #self.worldbody.appendChild(geom)
+        self.worldbody.appendChild(geom)
 
 
         light = self.root.createElement('light')
