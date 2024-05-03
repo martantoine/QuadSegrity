@@ -523,8 +523,8 @@ class Leg:
             j1 = Joint(name + 'j1', parent, center, 0.3-env.constants["a"], 0.1, 0.4, np.deg2rad(120), 'arrow')
             j2 = Joint(name + 'j2', j1.child, np.array([0, 0.3-env.constants["c"], 0]), 0.3, 0.2, 0.1, np.deg2rad(120), 'fork')
         elif orientation == "front":
-            j1 = Joint(name + 'j1', parent, center, 0.3-env.constants["a"], 0.1, -0.1, np.deg2rad(-120), 'fork')
-            j2 = Joint(name + 'j2', j1.child, np.array([0, -0.3+env.constants["c"], 0]), 0.3, 0.1, -0.1, np.deg2rad(-120), 'arrow')
+            j1 = Joint(name + 'j1', parent, center, 0.3-env.constants["a"], -0.1, -0.4, np.deg2rad(-120), 'fork')
+            j2 = Joint(name + 'j2', j1.child, np.array([0, -0.3+env.constants["c"], 0]), 0.3, -0.1, -0.3, np.deg2rad(-120), 'arrow')
 
 class Quadruped:
     def __init__(self, name, center):

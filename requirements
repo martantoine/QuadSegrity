@@ -2,3 +2,9 @@ numpy
 mujoco
 mediapy
 ipykernel
+sympy
+gymnasium
+matplotlib
+pybullet
+pyside2
+stable-baselines3
