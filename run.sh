@@ -1,6 +1,6 @@
 #!/bin/sh
 rm leg_parametric.xml   
-python main.py
+python gait_simulation.py
 
 unamestr=$(uname)
 if [[ "$unamestr" == 'Linux' ]]; then
