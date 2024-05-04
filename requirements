@@ -7,4 +7,4 @@ gymnasium
 matplotlib
 pybullet
 pyside2
-stable-baselines3
+stable_baselines3

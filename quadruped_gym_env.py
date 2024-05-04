@@ -7,6 +7,7 @@ import numpy as np
 from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box, Tuple
+from gymnasium.spaces.utils import flatten_space
 
 
 DEFAULT_CAMERA_CONFIG = {
@@ -14,7 +15,7 @@ DEFAULT_CAMERA_CONFIG = {
 }
 
 
-class Quadruped(MujocoEnv, utils.EzPickle):
+class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
     metadata = {
         "render_modes": [
             "human",
@@ -25,7 +26,7 @@ class Quadruped(MujocoEnv, utils.EzPickle):
 
     def __init__(
         self,
-        xml_file: str = "leg_parametric.xml",
+        xml_file: str = "./leg_parametric.xml",
         frame_skip: int = 5,
         default_camera_config: Dict[str, Union[float, int]] = DEFAULT_CAMERA_CONFIG,
         forward_reward_weight: float = 1.0,
@@ -45,17 +46,14 @@ class Quadruped(MujocoEnv, utils.EzPickle):
             ctrl_cost_weight,
             reset_noise_scale,
             exclude_current_positions_from_observation,
+            force_max,
+            switching_max,
             **kwargs,
         )
 
         self._forward_reward_weight = forward_reward_weight
         self._ctrl_cost_weight = ctrl_cost_weight
-
         self._reset_noise_scale = reset_noise_scale
-
-        self._exclude_current_positions_from_observation = (
-            exclude_current_positions_from_observation
-        )
 
         MujocoEnv.__init__(
             self,
@@ -85,14 +83,10 @@ class Quadruped(MujocoEnv, utils.EzPickle):
             low=-np.inf, high=np.inf, shape=(obs_size,), dtype=np.float64
         )
         
-        self.action_space = Tuple(Box(low=0, high=force_max, shape=(2,), dtype=np.float), Box(low=0, high=switching_max, shape=(8,), dtype=np.int8))
-        
-        self.observation_structure = {
-            "skipped_qpos": 1 * exclude_current_positions_from_observation,
-            "qpos": self.data.qpos.size
-            - 1 * exclude_current_positions_from_observation,
-            "qvel": self.data.qvel.size,
-        }
+        self.action_space = flatten_space(Tuple((
+            Box(low=0, high=force_max, shape=(2,), dtype=np.float64),
+            Box(low=0, high=switching_max, shape=(8,), dtype=np.int8)
+        )))
 
     def control_cost(self, action):
         control_cost = self._ctrl_cost_weight * np.sum(np.square(action))
