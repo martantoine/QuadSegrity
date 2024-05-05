@@ -2,10 +2,11 @@ import numpy as np
 
 env = None
 
-def add_site(parent, pos, site_name):
+def add_site(parent, pos, site_name, zaxis=[0, 0, 1]):
     site = env.root.createElement('site')
     site.setAttribute('name', site_name)
     site.setAttribute('pos', f'{pos[0]} {pos[1]} {pos[2]}')
+    site.setAttribute('zaxis', f'{zaxis[0]} {zaxis[1]} {zaxis[2]}')
     parent.appendChild(site)
 
 def add_muscle(name, sites):
@@ -155,6 +156,18 @@ class Quadruped:
         free_joint.setAttribute('type', 'free')
         robot.appendChild(free_joint)
 
+        add_site(robot, [0, 0, 0], name + '_sensors', zaxis=[0, 0, -1])
+
+        gyro = env.root.createElement('gyro')
+        env.sensor1.appendChild(gyro)
+        gyro.setAttribute('name', name + '_gyro')
+        gyro.setAttribute('site', name + '_sensors')
+
+        rangefinder = env.root.createElement('rangefinder')
+        env.sensor1.appendChild(rangefinder)
+        rangefinder.setAttribute('name', name + '_rangefinder')
+        rangefinder.setAttribute('site', name + '_sensors')
+        
         hw = env.constants["body_width"]/2
         hl = env.constants["body_length"]/2
 
