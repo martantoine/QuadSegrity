@@ -88,6 +88,10 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
             Box(low=0, high=switching_max, shape=(8,), dtype=np.int8)
         )))
 
+        self.old_c = np.zeros(8)
+        self.c = np.zeros(8)
+        self.old_forces = np.zeros(8)
+
     def control_cost(self, action):
         control_cost = self._ctrl_cost_weight * np.sum(np.square(action))
         return control_cost
