@@ -100,7 +100,8 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         #     Box(low=0, high=force_max, shape=(2,), dtype=np.float64),
         #     Box(low=0, high=switching_max, shape=(8,), dtype=np.int8)
         # )))
-        self.action_space = Box(low=0, high=force_max, shape=(10,), dtype=np.float32)
+        #self.action_space = Box(low=0, high=force_max, shape=(10,), dtype=np.float32)
+        self.action_space = Box(low=0, high=force_max, shape=(8,), dtype=np.float32)
         
         self.old_c = np.zeros(8)
         self.c = np.zeros(8)
@@ -163,27 +164,27 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         observation = np.concatenate((forces, dforces, self.c, dc, attitude, height, velocity)).ravel()
         return observation
     
-    def do_simulation(self, ctrl, n_frames) -> None:
-        """
-        Step the simulation n number of frames and applying a control action.
-        """
+    # def do_simulation(self, ctrl, n_frames) -> None:
+    #     """
+    #     Step the simulation n number of frames and applying a control action.
+    #     """
 
-        # converting the crtl to ctrl final
-        # ctrl: 2 Forces and 8 on/off valves
-        # ctrl_final: 8 forces
+    #     # converting the crtl to ctrl final
+    #     # ctrl: 2 Forces and 8 on/off valves
+    #     # ctrl_final: 8 forces
 
-        ctrl_final = np.zeros((8,))
-        for i in range(len(ctrl_final)):
-            if ctrl[2+i] == self._switching_max:
-                ctrl_final[i] = ctrl[i%2]
-            else:
-                ctrl_final[i] = self.old_forces[i]
-        # Check control input is contained in thet action space
-        if np.array(ctrl_final).shape != (self.model.nu,):
-            raise ValueError(
-                f"Action dimension mismatch. Expected {(self.model.nu,)}, found {np.array(ctrl_final).shape}"
-            )
-        self._step_mujoco_simulation(ctrl_final, n_frames)
+    #     ctrl_final = np.zeros((8,))
+    #     for i in range(len(ctrl_final)):
+    #         if ctrl[2+i] == self._switching_max:
+    #             ctrl_final[i] = ctrl[i%2]
+    #         else:
+    #             ctrl_final[i] = self.old_forces[i]
+    #     # Check control input is contained in thet action space
+    #     if np.array(ctrl_final).shape != (self.model.nu,):
+    #         raise ValueError(
+    #             f"Action dimension mismatch. Expected {(self.model.nu,)}, found {np.array(ctrl_final).shape}"
+    #         )
+    #     self._step_mujoco_simulation(ctrl_final, n_frames)
 
     def reset_model(self):
         noise_low = -self._reset_noise_scale
