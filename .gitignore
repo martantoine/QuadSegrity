@@ -2,6 +2,7 @@ mujoco/
 mujoco-dev/
 Gymnasium/
 logs/
+rl/
 MUJOCO_LOG.TXT
 leg_parametric.xml
 __pycache__/

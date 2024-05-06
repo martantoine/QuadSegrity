@@ -27,15 +27,15 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
     def __init__(
         self,
         xml_file: str = "./leg_parametric.xml",
-        frame_skip: int = 5,
+        frame_skip: int = 50,
         default_camera_config: Dict[str, Union[float, int]] = DEFAULT_CAMERA_CONFIG,
         forward_reward_weight: float = 1.0,
         force_cost_weight: float = 0.1,
         switching_rate_cost_weight: float = 0.1,
         reset_noise_scale: float = 0.1,
-        exclude_current_positions_from_observation: bool = True,
         force_max: float = 40.0,
         switching_max: int = 10,
+        total_timesteps: int = 1000,
         **kwargs,
     ):
         utils.EzPickle.__init__(
@@ -47,9 +47,9 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
             force_cost_weight,
             switching_rate_cost_weight,
             reset_noise_scale,
-            exclude_current_positions_from_observation,
             force_max,
             switching_max,
+            total_timesteps,
             **kwargs,
         )
 
@@ -58,6 +58,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         self._switching_rate_cost_weight = switching_rate_cost_weight
         self._reset_noise_scale = reset_noise_scale
         self._switching_max = switching_max
+        self.total_timesteps = total_timesteps
 
         MujocoEnv.__init__(
             self,
@@ -84,6 +85,13 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
             + 3 #body velocity
         )
         
+        self.observation_structure = {
+            "actuaors related": 8 * 4,
+            "body attitude": 3,
+            "body height": 1,
+            "body velocity": 3,
+        }
+
         self.observation_space = Box(
             low=-np.inf, high=np.inf, shape=(obs_size,), dtype=np.float64
         )
@@ -93,19 +101,22 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         #     Box(low=0, high=switching_max, shape=(8,), dtype=np.int8)
         # )))
         self.action_space = Box(low=0, high=force_max, shape=(10,), dtype=np.float32)
-
+        
         self.old_c = np.zeros(8)
         self.c = np.zeros(8)
         self.old_forces = np.zeros(8)
 
+        self.time = 0
+
     def control_cost(self, action):
-        control_cost = self._force_cost_weight * np.sum(np.square(action[0:2])) \
-                     + self._switching_rate_cost_weight * np.sum(np.square(action[3:10] - self.old_c))
+        control_cost = 0#self._force_cost_weight * np.sum(np.square(action[:2])) \
+                     #+ self._switching_rate_cost_weight * np.sum(np.square(action[2:] - self.old_c))
         return control_cost
 
     def step(self, action):
         x_position_before = self.data.qpos[0]
         self.do_simulation(action, self.frame_skip)
+        self.time += self.frame_skip
         x_position_after = self.data.qpos[0]
         x_velocity = (x_position_after - x_position_before) / self.dt
 
@@ -116,14 +127,19 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         if self.render_mode == "human":
             self.render()
         # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        return observation, reward, False, False, info
+        #return (observation, reward, False, False, dict(info))
+
+        #out_of_time = self.time > 1000
+        out_of_time = self.time >= self.total_timesteps - 1
+        return observation, reward, False, out_of_time, info
 
     def _get_rew(self, x_velocity: float, action):
         forward_reward = self._forward_reward_weight * x_velocity
         ctrl_cost = self.control_cost(action)
 
-        reward = forward_reward - ctrl_cost
-
+        stil_cost = np.exp(-np.abs(x_velocity))
+        reward = forward_reward# - ctrl_cost - stil_cost
+        
         reward_info = {
             "reward_forward": forward_reward,
             "reward_ctrl": -ctrl_cost,
@@ -182,7 +198,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         )
 
         self.set_state(qpos, qvel)
-
+        self.time = 0
         observation = self._get_obs()
         return observation
 

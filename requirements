@@ -1,5 +1,5 @@
 numpy
-mujoco
+mujoco==2.3.7
 mediapy
 ipykernel
 sympy
@@ -7,4 +7,6 @@ gymnasium
 matplotlib
 pybullet
 pyside2
-stable_baselines3
+stable-baselines3[extra]
+imageio
+tensorboard
