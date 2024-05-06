@@ -102,18 +102,18 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         self.time = 0
 
     def control_cost(self, action):
-        control_cost = self._force_cost_weight * np.sum(np.square(action)) \
-                     + self._switching_rate_cost_weight * np.sum(np.square(action - self.old_forces))
+        control_cost = self._force_cost_weight * np.sum(np.abs(action)) \
+                     + self._switching_rate_cost_weight * np.sum(np.abs(action - self.old_forces))
         return control_cost
 
     def step(self, action):
-        x_position_before = self.data.qpos[0]
+        x_position_before = self.data.qpos[1]
         
         self.do_simulation(action, self.frame_skip)
         self.time += self.frame_skip
 
-        x_position_after = self.data.qpos[0]
-        x_velocity = (x_position_after - x_position_before) / self.dt
+        x_position_after = self.data.qpos[1]
+        x_velocity = -(x_position_after - x_position_before) / self.dt
 
         observation = self._get_obs()
         reward, reward_info = self._get_rew(x_velocity, action)
