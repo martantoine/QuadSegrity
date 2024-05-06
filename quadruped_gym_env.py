@@ -79,14 +79,14 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         }
 
         obs_size = (
-            8 * 4 #actuators force, dforce, c, dc
+            8 * 2 #actuators force, dforce
             + 3 #body attitude
             + 1 #body height
             + 3 #body velocity
         )
         
         self.observation_structure = {
-            "actuaors related": 8 * 4,
+            "actuators related": 8 * 2,
             "body attitude": 3,
             "body height": 1,
             "body velocity": 3,
@@ -96,42 +96,33 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
             low=-np.inf, high=np.inf, shape=(obs_size,), dtype=np.float64
         )
         
-        # self.action_space = flatten_space(Tuple((
-        #     Box(low=0, high=force_max, shape=(2,), dtype=np.float64),
-        #     Box(low=0, high=switching_max, shape=(8,), dtype=np.int8)
-        # )))
-        #self.action_space = Box(low=0, high=force_max, shape=(10,), dtype=np.float32)
         self.action_space = Box(low=0, high=force_max, shape=(8,), dtype=np.float32)
-        
-        self.old_c = np.zeros(8)
-        self.c = np.zeros(8)
+    
         self.old_forces = np.zeros(8)
-
         self.time = 0
 
     def control_cost(self, action):
-        control_cost = 0#self._force_cost_weight * np.sum(np.square(action[:2])) \
-                     #+ self._switching_rate_cost_weight * np.sum(np.square(action[2:] - self.old_c))
+        control_cost = self._force_cost_weight * np.sum(np.square(action)) \
+                     + self._switching_rate_cost_weight * np.sum(np.square(action - self.old_forces))
         return control_cost
 
     def step(self, action):
         x_position_before = self.data.qpos[0]
+        
         self.do_simulation(action, self.frame_skip)
         self.time += self.frame_skip
+
         x_position_after = self.data.qpos[0]
         x_velocity = (x_position_after - x_position_before) / self.dt
 
         observation = self._get_obs()
         reward, reward_info = self._get_rew(x_velocity, action)
-        info = {"x_position": x_position_after, "x_velocity": x_velocity, **reward_info}
+        info = {"x_position": x_position_after, "x_velocity": x_velocity, "actions": action, **reward_info}
 
         if self.render_mode == "human":
             self.render()
-        # truncation=False as the time limit is handled by the `TimeLimit` wrapper added during `make`
-        #return (observation, reward, False, False, dict(info))
-
-        #out_of_time = self.time > 1000
         out_of_time = self.time >= self.total_timesteps - 1
+        
         return observation, reward, False, out_of_time, info
 
     def _get_rew(self, x_velocity: float, action):
@@ -139,7 +130,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         ctrl_cost = self.control_cost(action)
 
         stil_cost = np.exp(-np.abs(x_velocity))
-        reward = forward_reward# - ctrl_cost - stil_cost
+        reward = forward_reward - ctrl_cost# - stil_cost
         
         reward_info = {
             "reward_forward": forward_reward,
@@ -150,20 +141,16 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
     def _get_obs(self):
         velocity = self.data.qvel[0:3].flatten() #velocity of the body
 
-        #forces   = self.data.sensordata[4:12].flatten() #force sensors for each muscle
-        forces   = self.data.ctrl.flatten() #force sensors for each muscle
+        forces   = self.data.sensordata[4:].flatten() #force sensors for each muscle
+        #forces   = self.data.ctrl.flatten() #force sensors for each muscle
         dforces  = forces - self.old_forces
         self.old_forces = forces
-
-        dc = self.c - self.old_c
-        self.old_c = self.c
 
         attitude = self.data.sensordata[0:3].flatten() #gyro sensor on the body
         height = self.data.sensordata[3].flatten() #rangefinder sensor on the body
 
-        observation = np.concatenate((forces, dforces, self.c, dc, attitude, height, velocity)).ravel()
-        return observation
-    
+        return np.concatenate((forces, dforces, attitude, height, velocity)).ravel()
+        
     # def do_simulation(self, ctrl, n_frames) -> None:
     #     """
     #     Step the simulation n number of frames and applying a control action.
