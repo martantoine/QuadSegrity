@@ -36,6 +36,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         force_max: float = 40.0,
         switching_max: int = 10,
         total_timesteps: int = 1000,
+        mode: str = "train",
         **kwargs,
     ):
         utils.EzPickle.__init__(
@@ -50,6 +51,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
             force_max,
             switching_max,
             total_timesteps,
+            mode,
             **kwargs,
         )
 
@@ -59,6 +61,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         self._reset_noise_scale = reset_noise_scale
         self._switching_max = switching_max
         self.total_timesteps = total_timesteps
+        self._mode = mode
 
         MujocoEnv.__init__(
             self,
@@ -108,10 +111,19 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
 
     def step(self, action):
         x_position_before = self.data.qpos[1]
-        
-        self.do_simulation(action, self.frame_skip)
-        self.time += self.frame_skip
 
+        if self._mode == "train":
+            self.do_simulation(action, self.frame_skip)
+            self.time += self.frame_skip
+            if self.render_mode == "human":
+                        self.render()
+        else:
+            for i in range(self.frame_skip):
+                self.do_simulation(action, 1)
+                self.time += 1
+                if self.render_mode == "human":
+                            self.render()
+        
         x_position_after = self.data.qpos[1]
         x_velocity = -(x_position_after - x_position_before) / self.dt
 
@@ -119,8 +131,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         reward, reward_info = self._get_rew(x_velocity, action)
         info = {"x_position": x_position_after, "x_velocity": x_velocity, "actions": action, **reward_info}
 
-        if self.render_mode == "human":
-            self.render()
+        
         out_of_time = self.time >= self.total_timesteps - 1
         
         return observation, reward, False, out_of_time, info
