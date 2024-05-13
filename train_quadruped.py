@@ -1,5 +1,8 @@
 import os
 import argparse
+import numpy as np
+import torch as th
+import onnxruntime as ort
 from stable_baselines3 import SAC
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.env_util import make_vec_env
@@ -57,3 +60,52 @@ elif args.mode == 'test':
         obs, _, done, info = env.step(action)    
         if done:
             obs = env.reset()
+elif args.mode == 'onnx':
+    class OnnxablePolicy(th.nn.Module):
+        def __init__(self, actor: th.nn.Module):
+            super().__init__()
+            self.actor = actor
+
+        def forward(self, observation: th.Tensor) -> th.Tensor:
+            # NOTE: You may have to postprocess (unnormalize) actions
+            # to the correct bounds (see commented code below)
+            return self.actor(observation, deterministic=True)
+    
+    env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
+    env = make_vec_env(env, n_envs=1)
+    
+    model_name = os.path.join(model_dir, "rl_model210000.zip")
+    model = SAC.load(model_name, env)
+    print("\nLoaded model", model_name, "\n")
+
+    onnxable_model = OnnxablePolicy(model.policy.actor)
+
+    observation_size = model.observation_space.shape
+    dummy_input = th.randn(1, *observation_size)
+    onnx_path = os.path.join(model_dir, "actor.onnx")
+    th.onnx.export(
+        onnxable_model,
+        dummy_input,
+        onnx_path,
+        opset_version=17,
+        input_names=["input"],
+    )
+
+    obs = env.reset()
+    episode_reward = 0
+
+    observation = np.zeros((1, *observation_size)).astype(np.float32)
+    ort_sess = ort.InferenceSession(onnx_path)
+    scaled_action = ort_sess.run(None, {"input": observation})[0]
+    # print the policy neural network size
+    print(model.policy.actor)
+    print(scaled_action)
+
+    # Post-process: rescale to correct space
+    # Rescale the action from [-1, 1] to [low, high]
+    # low, high = model.action_space.low, model.action_space.high
+    # post_processed_action = low + (0.5 * (scaled_action + 1.0) * (high - low))
+
+    # Check that the predictions are the same
+    with th.no_grad():
+        print(model.actor(th.as_tensor(observation), deterministic=True))
