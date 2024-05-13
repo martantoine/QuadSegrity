@@ -12,3 +12,4 @@ imageio
 tensorboard
 onnxruntime
 onnx
+pyserial

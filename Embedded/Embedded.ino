@@ -81,10 +81,12 @@ void init(void)
     if (!bno.begin())
     {
         /* There was a problem detecting the BNO055 ... check your connections */
-        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!\n");
         while (1);
     }
+
 #endif
+    Serial.print("Reset successful\n");
     delay(1000);
 }
 
@@ -102,11 +104,12 @@ void loop()
         Serial.readBytes(command_bytes, COMMAND_BYTES_LEN);
     uint32_t command = (command_bytes[3] << 8*3) | (command_bytes[2] << 8*2) | (command_bytes[1] << 8) | command_bytes[0];
     // 16 bits for the regulators, 10 bits for the valves
+    uint16_t valve_command = command & 0xFF;
+
     if(command == 0xFFFFFFFF)
         init();
     else
     {
-        uint16_t valve_command = command & 0xFF;
         digitalWrite(VALVE_0, (valve_command >> 0) & 0x1);
         digitalWrite(VALVE_1, (valve_command >> 1) & 0x1);
         digitalWrite(VALVE_2, (valve_command >> 2) & 0x1);
@@ -122,29 +125,29 @@ void loop()
         regulator1 = (command >> 18) & 0xFF;
         
 	    delay(CONTROL_DELAY);
-        uint16_t observation[int(OBSERVATION_BYTES_LEN/2)];
-        observation[0] = valve_command;
-        observation[1] = analogRead(PRESSURE_SENSOR_0);
-        observation[2] = analogRead(PRESSURE_SENSOR_1);
-        
-#ifdef USE_IMU
-        sensors_event_t orientationData , angVelocityData , linearAccelData;
-        bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-        bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
-        bno.getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
-
-        observation[3] = orientationData.orientation.x;
-        observation[4] = orientationData.orientation.y;
-        observation[5] = orientationData.orientation.z;
-        
-        observation[6] = orientationData.gyro.x;
-        observation[7] = orientationData.gyro.y;
-        observation[8] = orientationData.gyro.z;
-        
-        observation[9] = orientationData.acceleration.x;
-        observation[10] = orientationData.acceleration.y;
-        observation[11] = orientationData.acceleration.z;
-#endif
-        Serial.write((uint8_t*)observation, OBSERVATION_BYTES_LEN);
     }
+    uint16_t observation[int(OBSERVATION_BYTES_LEN/2)];
+    observation[0] = valve_command;
+    observation[1] = analogRead(PRESSURE_SENSOR_0);
+    observation[2] = analogRead(PRESSURE_SENSOR_1);
+    
+#ifdef USE_IMU
+    sensors_event_t orientationData , angVelocityData , linearAccelData;
+    bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
+    bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
+    bno.getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
+
+    observation[3] = orientationData.orientation.x;
+    observation[4] = orientationData.orientation.y;
+    observation[5] = orientationData.orientation.z;
+    
+    observation[6] = orientationData.gyro.x;
+    observation[7] = orientationData.gyro.y;
+    observation[8] = orientationData.gyro.z;
+    
+    observation[9] = orientationData.acceleration.x;
+    observation[10] = orientationData.acceleration.y;
+    observation[11] = orientationData.acceleration.z;
+#endif
+    Serial.write((uint8_t*)observation, OBSERVATION_BYTES_LEN);
 }
