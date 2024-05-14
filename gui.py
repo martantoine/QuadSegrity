@@ -1,27 +1,32 @@
 from array import array
 from math import sin, pi
 from random import random
+import numpy as np 
 from time import time
 import dearpygui.dearpygui as dpg
 from collections import deque
 import time
 import threading
 
-C = 0.01
-L = int(pi * 2 * 100)
-
 max_history_time_seconds = 10
 update_interval = 0.5
 valve_history_length = int(max_history_time_seconds / update_interval)
 r = [[0 for i in range(valve_history_length)] for j in range(10)]
 valves = [deque([False]*valve_history_length, maxlen=valve_history_length) for i in range(10)]
+pressures = [deque([0]*valve_history_length, maxlen=valve_history_length) for i in range(2)]
+pressures_aug = [deque([0]*valve_history_length*2, maxlen=valve_history_length*2) for i in range(2)]
+xP = np.sort(list(np.linspace(0, max_history_time_seconds, valve_history_length))*2)
 w = 20
 
-def update_plots():
-    global r
-
+def update_plots(pressures_plot, yax):
+    global r, pressures, pressures_aug
     while True:
         [valves[i].append(random() > 0.5) for i in range(len(valves))]
+        [pressures[i].append(random()) for i in range(len(pressures))]
+        pressures_aug[0].append(pressures[0][-1])
+        pressures_aug[0].append(pressures[0][-1])
+        pressures_aug[1].append(pressures[1][-1])
+        pressures_aug[1].append(pressures[1][-1])
         for y in range(10):
             for x in range(valve_history_length):
                 if valves[y][x] == 0:
@@ -30,13 +35,12 @@ def update_plots():
                     color = [0x11, 0x11, 0x11, 0 + 0xff * x / valve_history_length]
                 dpg.configure_item(item=r[y][x], fill=color)
         
+        dpg.configure_item(item=pressures_plot[0], x=list(xP), y1=list(pressures_aug[0]))
+        dpg.configure_item(item=pressures_plot[1], x=list(xP), y1=list(pressures_aug[1]))
+        dpg.fit_axis_data(yax)
         time.sleep(update_interval)
 
 def main():
-    plot_values = array("f", [sin(x * C) for x in range(L)])
-    histogram_values = array("f", [random() for _ in range(20)])
-    last_time = time.time()
-
     dpg.create_context()
     dpg.create_viewport()
 
@@ -55,18 +59,21 @@ def main():
                     r[y][x] = dpg.draw_rectangle(pmin=[x*w, 0], pmax=[(x+0.9)*w + dw, 0.9*w], color=color, fill=color, rounding=1.0)
                     dpg.draw_text([(valve_history_length+1.5)*w, 0], "valve %d" % y, size=15.0, color=color)
                     
-        #dpg.plot_histogram(
-        #    "histogram(random())",
-        #    histogram_values,
-        #    overlay_text="random histogram",
-        #    values_count=22,
-        #    values_offset=0,
-        #    # offset by one item every milisecond, plot values
-        #    # buffer its end wraps around
-        #    graph_size=(21*w, 2*w),
-        #)
+        
+        with dpg.plot(label="Pressure commands", height=200, width=(valve_history_length+5)*w):
+            # optionally create legend
+            dpg.add_plot_legend()
 
-    thread1 = threading.Thread(name="update plots", target=update_plots, args=(), daemon=True)
+            # REQUIRED: create x and y axes
+            dpg.add_plot_axis(dpg.mvXAxis, label="time", tag="x_axis")
+            yax = dpg.add_plot_axis(dpg.mvYAxis, label="pressure", tag="y_axis")
+            
+            # series belong to a y axis
+            pressures_plot = [0]*2
+            pressures_plot[0] = dpg.add_shade_series(list(xP), list(pressures_aug[0]), label="hip", parent="y_axis")
+            pressures_plot[1] = dpg.add_shade_series(list(xP), list(pressures_aug[1]), label="knee", parent="y_axis")
+                
+    thread1 = threading.Thread(name="update plots", target=update_plots, args=((pressures_plot, yax, )), daemon=True)
     thread1.start()
 
     dpg.setup_dearpygui()
