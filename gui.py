@@ -1,3 +1,6 @@
+import serial
+import sys
+import onnxruntime as ort
 from array import array
 from math import sin, pi
 from random import random
@@ -7,6 +10,12 @@ import dearpygui.dearpygui as dpg
 from collections import deque
 import time
 import threading
+import os
+
+
+COMMAND_BYTES_LEN = 4
+OBSERVATION_BYTES_LEN = 24
+onnx_path = "remote_model.onnx"
 
 max_history_time_seconds = 10
 update_interval = 0.5
@@ -19,10 +28,10 @@ xP = np.sort(list(np.linspace(0, max_history_time_seconds, valve_history_length)
 w = 20
 
 def update_plots(pressures_plot, yax):
-    global r, pressures, pressures_aug
+    global valves, pressures, r, pressures, pressures_aug
+
+    print("Starting plot thread")
     while True:
-        [valves[i].append(random() > 0.5) for i in range(len(valves))]
-        [pressures[i].append(random()) for i in range(len(pressures))]
         pressures_aug[0].append(pressures[0][-1])
         pressures_aug[0].append(pressures[0][-1])
         pressures_aug[1].append(pressures[1][-1])
@@ -38,14 +47,70 @@ def update_plots(pressures_plot, yax):
         dpg.configure_item(item=pressures_plot[0], x=list(xP), y1=list(pressures_aug[0]))
         dpg.configure_item(item=pressures_plot[1], x=list(xP), y1=list(pressures_aug[1]))
         dpg.fit_axis_data(yax)
+        #print("plot thread updated")
         time.sleep(update_interval)
+
+
+if len(sys.argv) < 2:
+    print("Usage: python Remote.py <serial_port>")
+    sys.exit(1)
+if len(sys.argv) == 3:
+    onnx_path = sys.argv[2]
+
+def communicate():
+    global valves, pressures
+
+    #while True:
+    #    [valves[i].append(random() > 0.5) for i in range(len(valves))]
+    #    [pressures[i].append(random()) for i in range(len(pressures))]
+    #    time.sleep(update_interval)
+    
+    print("Starting commmunication thread")
+    serial_port = sys.argv[1]
+    #ort_sess = ort.InferenceSession(onnx_path)
+    # check first if the serial port exists
+
+    if not os.path.exists(serial_port):
+        print("Serial port does not exist.")
+        return
+    with serial.Serial(serial_port, baudrate=115200, timeout=0.1) as ser: #blocking reading because timeout=0
+        #ser.write(0xFFFFFFFF) #send the reset command
+        started = False
+        while not started:
+            if ser.inWaiting() == 0:
+                time.sleep(0.1)
+            else:
+                print(ser.readline()) 
+                started = True
+        while True:
+            if ser.inWaiting() < 4:
+                time.sleep(0.1)
+            else:
+                observation = int.from_bytes(ser.read(4))
+                print(observation)
+                #scaled_action = ort_sess.run(None, {"input": observation})[0]
+                [valves[i].append((observation >> i) & 0x1) for i in range(len(valves))]
+                [pressures[i].append(random()) for i in range(len(pressures))]
+                #print("communication thread updated")
+                time.sleep(update_interval)
+                #ser.write(scaled_action)
+    print("Quitting commmunication thread")
+
 
 def main():
     dpg.create_context()
     dpg.create_viewport()
 
+    dpg.show_imgui_demo()
+    with dpg.window(label="Communication"):
+        dpg.add_input_text(label="Serial port", width=120, default_value=sys.argv[1], callback=communicate)
+        dpg.add_separator()
+        with dpg.group(horizontal=True):
+            dpg.add_button(label="Connect", callback=communicate, height=30)
+            dpg.add_button(label="Disconnect", callback=communicate, height=30)
+
     with dpg.window(label="Valves Histograph"):
-        dpg.add_text("On/Off valves")
+        dpg.add_text("On/Off valves commands")
         for y in range(10):
             with dpg.drawlist((valve_history_length+5)*w, w):
                 for x in range(valve_history_length):
@@ -75,7 +140,9 @@ def main():
                 
     thread1 = threading.Thread(name="update plots", target=update_plots, args=((pressures_plot, yax, )), daemon=True)
     thread1.start()
-
+    thread2 = threading.Thread(name="communication", target=communicate, args=(), daemon=True)
+    thread2.start()
+    
     dpg.setup_dearpygui()
     dpg.show_viewport()
     dpg.start_dearpygui()

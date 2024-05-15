@@ -58,7 +58,7 @@ uint16_t BNO055_SAMPLERATE_DELAY_MS = 100;
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
 #endif
 
-void init(void)
+void init_robot(void)
 {
     pinMode(VALVE_0, OUTPUT);
     pinMode(VALVE_1, OUTPUT);
@@ -86,13 +86,13 @@ void init(void)
     }
 
 #endif
-    Serial.print("Reset successful\n");
+    Serial.println("Reset successful");
     delay(1000);
 }
 
 void setup()
 {
-    init();
+    init_robot();
 }
 
 void loop()
@@ -107,7 +107,7 @@ void loop()
     uint16_t valve_command = command & 0xFF;
 
     if(command == 0xFFFFFFFF)
-        init();
+        init_robot();
     else
     {
         digitalWrite(VALVE_0, (valve_command >> 0) & 0x1);
@@ -127,9 +127,9 @@ void loop()
 	    delay(CONTROL_DELAY);
     }
     uint16_t observation[int(OBSERVATION_BYTES_LEN/2)];
-    observation[0] = valve_command;
-    observation[1] = analogRead(PRESSURE_SENSOR_0);
-    observation[2] = analogRead(PRESSURE_SENSOR_1);
+    observation[0] = 0;//valve_command;
+    observation[1] = 0;//analogRead(PRESSURE_SENSOR_0);
+    observation[2] = 0;//analogRead(PRESSURE_SENSOR_1);
     
 #ifdef USE_IMU
     sensors_event_t orientationData , angVelocityData , linearAccelData;

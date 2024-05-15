@@ -2,5 +2,6 @@
     "sketch": "Embedded/Embedded.ino",
     "output": "build",
     "configuration": "cpu=atmega2560",
-    "board": "arduino:avr:mega"
+    "board": "arduino:avr:mega",
+    "port": "/dev/ttyACM0"
 }
