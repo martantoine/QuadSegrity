@@ -1,7 +1,5 @@
 #include <math.h>
-#include <Wire.h>
 #include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
 
 #define COMMAND_BYTES_LEN 4
 #define OBSERVATION_BYTES_LEN 24
@@ -63,16 +61,17 @@ void loop()
 
     // angles based on gyro (deg/s)
     float dt = float(start_time - old_start_time);
-    //Serial.println(dt);
+    
     roll  = roll  + (g.gyro.x) *180 / M_PI * dt / 1.0e6;
     pitch = pitch - (g.gyro.y) *180 / M_PI * dt / 1.0e6;
-    yaw   = yaw   + (g.gyro.z) *180 / M_PI * dt / 1.0e6;
+    yaw   = yaw   + (g.gyro.z) *180 / M_PI * dt / 1.0e6; // helplessly drifting away through time
 
-    float gravity_y = atan2(ax, sqrt(pow(ay, 2) + pow(az, 2))) * 180 / M_PI;
-    float gravity_x = atan2(ay, sqrt(pow(ax, 2) + pow(az, 2))) * 180 / M_PI;
+    float gravity_pitch = atan2(ax, sqrt(pow(ay, 2) + pow(az, 2))) * 180 / M_PI; 
+    float gravity_roll  = atan2(ay, sqrt(pow(ax, 2) + pow(az, 2))) * 180 / M_PI;
+    float gravity_yaw   = atan2(az, sqrt(pow(ax, 2) + pow(az, 2))) * 180 / M_PI;
     // complementary filter, tau = DT*(A)/(1-A) = 0.48sec
-    roll = roll * 0.96 + gravity_x * 0.04;
-    pitch = pitch * 0.96 + gravity_y * 0.04;
+    roll  = roll  * 0.96 + gravity_roll  * 0.04;
+    pitch = pitch * 0.96 + gravity_pitch * 0.04;
     
     unsigned int st = 20 - (micros() - start_time) / 1000;
     delay(st);
@@ -102,27 +101,9 @@ void calibrate()
 void init_robot(void)
 {
     pinMode(4, OUTPUT);
-    pinMode(3, OUTPUT);/*/
-    pinMode(VALVE_2, OUTPUT);
-    pinMode(VALVE_3, OUTPUT);
-    pinMode(VALVE_4, OUTPUT);
-    pinMode(VALVE_5, OUTPUT);
-    pinMode(VALVE_6, OUTPUT);
-    pinMode(VALVE_7, OUTPUT);
-    pinMode(VALVE_8, OUTPUT);
-    pinMode(VALVE_9, OUTPUT);
-    pinMode(REGULATOR_0, OUTPUT);
-    pinMode(REGULATOR_1, OUTPUT);
-    pinMode(PRESSURE_SENSOR_0, INPUT);
-    pinMode(PRESSURE_SENSOR_1, INPUT);*/
-    Serial.begin(115200);
+    pinMode(3, OUTPUT);
 
-    if (!mpu.begin(0x68)) { // Change address if needed
-        Serial.println("Failed to find MPU6050 chip");
-        while (1) {
-                delay(10);
-        }
- 	}
+  
  	mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
  	mpu.setGyroRange(MPU6050_RANGE_250_DEG);
  	mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
@@ -141,9 +122,9 @@ void init_robot(void)
     TCCR3B |= (1 << CS32);
     // Output Compare Match A Interrupt Enable
     TIMSK3 |= (1 << OCIE3A);
-    interrupts();
+    Serial.print("Reset successful\n");
 
-    Serial.println("Reset successful");
+    interrupts();
     start_time = micros();
 }
 
@@ -155,11 +136,16 @@ ISR(TIMER3_COMPA_vect)
 
 void setup()
 {
+    Serial.begin(115200);
+    if (!mpu.begin(0x68))
+    {
+        Serial.println("Failed to find MPU6050 chip");
+        for(;;);
+ 	}
     init_robot();
 }
 
 binaryFloat observationf[6];
-int i = 0;
 
 void comm()
 {
@@ -199,26 +185,20 @@ void comm()
     observation[1] = 0;//((valve_command >> 8) & 0b11) | ((p0 << 2) & 0b11111100);
     observation[2] = 0;//((p0 >> 6) & 0b1111) | ((p1 << 4) & 0b11110000);
     observation[3] = 0;//((p1 >> 4) & 0b111111);
-    Serial.print("i");
+    Serial.print("start\n");
     Serial.write(observation, 4);
     
-    observationf[0].floatingPoint = 0;
-    observationf[1].floatingPoint = 0;
-    observationf[2].floatingPoint = 0;
+    observationf[0].floatingPoint = ax;
+    observationf[1].floatingPoint = ay;
+    observationf[2].floatingPoint = az;
     
     observationf[3].floatingPoint = roll;
     observationf[4].floatingPoint = pitch;
-    observationf[5].floatingPoint = yaw;
+    observationf[5].floatingPoint = yaw; // better not to use this one
  
     for (int i = 0; i < 6; i++)
-    {
-        //Serial.print("f");
         Serial.write(observationf[i].binary, 4);
-        //Serial.print(observationf[i].floatingPoint);
-        
-    }
-    Serial.println(i, DEC);
-    i+=1; 
+    
     auto end_time = millis();
     digitalWrite(4, LOW);
- }
+}

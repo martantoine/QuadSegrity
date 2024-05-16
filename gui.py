@@ -69,16 +69,16 @@ def communicate():
     # check first if the serial port exists
     
     try:
-        ser = serial.Serial(serial_port, baudrate=115200, timeout=0.1) #blocking reading because timeout=0
-        #ser.write(0xFFFFFFFF) #send the reset command
-        #started = ""
-        #while started != "Reset successful":
-        #    if ser.inWaiting() == 0:
-        #        time.sleep(0.1)
-        #    else:
-        #        started = ser.readline().decode("ascii")[0:-2]
-        #        print(started)
-
+        ser = serial.Serial(serial_port, baudrate=115200) #blocking reading because timeout=0
+        print("Opened port")
+        for i in range(4):
+            ser.write(0xFF) #send the reset command
+        
+        start_detected = False
+        while not start_detected:
+            ser.read_until(b'Reset successful\n')
+            start_detected = True
+        print("Started communication")
         while True:
             if serial_order == 1:
                 ser.close()
@@ -93,34 +93,22 @@ def communicate():
             #[pressures[i].append(random()) for i in range(len(pressures))]
             
             #observation = []
-            has_start = False
-            while not has_start:
-                if ser.inWaiting() >= 1:
-                    if ser.read().decode("ascii") == 'i':
-                        has_start = True
-                time.sleep(0.05)
+            start_detected = False
+            while not start_detected:
+                ser.read_until(b'start\n')
+                start_detected = True
 
             def get_int():
-                #while ser.inWaiting() < 5:
-                #    time.sleep(0.1)
                 return int(struct.unpack('<I', ser.read(4))[0])
-                
 
             def get_float():
-                #while ser.inWaiting() < 5:
-                #    time.sleep(0.1)
-                #if ser.read(2).decode("ascii") == "f":
                 return float(struct.unpack('<f', ser.read(4))[0])
-                return -1
-                
+                    
             observation = get_int()
             imu_data.acceleration.append([get_float(), get_float(), get_float()])
             imu_data.angle.append([get_float(), get_float(), get_float()])
-            print(imu_data.acceleration[-1])
-            print(imu_data.angle[-1])
-            time.sleep(0.1)
+            time.sleep(0.08)
             #ser.write(scaled_action)
-            ser.flushInput()
     except:
         dpg.configure_item(item=100, label="Connect", callback=start_communicate)
         dpg.configure_item(item=200, default_value="Status: Closed")                  
@@ -280,8 +268,8 @@ def main():
             y_rot = 0
             z_rot = 0
 
-            view = dpg.create_fps_matrix([0, -50, 0], np.deg2rad(90.0), 0.0)
-            proj = dpg.create_perspective_matrix(pi*70.0/180.0, 1.0, 0.1, 100)
+            view = dpg.create_fps_matrix([0, -50, 10], np.deg2rad(90.0), 0.0)
+            proj = dpg.create_perspective_matrix(pi*90.0/180.0, 1.0, 0.01, 200)
             model = dpg.create_rotation_matrix(pi*x_rot/180.0 , [1, 0, 0])*\
                                     dpg.create_rotation_matrix(pi*y_rot/180.0 , [0, 1, 0])*\
                                     dpg.create_rotation_matrix(pi*z_rot/180.0 , [0, 0, 1])
@@ -299,7 +287,7 @@ def main():
     while dpg.is_dearpygui_running():
         x_rot = imu_data.angle[-1][0]
         y_rot = imu_data.angle[-1][1]
-        z_rot = imu_data.angle[-1][2]
+        z_rot = 0#imu_data.angle[-1][2]
         model = dpg.create_rotation_matrix(np.deg2rad(z_rot), [0, 0, 1])*\
                 dpg.create_rotation_matrix(np.deg2rad(y_rot), [1, 0, 0])*\
                 dpg.create_rotation_matrix(np.deg2rad(x_rot), [0, 1, 0])

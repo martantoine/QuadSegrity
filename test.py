@@ -7,29 +7,25 @@ from time import time
 from collections import deque
 import time
 import struct
-
-
-ser = serial.Serial("/dev/ttyACM0", baudrate=115200, timeout=0.1) #blocking reading because timeout=0
-#ser.write(0xFFFFFFFF)
-while True:
     
-    def get_int():
-        while ser.inWaiting() < 5:
-            time.sleep(0.001)
-        observation = int(struct.unpack('<I', ser.read(4))[0])
-        ser.readline()
-        return observation
-    
+with serial.Serial("/dev/ttyACM0", baudrate=115200) as ser:
+    ser.write(0xFF)
+    ser.write(0xFF)
+    ser.write(0xFF)
+    ser.write(0xFF)
+    while True:
+        start_detected = False
+        while not start_detected:
+            ser.read_until(b'start\n')
+            start_detected = True
 
-    def get_float():
-        while ser.inWaiting() < 5:
-            time.sleep(0.001)
-        observation = float(struct.unpack('<f', ser.read(4))[0])
-        ser.readline()
-        return observation
-    
-    print("odere ", get_int())
-    print("accel ", get_float(), get_float(), get_float())
-    print("angle ", get_float(), get_float(), get_float())
-    print(ser.readline())
-    time.sleep(0.5)
+        def get_int():
+            return int(struct.unpack('<I', ser.read(4))[0])
+
+        def get_float():
+            return float(struct.unpack('<f', ser.read(4))[0])
+            
+        print("order ", get_int())
+        print("accel ", get_float(), get_float(), get_float())
+        print("angle ", get_float(), get_float(), get_float())
+        time.sleep(0.08)
