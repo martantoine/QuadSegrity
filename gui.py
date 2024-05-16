@@ -10,6 +10,7 @@ import dearpygui.dearpygui as dpg
 from collections import deque
 import time
 import threading
+import struct
 import os
 
 
@@ -28,6 +29,11 @@ xP = list(np.linspace(0, max_history_time_seconds, valve_history_length))
 w = VALVES_HISTORY_WIDTH / (valve_history_length)
 
 serial_order = 0
+class IMUData:
+    def __init__(self, history_length):
+        self.angle        = deque([[0.0, 0.0, 0.0]], maxlen=history_length)
+        self.acceleration = deque([[0.0, 0.0, 0.0]], maxlen=history_length)    
+imu_data = IMUData(100)
 
 def update_plots(pressures_plot, yax):
     global valves, pressures, r, pressures, pressures_aug
@@ -55,7 +61,7 @@ if len(sys.argv) == 3:
     onnx_path = sys.argv[2]
     
 def communicate():
-    global valves, pressures, serial_order
+    global valves, pressures, serial_order, imu_data
     
     print("Starting commmunication thread")
     serial_port = sys.argv[1]
@@ -65,13 +71,14 @@ def communicate():
     try:
         ser = serial.Serial(serial_port, baudrate=115200, timeout=0.1) #blocking reading because timeout=0
         #ser.write(0xFFFFFFFF) #send the reset command
-        started = False
-        while not started:
-            if ser.inWaiting() == 0:
-                time.sleep(0.1)
-            else:
-                print(ser.readline()) 
-                started = True
+        #started = ""
+        #while started != "Reset successful":
+        #    if ser.inWaiting() == 0:
+        #        time.sleep(0.1)
+        #    else:
+        #        started = ser.readline().decode("ascii")[0:-2]
+        #        print(started)
+
         while True:
             if serial_order == 1:
                 ser.close()
@@ -80,18 +87,40 @@ def communicate():
                 dpg.configure_item(item=100, label="Connect", callback=start_communicate)
                 dpg.configure_item(item=200, default_value="Status: Closed")
                 return
+        
+            #scaled_action = ort_sess.run(None, {"input": observation})[0]
+            #[valves[i].append((observation >> i) & 0x1) for i in range(len(valves))]
+            #[pressures[i].append(random()) for i in range(len(pressures))]
             
-            if ser.inWaiting() < 4:
-                time.sleep(0.1)
-            else:
-                observation = int.from_bytes(ser.read(4))
-                print(observation)
-                #scaled_action = ort_sess.run(None, {"input": observation})[0]
-                [valves[i].append((observation >> i) & 0x1) for i in range(len(valves))]
-                [pressures[i].append(random()) for i in range(len(pressures))]
-                time.sleep(update_interval)
+            #observation = []
+            has_start = False
+            while not has_start:
+                if ser.inWaiting() >= 1:
+                    if ser.read().decode("ascii") == 'i':
+                        has_start = True
+                time.sleep(0.05)
+
+            def get_int():
+                #while ser.inWaiting() < 5:
+                #    time.sleep(0.1)
+                return int(struct.unpack('<I', ser.read(4))[0])
                 
-                #ser.write(scaled_action)
+
+            def get_float():
+                #while ser.inWaiting() < 5:
+                #    time.sleep(0.1)
+                #if ser.read(2).decode("ascii") == "f":
+                return float(struct.unpack('<f', ser.read(4))[0])
+                return -1
+                
+            observation = get_int()
+            imu_data.acceleration.append([get_float(), get_float(), get_float()])
+            imu_data.angle.append([get_float(), get_float(), get_float()])
+            print(imu_data.acceleration[-1])
+            print(imu_data.angle[-1])
+            time.sleep(0.1)
+            #ser.write(scaled_action)
+            ser.flushInput()
     except:
         dpg.configure_item(item=100, label="Connect", callback=start_communicate)
         dpg.configure_item(item=200, default_value="Status: Closed")                  
@@ -136,9 +165,9 @@ def history_resize():
 def main():
     global drawlists
     dpg.create_context()
-    dpg.create_viewport(decorated=False, resizable=False, width=500, height=800)
-    
-    with dpg.window(label="Main", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=500, height=800):
+    dpg.create_viewport(decorated=False, resizable=False, width=1000, height=800)
+    dpg.show_implot_demo()
+    with dpg.window(label="Commands", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=500, height=800):
         with dpg.collapsing_header(label="Communication", default_open=True):
             dpg.add_separator()
             with dpg.group(horizontal=True):
@@ -197,13 +226,86 @@ def main():
                             dpg.add_checkbox(label="Valve 8", default_value=True)
                             dpg.add_checkbox(label="Valve 9", default_value=True)
             dpg.add_button(label="Send Command", width=500, height=50)
+
+    with dpg.window(label="Sensors", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, pos=(500, 0), width=500, height=800):
+        with dpg.collapsing_header(label="IMU", default_open=True):
+            width = 5
+            length = 10
+            height = 2
+            verticies = [
+                    [-length, -width, -height],  # 0 near side
+                    [ length, -width, -height],  # 1
+                    [-length,  width, -height],  # 2
+                    [ length,  width, -height],  # 3
+                    [-length, -width,  height],  # 4 far side
+                    [ length, -width,  height],  # 5
+                    [-length,  width,  height],  # 6
+                    [ length,  width,  height],  # 7
+                    [-length, -width, -height],  # 8 left side
+                    [-length,  width, -height],  # 9
+                    [-length, -width,  height],  # 10
+                    [-length,  width,  height],  # 11
+                    [ length, -width, -height],  # 12 right side
+                    [ length,  width, -height],  # 13
+                    [ length, -width,  height],  # 14
+                    [ length,  width,  height],  # 15
+                    [-length, -width, -height],  # 16 bottom side
+                    [ length, -width, -height],  # 17
+                    [-length, -width,  height],  # 18
+                    [ length, -width,  height],  # 19
+                    [-length,  width, -height],  # 20 top side
+                    [ length,  width, -height],  # 21
+                    [-length,  width,  height],  # 22
+                    [ length,  width,  height],  # 23
+                ]
+
+            colors = [[150, 150, 150, 255]] * int(len(verticies)/2)
+            with dpg.drawlist(width=500, height=500):
+                with dpg.draw_layer(tag="main pass", depth_clipping=True, perspective_divide=True, cull_mode=dpg.mvCullMode_Back):
+                    with dpg.draw_node(tag="cube"):
+                        dpg.draw_triangle(verticies[1],  verticies[2],  verticies[0],  color=[0,0,0.0], fill=colors[0])
+                        dpg.draw_triangle(verticies[1],  verticies[3],  verticies[2],  color=[0,0,0.0], fill=colors[1])
+                        dpg.draw_triangle(verticies[7],  verticies[5],  verticies[4],  color=[0,0,0.0], fill=colors[2])
+                        dpg.draw_triangle(verticies[6],  verticies[7],  verticies[4],  color=[0,0,0.0], fill=colors[3])
+                        dpg.draw_triangle(verticies[9],  verticies[10], verticies[8],  color=[0,0,0.0], fill=colors[4])
+                        dpg.draw_triangle(verticies[9],  verticies[11], verticies[10], color=[0,0,0.0], fill=colors[5])
+                        dpg.draw_triangle(verticies[15], verticies[13], verticies[12], color=[0,0,0.0], fill=colors[6])
+                        dpg.draw_triangle(verticies[14], verticies[15], verticies[12], color=[0,0,0.0], fill=colors[7])
+                        dpg.draw_triangle(verticies[18], verticies[17], verticies[16], color=[0,0,0.0], fill=colors[8])
+                        dpg.draw_triangle(verticies[19], verticies[17], verticies[18], color=[0,0,0.0], fill=colors[9])
+                        dpg.draw_triangle(verticies[21], verticies[23], verticies[20], color=[0,0,0.0], fill=colors[10])
+                        dpg.draw_triangle(verticies[23], verticies[22], verticies[20], color=[0,0,0.0], fill=colors[11])
+
+            x_rot = 0
+            y_rot = 0
+            z_rot = 0
+
+            view = dpg.create_fps_matrix([0, -50, 0], np.deg2rad(90.0), 0.0)
+            proj = dpg.create_perspective_matrix(pi*70.0/180.0, 1.0, 0.1, 100)
+            model = dpg.create_rotation_matrix(pi*x_rot/180.0 , [1, 0, 0])*\
+                                    dpg.create_rotation_matrix(pi*y_rot/180.0 , [0, 1, 0])*\
+                                    dpg.create_rotation_matrix(pi*z_rot/180.0 , [0, 0, 1])
+
+            dpg.set_clip_space("main pass", 0, 0, 500, 500, -1.0, 1.0)
+            dpg.apply_transform("cube", proj*view*model)
+
     thread1 = threading.Thread(name="update plots", target=update_plots, args=((pressures_plot, yax, )), daemon=True)
     thread1.start()
     start_communicate()
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
-    dpg.start_dearpygui()
+
+    while dpg.is_dearpygui_running():
+        x_rot = imu_data.angle[-1][0]
+        y_rot = imu_data.angle[-1][1]
+        z_rot = imu_data.angle[-1][2]
+        model = dpg.create_rotation_matrix(np.deg2rad(z_rot), [0, 0, 1])*\
+                dpg.create_rotation_matrix(np.deg2rad(y_rot), [1, 0, 0])*\
+                dpg.create_rotation_matrix(np.deg2rad(x_rot), [0, 1, 0])
+        dpg.apply_transform("cube", proj*view*model)
+        dpg.render_dearpygui_frame()
+
     dpg.destroy_context()
 
 if __name__ == "__main__":

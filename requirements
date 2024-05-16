@@ -13,3 +13,4 @@ tensorboard
 onnxruntime
 onnx
 pyserial
+scikit.learn

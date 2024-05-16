@@ -1,3 +1,8 @@
+#include <math.h>
+#include <Wire.h>
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+
 #define COMMAND_BYTES_LEN 4
 #define OBSERVATION_BYTES_LEN 24
 
@@ -22,46 +27,82 @@
 
 static uint8_t regulator0 = 0;
 static uint8_t regulator1 = 0;
+float aX = 0.0f, aY = 0.0f, aZ = 0.0f, gX = 0.0f, gY = 0.0f, gZ = 0.0f;
 
-#ifdef USE_IMU
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
+typedef union {
+  float floatingPoint;
+  byte binary[4];
+} binaryFloat;
 
-/* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
-   which provides a common 'type' for sensor data and some helper functions.
 
-   To use this driver you will also need to download the Adafruit_Sensor
-   library and include it in your libraries folder.
+Adafruit_MPU6050 mpu;
 
-   You should also assign a unique ID to this sensor for use with
-   the Adafruit Sensor API so that you can identify this particular
-   sensor in any data logs, etc.  To assign a unique ID, simply
-   provide an appropriate value in the constructor below (12345
-   is used by default in this example).
 
-   Connections
-   ===========
-   Connect SCL to analog 5
-   Connect SDA to analog 4
-   Connect VDD to 3.3-5V DC
-   Connect GROUND to common ground
+#define MPU6050_I2C_ADDRESS 0x68
+#define FREQ  20.0 // sample freq in Hz
 
-   History
-   =======
-   2015/MAR/03  - First release (KTOWN)
-*/
+#define gSensitivity 131
+static float ax, ay, az;
+static float pitch = 0.0, yaw = 0.0, roll = 0.0;
+static float gyrXoffs, gyrYoffs, gyrZoffs;
 
-/* Set the delay between fresh samples */
-uint16_t BNO055_SAMPLERATE_DELAY_MS = 100;
-Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
-#endif
+static unsigned long start_time = 0;
+
+void loop()
+{
+    unsigned long old_start_time = start_time;
+    start_time = micros();
+    digitalWrite(3, digitalRead(3) ^ 1);
+    sensors_event_t a, g, temp;
+ 	mpu.getEvent(&a, &g, &temp);
+    
+    // angles based on accelerometer
+    ax = a.acceleration.x;
+    ay = a.acceleration.y;
+    az = a.acceleration.z;
+
+    // angles based on gyro (deg/s)
+    float dt = float(start_time - old_start_time);
+    //Serial.println(dt);
+    roll  = roll  + (g.gyro.x) *180 / M_PI * dt / 1.0e6;
+    pitch = pitch - (g.gyro.y) *180 / M_PI * dt / 1.0e6;
+    yaw   = yaw   + (g.gyro.z) *180 / M_PI * dt / 1.0e6;
+
+    float gravity_y = atan2(ax, sqrt(pow(ay, 2) + pow(az, 2))) * 180 / M_PI;
+    float gravity_x = atan2(ay, sqrt(pow(ax, 2) + pow(az, 2))) * 180 / M_PI;
+    // complementary filter, tau = DT*(A)/(1-A) = 0.48sec
+    roll = roll * 0.96 + gravity_x * 0.04;
+    pitch = pitch * 0.96 + gravity_y * 0.04;
+    
+    unsigned int st = 20 - (micros() - start_time) / 1000;
+    delay(st);
+}
+
+
+void calibrate()
+{
+    float xSum = 0.0, ySum = 0.0, zSum = 0.0;
+ 	sensors_event_t a, g, temp;
+    
+    for (int x = 0; x < 100; x++)
+    {
+        mpu.getEvent(&a, &g, &temp);
+        delay(10);
+
+        xSum += g.gyro.x;
+        ySum += g.gyro.y;
+        zSum += g.gyro.z;
+    }
+    
+    gyrXoffs = xSum / 100;
+    gyrYoffs = ySum / 100;
+    gyrZoffs = zSum / 100;  
+}
 
 void init_robot(void)
 {
-    pinMode(VALVE_0, OUTPUT);
-    pinMode(VALVE_1, OUTPUT);
+    pinMode(4, OUTPUT);
+    pinMode(3, OUTPUT);/*/
     pinMode(VALVE_2, OUTPUT);
     pinMode(VALVE_3, OUTPUT);
     pinMode(VALVE_4, OUTPUT);
@@ -72,22 +113,44 @@ void init_robot(void)
     pinMode(VALVE_9, OUTPUT);
     pinMode(REGULATOR_0, OUTPUT);
     pinMode(REGULATOR_1, OUTPUT);
-
     pinMode(PRESSURE_SENSOR_0, INPUT);
-    pinMode(PRESSURE_SENSOR_1, INPUT);
+    pinMode(PRESSURE_SENSOR_1, INPUT);*/
     Serial.begin(115200);
 
-#ifdef USE_IMU
-    if (!bno.begin())
-    {
-        /* There was a problem detecting the BNO055 ... check your connections */
-        Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!\n");
-        while (1);
-    }
+    if (!mpu.begin(0x68)) { // Change address if needed
+        Serial.println("Failed to find MPU6050 chip");
+        while (1) {
+                delay(10);
+        }
+ 	}
+ 	mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
+ 	mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+ 	mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+    calibrate();
+    
+    TCCR3A = 0;
+    TCCR3B = 0;
+    TCNT3 = 0;
 
-#endif
+    // 2 Hz (16000000/((31249+1)*256))
+    OCR3A = 6250;
+
+    // CTC
+    TCCR3B |= (1 << WGM32);
+    // Prescaler 256
+    TCCR3B |= (1 << CS32);
+    // Output Compare Match A Interrupt Enable
+    TIMSK3 |= (1 << OCIE3A);
+    interrupts();
+
     Serial.println("Reset successful");
-    delay(1000);
+    start_time = micros();
+}
+
+ISR(TIMER3_COMPA_vect) 
+{
+    TCNT3 = 0;
+    comm();
 }
 
 void setup()
@@ -95,8 +158,13 @@ void setup()
     init_robot();
 }
 
-void loop()
+binaryFloat observationf[6];
+int i = 0;
+
+void comm()
 {
+    digitalWrite(4, HIGH);
+    
     uint8_t command_bytes[COMMAND_BYTES_LEN];
     
     // Always take the last order sent (consisting of 4 bytes)
@@ -123,31 +191,34 @@ void loop()
      
         regulator0 = (command >> 10) & 0xFF;
         regulator1 = (command >> 18) & 0xFF;
-        
-	    delay(CONTROL_DELAY);
     }
-    uint16_t observation[int(OBSERVATION_BYTES_LEN/2)];
-    observation[0] = 0;//valve_command;
-    observation[1] = 0;//analogRead(PRESSURE_SENSOR_0);
-    observation[2] = 0;//analogRead(PRESSURE_SENSOR_1);
+    uint8_t observation[4];
+    uint16_t p0 = 0;//analogRead(PRESSURE_SENSOR_0);
+    uint16_t p1 = 0;//analogRead(PRESSURE_SENSOR_1);
+    observation[0] = 0;//valve_command & 0b11111111;
+    observation[1] = 0;//((valve_command >> 8) & 0b11) | ((p0 << 2) & 0b11111100);
+    observation[2] = 0;//((p0 >> 6) & 0b1111) | ((p1 << 4) & 0b11110000);
+    observation[3] = 0;//((p1 >> 4) & 0b111111);
+    Serial.print("i");
+    Serial.write(observation, 4);
     
-#ifdef USE_IMU
-    sensors_event_t orientationData , angVelocityData , linearAccelData;
-    bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
-    bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
-    bno.getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
-
-    observation[3] = orientationData.orientation.x;
-    observation[4] = orientationData.orientation.y;
-    observation[5] = orientationData.orientation.z;
+    observationf[0].floatingPoint = 0;
+    observationf[1].floatingPoint = 0;
+    observationf[2].floatingPoint = 0;
     
-    observation[6] = orientationData.gyro.x;
-    observation[7] = orientationData.gyro.y;
-    observation[8] = orientationData.gyro.z;
-    
-    observation[9] = orientationData.acceleration.x;
-    observation[10] = orientationData.acceleration.y;
-    observation[11] = orientationData.acceleration.z;
-#endif
-    Serial.write((uint8_t*)observation, OBSERVATION_BYTES_LEN);
-}
+    observationf[3].floatingPoint = roll;
+    observationf[4].floatingPoint = pitch;
+    observationf[5].floatingPoint = yaw;
+ 
+    for (int i = 0; i < 6; i++)
+    {
+        //Serial.print("f");
+        Serial.write(observationf[i].binary, 4);
+        //Serial.print(observationf[i].floatingPoint);
+        
+    }
+    Serial.println(i, DEC);
+    i+=1; 
+    auto end_time = millis();
+    digitalWrite(4, LOW);
+ }
