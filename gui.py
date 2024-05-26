@@ -60,8 +60,9 @@ if len(sys.argv) < 2:
 if len(sys.argv) == 3:
     onnx_path = sys.argv[2]
     
+command = 0
 def communicate():
-    global valves, pressures, serial_order, imu_data
+    global valves, pressures, serial_order, imu_data, command
     
     print("Starting commmunication thread")
     serial_port = sys.argv[1]
@@ -71,13 +72,7 @@ def communicate():
     try:
         ser = serial.Serial(serial_port, baudrate=115200) #blocking reading because timeout=0
         print("Opened port")
-        for i in range(4):
-            ser.write(0xFF) #send the reset command
-        
-        start_detected = False
-        while not start_detected:
-            ser.read_until(b'Reset successful\n')
-            start_detected = True
+        ser.read_until(b'Reset successful\n')
         print("Started communication")
         while True:
             if serial_order == 1:
@@ -91,22 +86,32 @@ def communicate():
             #scaled_action = ort_sess.run(None, {"input": observation})[0]
             #[valves[i].append((observation >> i) & 0x1) for i in range(len(valves))]
             #[pressures[i].append(random()) for i in range(len(pressures))]
+
+            if command != 0:
+                print("sending: ", command.encode())
+                l = ser.wite(command.encode())
+                ser.write(b'\n')
+                command = 0
+                print(ser.readline())
+                
             
+            #ser.read_until(b'start\n')
             #observation = []
-            start_detected = False
-            while not start_detected:
-                ser.read_until(b'start\n')
-                start_detected = True
-
-            def get_int():
-                return int(struct.unpack('<I', ser.read(4))[0])
-
-            def get_float():
-                return float(struct.unpack('<f', ser.read(4))[0])
+                
+            #def get_int():
+            #    return int(struct.unpack('<I', ser.read(4))[0])
+#
+            #def get_float():
+            #    return float(struct.unpack('<f', ser.read(4))[0])
                     
-            observation = get_int()
-            imu_data.acceleration.append([get_float(), get_float(), get_float()])
-            imu_data.angle.append([get_float(), get_float(), get_float()])
+            #observation = get_int()
+            #imu_data.acceleration.append([get_float(), get_float(), get_float()])
+            #imu_data.angle.append([get_float(), get_float(), get_float()])
+
+
+                    #print("readingA: ", struct.unpack("<B", ser.read(1))[0])
+                # for i in range(4):
+                #     print("readingB: ", struct.unpack("<B", ser.read(1))[0])
             time.sleep(0.08)
             #ser.write(scaled_action)
     except:
@@ -114,6 +119,21 @@ def communicate():
         dpg.configure_item(item=200, default_value="Status: Closed")                  
         print("Unexpectedly quitting commmunication thread!")
 
+def jog_callback():
+    global command
+    order = 0
+    for i in range(5):
+        if dpg.get_value(item=20001 + i):
+            order |= 1 << i
+    for i in range(5):
+        if dpg.get_value(item=20007 + i):
+            order |= 1 << (i+5)
+    order |= (dpg.get_value(item=20000) & 0xFF) << 10
+    order |= (dpg.get_value(item=20006) & 0xFF) << 18
+    order |= 1 << 26
+    #print("callback: ", bin(order), (order >> 26) & 0x1)
+    command = order
+    
 def close_serial():
     global serial_order
     dpg.configure_item(item=100, label="Connect", callback=start_communicate)
@@ -196,24 +216,24 @@ def main():
                 with dpg.group(horizontal=False):
                     dpg.add_text("Hip Joints")
                     with dpg.group(horizontal=True):
-                        dpg.add_slider_int(width=60, default_value=0, min_value=0, max_value=5, vertical=True, format="%d bar")
+                        dpg.add_slider_int(width=60, default_value=0, min_value=0, max_value=5, vertical=True, format="%d bar", tag=20000)
                         with dpg.group(horizontal=False):
-                            dpg.add_checkbox(label="Valve 0", default_value=True)
-                            dpg.add_checkbox(label="Valve 1", default_value=True)
-                            dpg.add_checkbox(label="Valve 2", default_value=True)
-                            dpg.add_checkbox(label="Valve 3", default_value=True)
-                            dpg.add_checkbox(label="Valve 4", default_value=True)
+                            dpg.add_checkbox(label="Valve 0", default_value=True, tag=20001)
+                            dpg.add_checkbox(label="Valve 1", default_value=True, tag=20002)
+                            dpg.add_checkbox(label="Valve 2", default_value=True, tag=20003)
+                            dpg.add_checkbox(label="Valve 3", default_value=True, tag=20004)
+                            dpg.add_checkbox(label="Valve 4", default_value=True, tag=20005)
                 with dpg.group(horizontal=False):
                     dpg.add_text("Knee Joints")
                     with dpg.group(horizontal=True):
-                        dpg.add_slider_int(width=60, default_value=0, min_value=0, max_value=5, vertical=True, format="%d bar")
+                        dpg.add_slider_int(width=60, default_value=0, min_value=0, max_value=5, vertical=True, format="%d bar",tag=20006)
                         with dpg.group(horizontal=False):
-                            dpg.add_checkbox(label="Valve 5", default_value=True)
-                            dpg.add_checkbox(label="Valve 6", default_value=True)
-                            dpg.add_checkbox(label="Valve 7", default_value=True)
-                            dpg.add_checkbox(label="Valve 8", default_value=True)
-                            dpg.add_checkbox(label="Valve 9", default_value=True)
-            dpg.add_button(label="Send Command", width=500, height=50)
+                            dpg.add_checkbox(label="Valve 5", default_value=True, tag=20007)
+                            dpg.add_checkbox(label="Valve 6", default_value=True, tag=20008)
+                            dpg.add_checkbox(label="Valve 7", default_value=True, tag=20009)
+                            dpg.add_checkbox(label="Valve 8", default_value=True, tag=20010)
+                            dpg.add_checkbox(label="Valve 9", default_value=True, tag=20011)
+            dpg.add_button(label="Send Command", width=500, height=50, callback=jog_callback)
 
     with dpg.window(label="Sensors", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, pos=(500, 0), width=500, height=800):
         with dpg.collapsing_header(label="IMU", default_open=True):

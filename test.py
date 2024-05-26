@@ -9,10 +9,6 @@ import time
 import struct
     
 with serial.Serial("/dev/ttyACM0", baudrate=115200) as ser:
-    ser.write(0xFF)
-    ser.write(0xFF)
-    ser.write(0xFF)
-    ser.write(0xFF)
     while True:
         start_detected = False
         while not start_detected:

@@ -172,15 +172,15 @@ class Quadruped:
         hl = env.constants["body_length"]/2
 
         legRL = Leg(robot, self.name + 'rl', center + np.array([ hw,  hl, 0]), "rear")
-        legFL = Leg(robot, self.name + 'fl', center + np.array([ hw,  -hl, 0]), "front")
+        legFL = Leg(robot, self.name + 'fl', center + np.array([ hw,  -hl, 0]), "rear")
         legRR = Leg(robot, self.name + 'rr', center + np.array([-hw,  hl, 0]), "rear")
-        legFR = Leg(robot, self.name + 'fr', center + np.array([-hw,  -hl, 0]), "front")
+        legFR = Leg(robot, self.name + 'fr', center + np.array([-hw,  -hl, 0]), "rear")
         
         box = env.root.createElement('geom')
         box.setAttribute('type', 'box')
         box.setAttribute('mass', f'{env.constants["core_mass"]}')
         box.setAttribute('rgba', '0.3 0.3 0.3 0.5')
         box_center = center + np.array([0, -0.15/2*np.cos(120), 0.0])
-        box.setAttribute('pos', f'0 {box_center[1]} 0')
+        #box.setAttribute('pos', f'0 {box_center[1]} 0')
         box.setAttribute('size', f'{hw} {hl} {env.constants["beam_radius"]}')
         robot.appendChild(box)
