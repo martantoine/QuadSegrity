@@ -112,9 +112,9 @@ class Env:
 
         material = self.root.createElement('material')
         material.setAttribute('name', 'matplane')
-        material.setAttribute('reflectance', '0.1')
+        material.setAttribute('reflectance', '0')
         material.setAttribute('texture', 'texplane')
-        material.setAttribute('texrepeat', '1 1')
+        material.setAttribute('texrepeat', '5 5')
         material.setAttribute('texuniform', 'true')
         asset.appendChild(material)
 

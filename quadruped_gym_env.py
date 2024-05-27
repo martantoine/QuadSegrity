@@ -82,17 +82,15 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         }
 
         obs_size = (
-            8 * 2 #actuators force, dforce
-            + 3 #body attitude
-            + 1 #body height
-            + 3 #body velocity
+            8 #actuators force
+            + 3 #zaxis
         )
         
         self.observation_structure = {
-            "actuators related": 8 * 2,
-            "body attitude": 3,
-            "body height": 1,
-            "body velocity": 3,
+            "actuators related": 8,
+            "zaxis": 3,
+            #"body height": 1,
+            #"body velocity": 3,
         }
 
         self.observation_space = Box(
@@ -150,17 +148,16 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         return reward, reward_info
 
     def _get_obs(self):
-        velocity = self.data.qvel[0:3].flatten() #velocity of the body
+        #velocity = self.data.qvel[0:3].flatten() #velocity of the body
 
-        forces   = self.data.sensordata[4:].flatten() #force sensors for each muscle
-        #forces   = self.data.ctrl.flatten() #force sensors for each muscle
-        dforces  = forces - self.old_forces
+        zaxis = self.data.sensordata[0:3].flatten() #zaxis
+
+        forces   = self.data.sensordata[3:].flatten() #force sensors for each muscle
+        #dforces  = forces - self.old_forces
         self.old_forces = forces
 
-        attitude = self.data.sensordata[0:3].flatten() #gyro sensor on the body
-        height = self.data.sensordata[3].flatten() #rangefinder sensor on the body
-
-        return np.concatenate((forces, dforces, attitude, height, velocity)).ravel()
+        
+        return np.concatenate((zaxis, forces)).ravel()
         
     # def do_simulation(self, ctrl, n_frames) -> None:
     #     """

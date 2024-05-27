@@ -17,7 +17,7 @@ env.constants = {
     'timestep': 0.001,
     'viscosity': 0.2,
 
-    'hinge_stiffness': 4.14,
+    'hinge_stiffness': 4.40,
     
     'muscle_tendon_limited': 'false',
     'muscle_tendon_range': '-0.01 0.01',
@@ -49,8 +49,11 @@ env.constants = {
 
     'core_mass': 1.5,
     'core_pos': [0, 0, 0.1],
-    'body_width': 0.6,
-    'body_length': 0.6,
+
+    'body_width': 0.3,
+    'body_length': 0.5,
+    'feet_radius': 0.02,
+    'feet_width': 0.02,
 
     'star_length': 0.04,
     'losange_spacing': 0.0358,

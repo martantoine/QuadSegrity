@@ -50,7 +50,7 @@ def add_muscle(name, sites):
 
     
 class Joint:
-    def __init__(self, name, parent, center, length, muscle_A, muscle_B, angle, connect_to):
+    def __init__(self, name, parent, center, length, muscle_A, muscle_B, angle, connect_to, colorStar, colorLosange):
         self.name = name
         self.parent = parent
         self.center = center
@@ -64,6 +64,9 @@ class Joint:
             parent_rotation = np.array([[1,  0,  0],
                                       [0, -1,  0],
                                       [0,  0, -1]])
+            colorTmp = colorStar
+            colorStar = colorLosange
+            colorLosange = colorTmp
         
         #   A         
         #     \         E
@@ -97,16 +100,19 @@ class Joint:
         # Star
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorStar[0]} {colorStar[1]} {colorStar[2]} 1')
         beam.setAttribute('fromto', f'{self.C[0]} {self.C[1]} {self.C[2]} {self.A[0]} {self.A[1]} {self.A[2]}')
         self.parent.appendChild(beam)
 
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorStar[0]} {colorStar[1]} {colorStar[2]} 1')
         beam.setAttribute('fromto', f'{self.C[0]} {self.C[1]} {self.C[2]} {self.B[0]} {self.B[1]} {self.B[2]}')
         self.parent.appendChild(beam)
 
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorStar[0]} {colorStar[1]} {colorStar[2]} 1')
         beam.setAttribute('fromto', f'{self.C[0]} {self.C[1]} {self.C[2]} {self.D[0]} {self.D[1]} {self.D[2]}')
         self.parent.appendChild(beam)
 
@@ -125,26 +131,31 @@ class Joint:
         # Losange
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorLosange[0]} {colorLosange[1]} {colorLosange[2]} 1')
         beam.setAttribute('fromto', f'{self.G[0]} {self.G[1]} {self.G[2]} {self.E[0]} {self.E[1]} {self.E[2]}')
         self.child.appendChild(beam)
 
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorLosange[0]} {colorLosange[1]} {colorLosange[2]} 1')
         beam.setAttribute('fromto', f'{self.G[0]} {self.G[1]} {self.G[2]} {self.F[0]} {self.F[1]} {self.F[2]}')
         self.child.appendChild(beam)
 
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorLosange[0]} {colorLosange[1]} {colorLosange[2]} 1')
         beam.setAttribute('fromto', f'{self.G[0]} {self.G[1]} {self.G[2]} {self.H[0]} {self.H[1]} {self.H[2]}')
         self.child.appendChild(beam)
 
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorLosange[0]} {colorLosange[1]} {colorLosange[2]} 1')
         beam.setAttribute('fromto', f'{self.E[0]} {self.E[1]} {self.E[2]} {self.I[0]} {self.I[1]} {self.I[2]}')
         self.child.appendChild(beam)
         
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', f'{colorLosange[0]} {colorLosange[1]} {colorLosange[2]} 1')
         beam.setAttribute('fromto', f'{self.F[0]} {self.F[1]} {self.F[2]} {self.I[0]} {self.I[1]} {self.I[2]}')
         self.child.appendChild(beam)
         
@@ -153,6 +164,16 @@ class Joint:
         add_site(self.parent, [self.S2[0], self.S2[1], self.S2[2]], self.name + '_1')
         add_muscle(self.name + '_hip_flexor', [self.name + '_0', self.name + '_1'])
 
+def addFoot(parent, center):
+    cylinder = env.root.createElement('geom')
+    cylinder.setAttribute('type', 'cylinder')
+    cylinder.setAttribute('pos', f'{center[0]} {center[1]} {center[2]}')
+    cylinder.setAttribute('friction', '1 0.005 0.0001') #rubber against concrete
+    cylinder.setAttribute('size', f'{env.constants["feet_radius"]} {env.constants["feet_width"]}')
+    cylinder.setAttribute('euler', f'0 90 0')
+    cylinder.setAttribute('rgba', '0.9 0.3 0.3 1')
+    parent.appendChild(cylinder)
+        
 class Leg:
     def __init__(self, parent, name, center, orientation, limb_length=0.3):
         muscle_A1 = 0.4
@@ -160,19 +181,20 @@ class Leg:
         if orientation == "rear":
             j1 = Joint(name + 'j1', parent, center,
                        limb_length, muscle_A1, -env.constants["losange_length"],
-                       np.deg2rad(120), 'star')
+                       np.deg2rad(120), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length-env.constants["losange_length"], 0])
             j2 = Joint(name + 'j2', j1.child, j2_center,
                        limb_length, muscle_A2, -env.constants["losange_length"],
-                       np.deg2rad(120), 'losange')
+                       np.deg2rad(120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
         elif orientation == "front":
             j1 = Joint(name + 'j1', parent, center,
                        limb_length, -muscle_A1, env.constants["losange_length"],
-                       np.deg2rad(120), 'star')
+                       np.deg2rad(60), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length-env.constants["losange_length"], 0])
             j2 = Joint(name + 'j2', j1.child, j2_center,
                        limb_length, muscle_A2, -env.constants["losange_length"],
-                       np.deg2rad(120), 'losange')
+                       np.deg2rad(-120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
+        addFoot(j2.child, [0, -limb_length+env.constants["losange_length"], 0])
 
 class Quadruped:
     def __init__(self, name, center):
@@ -187,15 +209,16 @@ class Quadruped:
 
         add_site(robot, [0, 0, 0], name + '_sensors', zaxis=[0, 0, -1])
 
-        gyro = env.root.createElement('gyro')
-        env.sensor1.appendChild(gyro)
-        gyro.setAttribute('name', name + '_gyro')
-        gyro.setAttribute('site', name + '_sensors')
+        framezaxis = env.root.createElement('framezaxis')
+        env.sensor1.appendChild(framezaxis)
+        framezaxis.setAttribute('name', name + '_framezaxis')
+        framezaxis.setAttribute('objtype', 'site')
+        framezaxis.setAttribute('objname', name + '_sensors')
 
-        rangefinder = env.root.createElement('rangefinder')
-        env.sensor1.appendChild(rangefinder)
-        rangefinder.setAttribute('name', name + '_rangefinder')
-        rangefinder.setAttribute('site', name + '_sensors')
+        #rangefinder = env.root.createElement('rangefinder')
+        #env.sensor1.appendChild(rangefinder)
+        #rangefinder.setAttribute('name', name + '_rangefinder')
+        #rangefinder.setAttribute('site', name + '_sensors')
         
         hw = env.constants["body_width"]/2
         hl = env.constants["body_length"]/2
@@ -208,8 +231,27 @@ class Quadruped:
         box = env.root.createElement('geom')
         box.setAttribute('type', 'box')
         box.setAttribute('mass', f'{env.constants["core_mass"]}')
-        box.setAttribute('rgba', '0.3 0.3 0.3 0.5')
-        box_center = center + np.array([0, -0.15/2*np.cos(120), 0.0])
-        #box.setAttribute('pos', f'0 {box_center[1]} 0')
-        box.setAttribute('size', f'{hw} {hl} {env.constants["beam_radius"]}')
+        box.setAttribute('rgba', '0.9 0.3 0.3 1')
+        box.setAttribute('size', f'{hw} {0.7*hl} {env.constants["beam_radius"]}')
         robot.appendChild(box)
+
+        beam = env.root.createElement('geom')
+        beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', '0.9 0.3 0.3 1')
+        beam.setAttribute('fromto', f'{-hw} {-hl} 0 {-hw} { hl} 0')
+        robot.appendChild(beam)
+        beam = env.root.createElement('geom')
+        beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', '0.9 0.3 0.3 1')
+        beam.setAttribute('fromto', f'{+hw} {-hl} 0 {+hw} { hl} 0')
+        robot.appendChild(beam)
+        beam = env.root.createElement('geom')
+        beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', '0.9 0.3 0.3 1')
+        beam.setAttribute('fromto', f'{-hw} {-hl*0.7} 0 {+hw} { -hl*0.7} 0')
+        robot.appendChild(beam)
+        beam = env.root.createElement('geom')
+        beam.setAttribute('type', 'capsule')
+        beam.setAttribute('rgba', '0.9 0.3 0.3 1')
+        beam.setAttribute('fromto', f'{-hw} {+hl*0.7} 0 {+hw} { +hl*0.7} 0')
+        robot.appendChild(beam)
