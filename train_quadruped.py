@@ -34,10 +34,10 @@ parser.add_argument('mode', type=str, help='Mode to run the program in')
 args = parser.parse_args()
 
 if args.mode == 'train':
-    env = QuadrupedGymEnv(**env_configs, render_mode="human", mode="train") 
+    env = QuadrupedGymEnv(**env_configs, mode="train") 
     env = Monitor(env, log_dir, info_keywords=('x_position', 'x_velocity', 'actions', 'reward_forward', 'reward_ctrl'))
     
-    model = SAC('MlpPolicy', env, device="auto", tensorboard_log=log_dir, verbose=1)
+    model = SAC('MlpPolicy', env, device="auto", tensorboard_log=log_dir, verbose=1, learning_rate=0.003)
 
     iter = 0
     while True:
@@ -48,7 +48,7 @@ elif args.mode == 'test':
     env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
     env = make_vec_env(env, n_envs=1)
     
-    model_name = os.path.join(model_dir, "rl_model210000.zip")
+    model_name = os.path.join(model_dir, "rl_model435000.zip")
     model = SAC.load(model_name, env)
     print("\nLoaded model", model_name, "\n")
 

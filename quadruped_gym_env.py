@@ -126,7 +126,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         x_velocity = -(x_position_after - x_position_before) / self.dt
 
         observation = self._get_obs()
-        reward, reward_info = self._get_rew(x_velocity, action)
+        reward, reward_info = self._get_rew(x_velocity, action, observation)
         info = {"x_position": x_position_after, "x_velocity": x_velocity, "actions": action, **reward_info}
 
         
@@ -134,12 +134,13 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         
         return observation, reward, False, out_of_time, info
 
-    def _get_rew(self, x_velocity: float, action):
+    def _get_rew(self, x_velocity: float, action, obs):
         forward_reward = self._forward_reward_weight * x_velocity
         ctrl_cost = self.control_cost(action)
-
+        contact_penalty = max(self.data.ncon-4,0)*2
         stil_cost = np.exp(-np.abs(x_velocity))
-        reward = forward_reward - ctrl_cost# - stil_cost
+        verticality_reward = np.dot(obs[0:3], [0, 0, 1])
+        reward = forward_reward - ctrl_cost - contact_penalty + verticality_reward# - stil_cost
         
         reward_info = {
             "reward_forward": forward_reward,
