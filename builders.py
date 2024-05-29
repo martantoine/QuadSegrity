@@ -192,7 +192,7 @@ class Leg:
                        np.deg2rad(60), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length-env.constants["losange_length"], 0])
             j2 = Joint(name + 'j2', j1.child, j2_center,
-                       limb_length, muscle_A2, -env.constants["losange_length"],
+                       limb_length, muscle_A2, env.constants["losange_length"],
                        np.deg2rad(-120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
         addFoot(j2.child, [0, -limb_length+env.constants["losange_length"], 0])
 
