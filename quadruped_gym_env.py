@@ -8,7 +8,7 @@ from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box, Tuple
 from gymnasium.spaces.utils import flatten_space
-
+import mujoco as mj
 
 DEFAULT_CAMERA_CONFIG = {
     "distance": 4.0,
@@ -82,13 +82,13 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         }
 
         obs_size = (
-            8 #actuators force
-            + 3 #zaxis
+            3 #zaxis
+            + 8 #actuators force
         )
         
         self.observation_structure = {
-            "actuators related": 8,
             "zaxis": 3,
+            "actuators related": 8,
             #"body height": 1,
             #"body velocity": 3,
         }
@@ -137,7 +137,11 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
     def _get_rew(self, x_velocity: float, action, obs):
         forward_reward = self._forward_reward_weight * x_velocity
         ctrl_cost = self.control_cost(action)
-        contact_penalty = max(self.data.ncon-4,0)*2
+        contact_penalty = 0
+        for c in self.data.contact:
+            body_colliding_name = mj.mj_id2name(self.model, mj.mjtObj.mjOBJ_BODY, self.model.geom_bodyid[c.geom2])
+            if "humerus" in body_colliding_name:
+                contact_penalty += 1
         stil_cost = np.exp(-np.abs(x_velocity))
         verticality_reward = np.dot(obs[0:3], [0, 0, 1])
         reward = forward_reward - ctrl_cost - contact_penalty + verticality_reward# - stil_cost

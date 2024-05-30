@@ -119,6 +119,7 @@ class Joint:
 
         self.child = env.root.createElement('body')
         self.child.setAttribute('pos', f'{center[0]} {center[1]} {center[2]}')
+        self.child.setAttribute('name', self.name)
         self.parent.appendChild(self.child)
         free_joint = env.root.createElement('joint')
         free_joint.setAttribute('type', 'hinge')
@@ -179,20 +180,20 @@ class Leg:
         muscle_A1 = 0.4
         muscle_A2 = limb_length
         if orientation == "rear":
-            j1 = Joint(name + 'j1', parent, center,
+            j1 = Joint(name + '_humerus', parent, center,
                        limb_length, muscle_A1, -env.constants["losange_length"],
                        np.deg2rad(120), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length-env.constants["losange_length"], 0])
-            j2 = Joint(name + 'j2', j1.child, j2_center,
+            j2 = Joint(name + '_radius', j1.child, j2_center,
                        limb_length, muscle_A2, -env.constants["losange_length"],
                        np.deg2rad(120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
         elif orientation == "front":
-            j1 = Joint(name + 'j1', parent, center,
+            j1 = Joint(name + '_humerus', parent, center,
                        limb_length, -muscle_A1, env.constants["losange_length"],
                        np.deg2rad(60), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length-env.constants["losange_length"], 0])
-            j2 = Joint(name + 'j2', j1.child, j2_center,
-                       limb_length, muscle_A2, env.constants["losange_length"],
+            j2 = Joint(name + '_radius', j1.child, j2_center,
+                       limb_length, muscle_A2, -env.constants["losange_length"],
                        np.deg2rad(-120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
         addFoot(j2.child, [0, -limb_length+env.constants["losange_length"], 0])
 
@@ -202,6 +203,7 @@ class Quadruped:
         
         robot = env.root.createElement('body')
         robot.setAttribute('pos', '0 0 0')
+        robot.setAttribute('name', self.name)
         env.worldbody.appendChild(robot)
         free_joint = env.root.createElement('joint')
         free_joint.setAttribute('type', 'free')
@@ -223,10 +225,10 @@ class Quadruped:
         hw = env.constants["body_width"]/2
         hl = env.constants["body_length"]/2
 
-        legRL = Leg(robot, self.name + 'rl', center + np.array([ hw,  hl, 0]), "rear", 0.3)
-        legFL = Leg(robot, self.name + 'fl', center + np.array([ hw,  -hl, 0]), "front", 0.3)
-        legRR = Leg(robot, self.name + 'rr', center + np.array([-hw,  hl, 0]), "rear", 0.3)
-        legFR = Leg(robot, self.name + 'fr', center + np.array([-hw,  -hl, 0]), "front", 0.3)
+        legRL = Leg(robot, self.name + '_rl', center + np.array([ hw,  hl, 0]), "rear", 0.3)
+        legFL = Leg(robot, self.name + '_fl', center + np.array([ hw,  -hl, 0]), "front", 0.3)
+        legRR = Leg(robot, self.name + '_rr', center + np.array([-hw,  hl, 0]), "rear", 0.3)
+        legFR = Leg(robot, self.name + '_fr', center + np.array([-hw,  -hl, 0]), "front", 0.3)
         
         box = env.root.createElement('geom')
         box.setAttribute('type', 'box')
