@@ -50,14 +50,14 @@ env.constants = {
     'core_mass': 1.5,
     'core_pos': [0, 0, 0.1],
 
-    'body_width': 0.3,
-    'body_length': 0.5,
+    'body_width': 0.33,
+    'body_length': 0.52,
     'feet_radius': 0.02,
     'feet_width': 0.02,
 
-    'star_length': 0.04,
+    'star_length': 0.05,
     'losange_spacing': 0.0358,
-    'losange_length': 0.065
+    'losange_length': 0.1
 }
 env.init()
 

@@ -22,7 +22,7 @@ control_step_skip = int(control_period / TIMESTEPS)
 env_configs = {"force_max": 40.0,
                "switching_max": 10,
                "reset_noise_scale": 0.0001,
-               "forward_reward_weight": 200.0,
+               "forward_reward_weight": 50.0,
                "force_cost_weight": 0.0001,
                "switching_rate_cost_weight": 0.001,
                "total_timesteps": NSTEPS,
@@ -48,7 +48,7 @@ elif args.mode == 'test':
     env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
     env = make_vec_env(env, n_envs=1)
     
-    model_name = os.path.join(model_dir, "rl_model15000.zip")
+    model_name = os.path.join(model_dir, "rl_model75000.zip")
     model = SAC.load(model_name, env)
     print("\nLoaded model", model_name, "\n")
 

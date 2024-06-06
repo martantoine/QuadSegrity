@@ -6,25 +6,18 @@
 
 #define CONTROL_DELAY 500
 
-#define VALVE_0 2
-#define VALVE_1 2
-#define VALVE_2 2
-#define VALVE_3 2
-#define VALVE_4 2
-#define VALVE_5 2
-#define VALVE_6 2
-#define VALVE_7 2
-#define VALVE_8 2
-#define VALVE_9 2
-
-#define REGULATOR_0 3
-#define REGULATOR_1 4
-
-#define PRESSURE_SENSOR_0 A0
-#define PRESSURE_SENSOR_1 A1
-
-static uint8_t regulator0 = 0;
-static uint8_t regulator1 = 0;
+//0
+#define VALVE_RL_K 3
+#define VALVE_RL_H 2
+//1
+#define VALVE_FR_H 4
+#define VALVE_FR_K 5
+//2
+#define VALVE_FL_K 6
+#define VALVE_FL_H 7
+//3
+#define VALVE_RR_K 9
+#define VALVE_RR_H 8
 
 typedef union {
     float floatingPoint;
@@ -67,13 +60,15 @@ void calibrate()
 
 void init_robot(void)
 {
-    pinMode(4, OUTPUT);
-    pinMode(3, OUTPUT);
-    pinMode(5, OUTPUT);
-    pinMode(6, OUTPUT);
-    pinMode(7, OUTPUT);
-    pinMode(8, OUTPUT);
-
+    pinMode(VALVE_RR_K, OUTPUT);
+    pinMode(VALVE_RR_H, OUTPUT);
+    pinMode(VALVE_FR_H, OUTPUT);
+    pinMode(VALVE_FR_K, OUTPUT);
+    pinMode(VALVE_FL_K, OUTPUT);
+    pinMode(VALVE_FL_H, OUTPUT);
+    pinMode(VALVE_RL_H, OUTPUT);
+    pinMode(VALVE_RL_K, OUTPUT);
+    
     /*
  	mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
  	mpu.setGyroRange(MPU6050_RANGE_250_DEG);
@@ -81,6 +76,7 @@ void init_robot(void)
     calibrate();
     */
 
+    /*
     TCCR3A = 0;
     TCCR3B = 0;
     TCNT3 = 0;
@@ -98,33 +94,81 @@ void init_robot(void)
 
     interrupts();
     start_time = micros();
+    */
 }
 
 
 
 void setup()
 {
-    pinMode(5, OUTPUT);
-    pinMode(6, OUTPUT);
-    pinMode(7, OUTPUT);
-
     Serial.begin(115200);
-    //init_robot();
+    init_robot();
+}
+
+int seq[] = {0, 2, 3, 1};
+int lasti = 0;
+
+void release_ik(int i)
+{
+    if((i == 1) || (i == 2))
+        digitalWrite(2+(lasti * 2), LOW);
+    else
+        digitalWrite(2+(lasti * 2)+1, LOW);
+}
+
+void release_ih(int i)
+{
+    if((i == 0) || (i == 3))
+        digitalWrite(2+(lasti * 2), LOW);
+    else
+        digitalWrite(2+(lasti * 2)+1, LOW);
 }
 
 void loop()
 {
-    digitalWrite(5, HIGH);
-    digitalWrite(7, HIGH);
-    delay(3000);
-    digitalWrite(5, LOW);
-    digitalWrite(7, LOW);
-    delay(5000);
-    digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
-    delay(3000);
-    digitalWrite(6, LOW);
-    digitalWrite(7, LOW);
+    for(int i=0; i < 4; i++)
+    {
+        switch (seq[i]) {
+            case 0:
+                digitalWrite(VALVE_RR_K, HIGH);
+                digitalWrite(VALVE_RR_H, HIGH);
+                delay(500);
+                release_ik(i);
+                delay(500);
+                release_ih(i);
+                lasti = 0;
+            break;
+            case 1:
+                digitalWrite(VALVE_FR_K, HIGH);
+                digitalWrite(VALVE_FR_H, HIGH);
+                delay(500);
+                release_ik(i);
+                delay(500);
+                release_ih(i);
+                lasti = 1;
+            break;
+            case 2:
+                digitalWrite(VALVE_FL_K, HIGH);
+                digitalWrite(VALVE_FL_H, HIGH);
+                delay(500);
+                release_ik(i);
+                delay(500);
+                release_ih(i);
+                lasti = 2;
+                break;
+            case 3:
+                digitalWrite(VALVE_RL_K, HIGH);
+                digitalWrite(VALVE_RL_H, HIGH);
+                delay(500);
+                release_ik(i);
+                delay(500);
+                release_ih(i);
+                lasti = 3;
+                break;
+        }
+        delay(500);
+        
+    }
     
     /*if (Serial.available() > 0) {
         long myInt = Serial.parseInt(SKIP_WHITESPACE);
