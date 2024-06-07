@@ -15,11 +15,11 @@
 
   <asset>
     <texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2=".28 .28 .28" width="512" height="512" markrgb=".8 .8 .8"/>
-    <material name="matplane" reflectance="0.1" texture="texplane" texrepeat="1 1" texuniform="true"/>
+    <texture name="skybox" type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="1 1 1" width="800" height="800" mark="none" markrgb="1 1 1"/>
+		<material name="matplane" reflectance="0.1" texture="texplane" texrepeat="1 1" texuniform="true"/>
   </asset>
 
   <worldbody>
-    <geom name="floor" rgba="1 1 1 1" pos="0 0 -0.35" size="0 0 1" type="plane" material="matplane"/>
     <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
 
     <!--FORK-->

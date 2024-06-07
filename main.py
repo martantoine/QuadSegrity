@@ -33,8 +33,8 @@ env.constants = {
     'fork_opening_big': 0.06,
     'fork_opening_small': 0.04,
 
-    'site_space': 0.0025,
-    'site_radius': 0.0041,
+    'site_space': 0.006,
+    'site_radius': 0.0045,
     'beam_radius': 0.004,
     'geom_rgba': '0.3 0.3 0.3 1',
 

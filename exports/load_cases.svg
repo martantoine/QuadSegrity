@@ -26,7 +26,7 @@
      showguides="false"
      inkscape:zoom="2.8284271"
      inkscape:cx="79.19596"
-     inkscape:cy="270.64512"
+     inkscape:cy="214.07658"
      inkscape:window-width="1920"
      inkscape:window-height="1029"
      inkscape:window-x="0"
@@ -39,6 +39,21 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <path
+       style="display:inline;fill:none;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
+       d="m 8.5226254,58.571871 53.3753926,0"
+       id="path1-1"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
+       d="M 12.962666,58.585049 28.92417,70.747939"
+       id="path4-65"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
+       d="M 57.803417,58.585049 41.841912,70.747939"
+       id="path12"
+       sodipodi:nodetypes="cc" />
     <path
        style="display:inline;fill:none;stroke:#666666;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1"
        d="m 8.5371326,54.392164 53.5817384,0"
@@ -72,16 +87,6 @@
        style="fill:#333333;stroke-width:0.4;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:0.4, 0.799999"
        d="m 10.613368,88.628869 h 3.763147"
        id="path5" />
-    <path
-       style="display:inline;fill:none;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
-       d="m 8.5226254,58.571871 53.3753926,0"
-       id="path1-1"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="display:inline;fill:#000000;fill-opacity:1;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
-       d="M 12.962666,58.585049 28.92417,70.747939"
-       id="path4-65"
-       sodipodi:nodetypes="cc" />
     <path
        style="display:inline;fill:#000000;fill-opacity:1;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
        d="M 28.752462,70.972376 19.595105,88.828699"
@@ -184,11 +189,6 @@
        cy="54.406826"
        r="1.0676773"
        transform="scale(-1,1)" />
-    <path
-       style="display:inline;fill:#000000;fill-opacity:1;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
-       d="M 57.803417,58.585049 41.841912,70.747939"
-       id="path12"
-       sodipodi:nodetypes="cc" />
     <path
        style="display:inline;fill:#000000;fill-opacity:1;stroke:#cccccc;stroke-width:0.265;stroke-dasharray:none;stroke-opacity:1;stroke-dashoffset:0"
        d="m 42.01362,70.972376 9.157358,17.856323"
@@ -317,68 +317,68 @@
        id="path33" />
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="19.250265"
-       y="53.064976"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="19.284462"
+       y="53.229374"
        id="text33"><tspan
          sodipodi:role="line"
          id="tspan33"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
-         x="19.250265"
-         y="53.064976">un-affected by gravity</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
+         x="19.284462"
+         y="53.229374">un-affected by gravity</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       x="9.6109047"
-       y="53.1096"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       x="9.022728"
+       y="53.028923"
        id="text33-0"><tspan
          sodipodi:role="line"
          id="tspan33-6"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
-         x="9.6109047"
-         y="53.1096">A</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
+         x="9.022728"
+         y="53.028923">A</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="font-size:4.2333298px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
        x="20.408298"
        y="72.293945"
        id="text33-0-4"><tspan
          sodipodi:role="line"
          id="tspan33-6-7"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.2333298px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
          x="20.408298"
          y="72.293945">B</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="font-size:4.2333298px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
        x="59.55397"
        y="53.228676"
        id="text33-0-4-9"><tspan
          sodipodi:role="line"
          id="tspan33-6-7-3"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.2333298px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
          x="59.55397"
          y="53.228676">D</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="font-size:4.2333298px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
        x="48.247093"
        y="72.215813"
        id="text33-0-4-9-2"><tspan
          sodipodi:role="line"
          id="tspan33-6-7-3-5"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.2333298px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#666666;fill-opacity:1;stroke:none;stroke-width:0.265"
          x="48.247093"
          y="72.215813">C</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:4.23333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="font-size:3.52778px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.264999;stroke-linecap:round;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
        x="21.480925"
        y="61.814083"
        id="text33-1"><tspan
          sodipodi:role="line"
          id="tspan33-0"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.265"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777778px;font-family:'TeX Gyre Termes Math';-inkscape-font-specification:'TeX Gyre Termes Math, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#cccccc;fill-opacity:1;stroke:none;stroke-width:0.265"
          x="21.480925"
          y="61.814083">affected by gravity</tspan></text>
   </g>
