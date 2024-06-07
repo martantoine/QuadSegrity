@@ -7,8 +7,8 @@
 #define CONTROL_DELAY 500
 
 //0
-#define VALVE_RL_K 3
-#define VALVE_RL_H 2
+#define VALVE_RL_K 2
+#define VALVE_RL_H 3
 //1
 #define VALVE_FR_H 4
 #define VALVE_FR_K 5
@@ -105,7 +105,7 @@ void setup()
     init_robot();
 }
 
-int seq[] = {0, 2, 3, 1};
+int seq[] = {0, 1};
 int lasti = 0;
 
 void release_ik(int i)
@@ -126,47 +126,37 @@ void release_ih(int i)
 
 void loop()
 {
-    for(int i=0; i < 4; i++)
+    for(int i=0; i < 2; i++)
     {
         switch (seq[i]) {
             case 0:
                 digitalWrite(VALVE_RR_K, HIGH);
+                digitalWrite(VALVE_FR_K, HIGH);
                 digitalWrite(VALVE_RR_H, HIGH);
-                delay(500);
-                release_ik(i);
-                delay(500);
-                release_ih(i);
-                lasti = 0;
+                digitalWrite(VALVE_FR_H, HIGH);
+                delay(1000);
+                digitalWrite(VALVE_RR_K, LOW);
+                digitalWrite(VALVE_FR_K, LOW);
+                delay(1000);
+                digitalWrite(VALVE_RR_H, LOW);
+                digitalWrite(VALVE_FR_H, LOW);
+                
             break;
             case 1:
-                digitalWrite(VALVE_FR_K, HIGH);
-                digitalWrite(VALVE_FR_H, HIGH);
-                delay(500);
-                release_ik(i);
-                delay(500);
-                release_ih(i);
-                lasti = 1;
-            break;
-            case 2:
-                digitalWrite(VALVE_FL_K, HIGH);
-                digitalWrite(VALVE_FL_H, HIGH);
-                delay(500);
-                release_ik(i);
-                delay(500);
-                release_ih(i);
-                lasti = 2;
-                break;
-            case 3:
                 digitalWrite(VALVE_RL_K, HIGH);
                 digitalWrite(VALVE_RL_H, HIGH);
-                delay(500);
-                release_ik(i);
-                delay(500);
-                release_ih(i);
-                lasti = 3;
-                break;
+                digitalWrite(VALVE_FL_K, HIGH);
+                digitalWrite(VALVE_FL_H, HIGH);
+                delay(1000);
+                digitalWrite(VALVE_RL_K, LOW);
+                digitalWrite(VALVE_FL_K, LOW);
+                delay(1000);
+                digitalWrite(VALVE_RL_H, LOW);
+                digitalWrite(VALVE_FL_H, LOW);
+                
+            break;
         }
-        delay(500);
+        delay(1000);
         
     }
     
