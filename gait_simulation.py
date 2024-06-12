@@ -51,7 +51,7 @@ env.constants = {
     'core_pos': [0, 0, 0.1],
 
     'body_width': 0.33,
-    'body_length': 0.52,
+    'body_length': 0.72,
     'feet_radius': 0.02,
     'feet_width': 0.02,
 
