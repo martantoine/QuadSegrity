@@ -9,8 +9,7 @@ This repo contains the [Mujoco](https://github.com/google-deepmind/mujoco) simul
 
 This robot was designed by Antoine Vincent Martin, it is based on the work of Erik Mortensen
 
-# Usage Notice
-1. Clone this repo
-2. Download and extract in the repo the **Mujoco** release `v3.1.3`, select the binary corresponding to your architecture
-3. Named the extracted **Mujoco** folder as `mujoco`
-4. Run `./run.sh`
+# Mujoco simulations usage notice
+1. Download and extract in the repo the **Mujoco** release `v3.1.3`, select the binary corresponding to your architecture
+2. Named the extracted **Mujoco** folder as `mujoco`, put it under the Mujoco folder (Mujoco/mujoco)
+3. Run `./run.sh` inside the Mujoco fodler
