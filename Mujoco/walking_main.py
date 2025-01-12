@@ -70,7 +70,7 @@ if args.mode == 'train':
         model.save(os.path.join(model_dir, args.name + f"{NSTEPS*iter}"))
 
 elif args.mode == 'test':
-    env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
+    env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", xml_file=args.xml, mode="test")
     env = make_vec_env(env, n_envs=1)
     
     model_name = get_latest_zip(model_dir, args.name)
@@ -81,7 +81,7 @@ elif args.mode == 'test':
     model_name = os.path.join(model_dir, model_name)
 
     model = SAC.load(model_name, env)
-    print("\nLoaded model", model_name, "\n")
+    print("Loaded model", model_name)
 
     obs = env.reset()
     episode_reward = 0
@@ -103,12 +103,18 @@ elif args.mode == 'onnx':
             # to the correct bounds (see commented code below)
             return self.actor(observation, deterministic=True)
     
-    env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
+    env = lambda: QuadrupedGymEnv(**env_configs, xml_file=args.xml, mode="test")
     env = make_vec_env(env, n_envs=1)
     
-    model_name = os.path.join(model_dir, get_latest_zip(model_dir, args.name))
+    model_name = get_latest_zip(model_dir, args.name)
+    if not model_name:
+        print(f"Critical Error!: There no model with prefix {args.name} under {model_dir} found")
+        print("Exiting script")
+        sys.exit()
+    model_name = os.path.join(model_dir, model_name)
+
     model = SAC.load(model_name, env)
-    print("\nLoaded model", model_name, "\n")
+    print("Loaded model", model_name)
 
     onnxable_model = OnnxablePolicy(model.policy.actor)
 
@@ -123,16 +129,15 @@ elif args.mode == 'onnx':
         input_names=["input"],
     )
 
-    obs = env.reset()
-    episode_reward = 0
 
     observation = np.zeros((1, *observation_size)).astype(np.float32)
     ort_sess = ort.InferenceSession(onnx_path)
     scaled_action = ort_sess.run(None, {"input": observation})[0]
+    
     # print the policy neural network size
-    print(model.policy.actor)
+    #print(model.policy.actor)
     print(scaled_action)
-
+    
     # Post-process: rescale to correct space
     # Rescale the action from [-1, 1] to [low, high]
     # low, high = model.action_space.low, model.action_space.high
@@ -141,3 +146,5 @@ elif args.mode == 'onnx':
     # Check that the predictions are the same
     with th.no_grad():
         print(model.actor(th.as_tensor(observation), deterministic=True))
+
+    sys.exit()

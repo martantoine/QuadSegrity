@@ -1,9 +1,10 @@
-__credits__ = ["Anoine Vincent Martin", "Kallinteris-Andreas", "Rushiv Arora"]
+__credits__ = ["Antoine Vincent Martin", "Kallinteris-Andreas", "Rushiv Arora"]
 
 from typing import Dict, Union
 
 import numpy as np
-
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="stable_baselines3.common.save_util")
 from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box, Tuple
@@ -26,7 +27,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
 
     def __init__(
         self,
-        xml_file: str = "./1223-2leg_parametric-edit.xml",
+        xml_file: str = "./leg_parametric.xml",
         frame_skip: int = 50,
         default_camera_config: Dict[str, Union[float, int]] = DEFAULT_CAMERA_CONFIG,
         forward_reward_weight: float = 1.0,
