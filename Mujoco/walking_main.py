@@ -1,4 +1,4 @@
-import os, re, argparse
+import os, re, argparse, sys
 import numpy as np
 import torch as th
 import onnxruntime as ort
@@ -22,7 +22,8 @@ def get_latest_zip(directory, prefix):
             if number > max_number:
                 max_number = number
                 max_file = file
-
+    if max_number == -1:
+        return False
     return max_file
 
 model_dir = './rl/model/'
@@ -48,10 +49,16 @@ env_configs = {"force_max": 40.0,
 parser = argparse.ArgumentParser(description="Train, test, or export the model")
 parser.add_argument('mode', type=str, help='Mode to run the program in: train, test, onnx')
 parser.add_argument('name', type=str, help='Base name of the model to use')
+parser.add_argument('xml', type=str, help='path and name of the Mujoco .xml')
 args = parser.parse_args()
 
+if not os.path.isfile(args.xml):
+    print("Critical Error!: Mujoco .xml " + args.xml + " not found")
+    print("Exiting script")
+    sys.exit()
+
 if args.mode == 'train':
-    env = QuadrupedGymEnv(**env_configs, mode="train") 
+    env = QuadrupedGymEnv(**env_configs, xml_file=args.xml, mode="train") 
     env = Monitor(env, log_dir, info_keywords=('x_position', 'x_velocity', 'actions', 'reward_forward', 'reward_ctrl'))
     
     model = SAC('MlpPolicy', env, device="auto", tensorboard_log=log_dir, verbose=1, learning_rate=0.003)
@@ -66,7 +73,13 @@ elif args.mode == 'test':
     env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
     env = make_vec_env(env, n_envs=1)
     
-    model_name = os.path.join(model_dir, get_latest_zip(model_dir, args.name))
+    model_name = get_latest_zip(model_dir, args.name)
+    if not model_name:
+        print(f"Critical Error!: There no model with prefix {args.name} under {model_dir} found")
+        print("Exiting script")
+        sys.exit()
+    model_name = os.path.join(model_dir, model_name)
+
     model = SAC.load(model_name, env)
     print("\nLoaded model", model_name, "\n")
 
