@@ -2,7 +2,7 @@ import numpy as np
 
 env = None
 
-def add_site(parent, pos, site_name, zaxis=[0, 0, 1]):
+def add_site(parent, pos, site_name, zaxis=[0, 0, 1]): #actuators position
     site = env.root.createElement('site')
     site.setAttribute('name', site_name)
     site.setAttribute('pos', f'{pos[0]} {pos[1]} {pos[2]}')
@@ -129,6 +129,16 @@ class Joint:
         free_joint.setAttribute('damping', '0.1')
         self.child.appendChild(free_joint)
 
+        self.child.setAttribute('pos', f'{center[0]} {center[1]} {center[2]}')
+        self.parent.appendChild(self.child)
+        free_joint = env.root.createElement('joint')
+        free_joint.setAttribute('type', 'hinge')
+        free_joint.setAttribute('axis', '0 0 1')
+        self.child.setAttribute('euler', f'{np.rad2deg(-angle)} 0 0')
+        free_joint.setAttribute('stiffness', '10')
+        free_joint.setAttribute('damping', '0.1')
+        self.child.appendChild(free_joint)
+
         # Losange
         beam = env.root.createElement('geom')
         beam.setAttribute('type', 'capsule')
@@ -175,24 +185,24 @@ def addFoot(parent, center):
     cylinder.setAttribute('rgba', '0.9 0.3 0.3 1')
     parent.appendChild(cylinder)
         
-class Leg:
+class Leg: #actuator position
     def __init__(self, parent, name, center, orientation, limb_length):
         muscle_A1 = 0.4
         muscle_A2 = limb_length
         if orientation == "rear":
-            j1 = Joint(name + '_humerus', parent, center,
+            j1 = Joint(name + '_humerus', parent, center, #output 0.21 rl,rr_H
                        limb_length, muscle_A1, -0.21,
                        np.deg2rad(120), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length, 0])
-            j2 = Joint(name + '_radius', j1.child, j2_center,
+            j2 = Joint(name + '_radius', j1.child, j2_center, #output 0.205 rl,rr_K
                        limb_length, 0.14, -0.24,
                        np.deg2rad(120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
         elif orientation == "front":
-            j1 = Joint(name + '_humerus', parent, center,
+            j1 = Joint(name + '_humerus', parent, center, #output 0.205 fl,fr_H
                        limb_length, -0.2, 0.205,
                        np.deg2rad(60), 'star', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
             j2_center = np.array([0, limb_length, 0])
-            j2 = Joint(name + '_radius', j1.child, j2_center,
+            j2 = Joint(name + '_radius', j1.child, j2_center,  #output 0.205 fl,fr_K
                        limb_length, 0.14, -0.24,
                        np.deg2rad(-120), 'losange', [0.9, 0.3, 0.3], [0.3, 0.3, 0.9])
         addFoot(j2.child, [0, -limb_length, 0])

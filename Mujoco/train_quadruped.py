@@ -1,5 +1,4 @@
-import os
-import argparse
+import os, re, argparse
 import numpy as np
 import torch as th
 import onnxruntime as ort
@@ -8,6 +7,23 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.env_util import make_vec_env
 from quadruped_gym_env import QuadrupedGymEnv
 
+def get_latest_zip(directory, prefix):
+    # Regular expression to extract numbers after the prefix and before ".zip"
+    pattern = re.compile(rf"^{re.escape(prefix)}(\d+)\.zip$")
+    
+    max_number = -1
+    max_file = None
+
+    # Iterate through the files in the directory
+    for file in os.listdir(directory):
+        match = pattern.match(file)
+        if match:
+            number = int(match.group(1))
+            if number > max_number:
+                max_number = number
+                max_file = file
+
+    return max_file
 
 model_dir = './rl/model/'
 log_dir = './rl/log/'
@@ -29,8 +45,9 @@ env_configs = {"force_max": 40.0,
                "frame_skip": control_step_skip,
                }
 
-parser = argparse.ArgumentParser(description="Train or test the model")
-parser.add_argument('mode', type=str, help='Mode to run the program in')
+parser = argparse.ArgumentParser(description="Train, test, or export the model")
+parser.add_argument('mode', type=str, help='Mode to run the program in: train, test, onnx')
+parser.add_argument('name', type=str, help='Base name of the model to use')
 args = parser.parse_args()
 
 if args.mode == 'train':
@@ -43,12 +60,13 @@ if args.mode == 'train':
     while True:
         iter += 1
         model.learn(total_timesteps=NSTEPS, reset_num_timesteps=False)
-        model.save(os.path.join(model_dir, "rl_model" + f"{NSTEPS*iter}"))
+        model.save(os.path.join(model_dir, args.name + f"{NSTEPS*iter}"))
+
 elif args.mode == 'test':
     env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
     env = make_vec_env(env, n_envs=1)
     
-    model_name = os.path.join(model_dir, "rl_model75000.zip")
+    model_name = os.path.join(model_dir, get_latest_zip(model_dir, args.name))
     model = SAC.load(model_name, env)
     print("\nLoaded model", model_name, "\n")
 
@@ -60,6 +78,7 @@ elif args.mode == 'test':
         obs, _, done, info = env.step(action)    
         if done:
             obs = env.reset()
+
 elif args.mode == 'onnx':
     class OnnxablePolicy(th.nn.Module):
         def __init__(self, actor: th.nn.Module):
@@ -74,7 +93,7 @@ elif args.mode == 'onnx':
     env = lambda: QuadrupedGymEnv(**env_configs, render_mode="human", mode="test")
     env = make_vec_env(env, n_envs=1)
     
-    model_name = os.path.join(model_dir, "rl_model10000.zip")
+    model_name = os.path.join(model_dir, get_latest_zip(model_dir, args.name))
     model = SAC.load(model_name, env)
     print("\nLoaded model", model_name, "\n")
 
@@ -82,7 +101,7 @@ elif args.mode == 'onnx':
 
     observation_size = model.observation_space.shape
     dummy_input = th.randn(1, *observation_size)
-    onnx_path = os.path.join(model_dir, "actor.onnx")
+    onnx_path = os.path.join(model_dir, args.name + "_actor.onnx")
     th.onnx.export(
         onnxable_model,
         dummy_input,

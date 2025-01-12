@@ -53,7 +53,8 @@ env.constants = {
     'body_width': 0.33,
     'body_length': 0.72,
     'feet_radius': 0.02,
-    'feet_width': 0.02,
+    'feet_width': 0.045,
+    #'feet_width': 0.02,
 
     'star_length': 0.05,
     'losange_spacing': 0.0358,

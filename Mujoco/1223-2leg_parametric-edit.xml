@@ -1,0 +1,206 @@
+<?xml version="1.0" ?> <!--Some files output by this program have been modified. I have added comments to the modified lines.-->
+<mujoco>
+	<sensor>
+		<framezaxis name="QuadSegrity1_framezaxis" objtype="site" objname="QuadSegrity1_sensors"/>
+		<actuatorfrc name="QuadSegrity1_rl_humerus_hip_flexor" actuator="QuadSegrity1_rl_humerus_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_rl_radius_hip_flexor" actuator="QuadSegrity1_rl_radius_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_fl_humerus_hip_flexor" actuator="QuadSegrity1_fl_humerus_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_fl_radius_hip_flexor" actuator="QuadSegrity1_fl_radius_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_rr_humerus_hip_flexor" actuator="QuadSegrity1_rr_humerus_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_rr_radius_hip_flexor" actuator="QuadSegrity1_rr_radius_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_fr_humerus_hip_flexor" actuator="QuadSegrity1_fr_humerus_hip_flexor"/>
+		<actuatorfrc name="QuadSegrity1_fr_radius_hip_flexor" actuator="QuadSegrity1_fr_radius_hip_flexor"/>
+	</sensor>
+	<sensor/>
+	<actuator>
+		<muscle name="QuadSegrity1_rl_humerus_hip_flexor" tendon="QuadSegrity1_rl_humerus_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.33 0.6" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_rl_radius_hip_flexor" tendon="QuadSegrity1_rl_radius_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.24 0.7" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_fl_humerus_hip_flexor" tendon="QuadSegrity1_fl_humerus_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.33 0.6" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_fl_radius_hip_flexor" tendon="QuadSegrity1_fl_radius_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.24 0.7" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_rr_humerus_hip_flexor" tendon="QuadSegrity1_rr_humerus_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.33 0.6" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_rr_radius_hip_flexor" tendon="QuadSegrity1_rr_radius_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.24 0.7" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_fr_humerus_hip_flexor" tendon="QuadSegrity1_fr_humerus_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.33 0.6" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+		<muscle name="QuadSegrity1_fr_radius_hip_flexor" tendon="QuadSegrity1_fr_radius_hip_flexor" ctrllimited="false" forcelimited="false" lengthrange="0.24 0.7" force="60" scale="200" range="0.8 1.2"/> <!--change "lengthrange="-10 10" force="40""-->
+	</actuator>
+	<tendon>
+		<spatial limited="false" name="QuadSegrity1_rl_humerus_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_rl_humerus_0"/>
+			<site site="QuadSegrity1_rl_humerus_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_rl_radius_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_rl_radius_0"/>
+			<site site="QuadSegrity1_rl_radius_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_fl_humerus_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_fl_humerus_0"/>
+			<site site="QuadSegrity1_fl_humerus_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_fl_radius_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_fl_radius_0"/>
+			<site site="QuadSegrity1_fl_radius_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_rr_humerus_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_rr_humerus_0"/>
+			<site site="QuadSegrity1_rr_humerus_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_rr_radius_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_rr_radius_0"/>
+			<site site="QuadSegrity1_rr_radius_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_fr_humerus_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_fr_humerus_0"/>
+			<site site="QuadSegrity1_fr_humerus_1"/>
+		</spatial>
+		<spatial limited="false" name="QuadSegrity1_fr_radius_hip_flexor" range="-0.01 0.01" width="0.001" rgba="0.05 0.05 0.8 1" stiffness="0" damping="1">
+			<site site="QuadSegrity1_fr_radius_0"/>
+			<site site="QuadSegrity1_fr_radius_1"/>
+		</spatial>
+	</tendon>
+	<statistic extent="0.4" center="0.2 0 -0.2"/>
+	<visual>
+		<global fovy="90" azimuth="180" elevation="0"/> 
+		<headlight ambient="0.3 0.3 0.3"/>
+		<rgba haze="1 1 1 1"/>
+	</visual>
+	<option timestep="0.001" iterations="50" integrator="RK4" tolerance="1e-10" gravity="0 0 -9.81" viscosity="0.2" density="1.2"/>
+	<default>
+		<joint type="ball"/>
+		<muscle ctrllimited="true" ctrlrange="-1000 1000"/>
+		<geom size="0.004" density="2000" rgba="0.3 0.3 0.3 1"/>
+		<site size="0.008" rgba="0.1 0.4 0.1 1"/>
+	</default>
+	<asset>
+		<texture name="texplane" type="2d" builtin="checker" rgb1=".25 .25 .25" rgb2=".28 .28 .28" width="512" height="512" markrgb=".8 .8 .8"/>
+		<texture name="skybox" type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="1 1 1" width="800" height="800" mark="none" markrgb="1 1 1"/>
+		<material name="matplane" reflectance="0" texture="texplane" texrepeat="5 5" texuniform="true"/>
+	</asset>
+	<worldbody>
+		<geom name="floor" rgba="1 1 1 1" pos="0 0 -0.7" size="0 0 1" type="plane" material="matplane"/>
+		<light directional="true" castshadow="false" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+		<body pos="0 0 0" name="QuadSegrity1">
+			<joint type="free"/>
+			<site name="QuadSegrity1_sensors" pos="0 0 0" zaxis="0 0 -1"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 0.36 0.0 0.165 0.335 0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 0.36 0.0 0.165 0.335 -0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 0.36 0.0 0.165 0.41 0.0"/>
+			<body pos="0.165 0.36 0.0" name="QuadSegrity1_rl_humerus" euler="-119.99999999999999 0 0">
+				<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+				<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 -0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0 0.3265 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="-0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<site name="QuadSegrity1_rl_humerus_0" pos="0.0 0.25 0.0" zaxis="0 0 1"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 -0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.2765 0.0"/>
+				<body pos="0.0 0.3265 0.0" name="QuadSegrity1_rl_radius" euler="-119.99999999999999 0 0">
+					<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+					<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 -0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0 -0.3265 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<site name="QuadSegrity1_rl_radius_0" pos="0.0 -0.24 0.0" zaxis="0 0 1"/>
+					<geom type="cylinder" pos="0 -0.3265 0" friction="1 0.005 0.0001" size="0.02 0.05" euler="0 90 0" rgba="0.9 0.3 0.3 1"/>
+				</body>
+				<site name="QuadSegrity1_rl_radius_1" pos="0.0 0.1865 0.0" zaxis="0 0 1"/>
+			</body>
+			<site name="QuadSegrity1_rl_humerus_1" pos="0.165 0.02 0.0" zaxis="0 0 1"/> <!--<site name="QuadSegrity1_rl_humerus_1" pos="0.165 -0.040000000000000036 0.0" zaxis="0 0 1"/>-->
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 -0.36 0.0 0.165 -0.38499999999999995 0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 -0.36 0.0 0.165 -0.38499999999999995 -0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 -0.36 0.0 0.165 -0.31 0.0"/>
+			<body pos="0.165 -0.36 0.0" name="QuadSegrity1_fl_humerus" euler="-59.99999999999999 0 0">
+				<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+				<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 -0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0 0.3265 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="-0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<site name="QuadSegrity1_fl_humerus_0" pos="0.0 0.25 0.0" zaxis="0 0 1"/> <!--<site name="QuadSegrity1_fl_humerus_0" pos="0.0 -0.205 0.0" zaxis="0 0 1"/>-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 -0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.2765 0.0"/>
+				<body pos="0.0 0.3265 0.0" name="QuadSegrity1_fl_radius" euler="119.99999999999999 0 0">
+					<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+					<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 -0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0 -0.3265 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<site name="QuadSegrity1_fl_radius_0" pos="0.0 -0.24 0.0" zaxis="0 0 1"/>
+					<geom type="cylinder" pos="0 -0.3265 0" friction="1 0.005 0.0001" size="0.02 0.05" euler="0 90 0" rgba="0.9 0.3 0.3 1"/>
+				</body>
+				<site name="QuadSegrity1_fl_radius_1" pos="0.0 0.1865 0.0" zaxis="0 0 1"/>
+			</body>
+			<site name="QuadSegrity1_fl_humerus_1" pos="0.165 -0.02 0.0" zaxis="0 0 1"/> <!--<site name="QuadSegrity1_fl_humerus_1" pos="0.165 -0.15999999999999998 0.0" zaxis="0 0 1"/>-->
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 0.36 0.0 -0.165 0.335 0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 0.36 0.0 -0.165 0.335 -0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 0.36 0.0 -0.165 0.41 0.0"/>
+			<body pos="-0.165 0.36 0.0" name="QuadSegrity1_rr_humerus" euler="-119.99999999999999 0 0">
+				<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+				<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 -0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0 0.3265 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="-0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<site name="QuadSegrity1_rr_humerus_0" pos="0.0 0.25 0.0" zaxis="0 0 1"/> <!--site name="QuadSegrity1_rr_humerus_0" pos="0.0 0.21 0.0" zaxis="0 0 1"/>-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 -0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.2765 0.0"/>
+				<body pos="0.0 0.3265 0.0" name="QuadSegrity1_rr_radius" euler="-119.99999999999999 0 0">
+					<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+					<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 -0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0 -0.3265 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<site name="QuadSegrity1_rr_radius_0" pos="0.0 -0.24 0.0" zaxis="0 0 1"/>
+					<geom type="cylinder" pos="0 -0.3265 0" friction="1 0.005 0.0001" size="0.02 0.05" euler="0 90 0" rgba="0.9 0.3 0.3 1"/>
+				</body>
+				<site name="QuadSegrity1_rr_radius_1" pos="0.0 0.1865 0.0" zaxis="0 0 1"/>
+			</body>
+			<site name="QuadSegrity1_rr_humerus_1" pos="-0.165 0.02 0.0" zaxis="0 0 1"/> <!--<site name="QuadSegrity1_rr_humerus_1" pos="-0.165 -0.040000000000000036 0.0" zaxis="0 0 1"/>-->
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 -0.36 0.0 -0.165 -0.38499999999999995 0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 -0.36 0.0 -0.165 -0.38499999999999995 -0.04330127018922194"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 -0.36 0.0 -0.165 -0.31 0.0"/>
+			<body pos="-0.165 -0.36 0.0" name="QuadSegrity1_fr_humerus" euler="-59.99999999999999 0 0">
+				<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+				<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 -0.0358 0.0 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.1 0.0 0.0 0.3265 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="-0.0358 0.0 0.0 0.0 -0.1 0.0"/>
+				<site name="QuadSegrity1_fr_humerus_0" pos="0.0 0.25 0.0" zaxis="0 0 1"/> <!--<site name="QuadSegrity1_fr_humerus_0" pos="0.0 -0.205 0.0" zaxis="0 0 1"/>-->
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 -0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.3515 0.04330127018922194"/>
+				<geom type="capsule" rgba="0.3 0.3 0.9 1" fromto="0.0 0.3265 0.0 0.0 0.2765 0.0"/>
+				<body pos="0.0 0.3265 0.0" name="QuadSegrity1_fr_radius" euler="119.99999999999999 0 0">
+					<joint type="hinge" axis="1 0 0" stiffness="9.4" damping="0.1"/><!--stiffness="4.4"-->
+					<joint type="hinge" axis="0 0 1" stiffness="12" damping="0.1"/><!--stiffness="10"-->
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 -0.0358 0.0 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0 -0.1 0.0 0.0 -0.3265 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.0358 0.0 0.0 0.0 0.1 0.0"/>
+					<site name="QuadSegrity1_fr_radius_0" pos="0.0 -0.24 0.0" zaxis="0 0 1"/>
+					<geom type="cylinder" pos="0 -0.3265 0" friction="1 0.005 0.0001" size="0.02 0.05" euler="0 90 0" rgba="0.9 0.3 0.3 1"/>
+				</body>
+				<site name="QuadSegrity1_fr_radius_1" pos="0.0 0.1865 0.0" zaxis="0 0 1"/>
+			</body>
+			<site name="QuadSegrity1_fr_humerus_1" pos="-0.165 -0.02 0.0" zaxis="0 0 1"/>
+			<geom type="box" mass="1.5" rgba="0.9 0.3 0.3 1" size="0.165 0.252 0.004"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 -0.36 0 -0.165 0.36 0"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="0.165 -0.36 0 0.165 0.36 0"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 -0.252 0 0.165 -0.252 0"/>
+			<geom type="capsule" rgba="0.9 0.3 0.3 1" fromto="-0.165 0.252 0 0.165 0.252 0"/>
+		</body>
+	</worldbody>
+</mujoco>

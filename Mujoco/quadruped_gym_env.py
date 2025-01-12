@@ -26,7 +26,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
 
     def __init__(
         self,
-        xml_file: str = "./leg_parametric.xml",
+        xml_file: str = "./1223-2leg_parametric-edit.xml",
         frame_skip: int = 50,
         default_camera_config: Dict[str, Union[float, int]] = DEFAULT_CAMERA_CONFIG,
         forward_reward_weight: float = 1.0,

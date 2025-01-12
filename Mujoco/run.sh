@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 rm leg_parametric.xml   
 python main.py
 
