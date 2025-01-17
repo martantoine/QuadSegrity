@@ -69,14 +69,21 @@ def change_mode(sender, app_data):
         dpg.disable_item("auto_group")
         dpg.enable_item("manual_group")
 
+def get_device_port():
+    """
+    Returns the device port string (e.g COM3, /dev/usb1)
+    """
+    return dpg.get_value("device_port_input")
+
 def main():
     dpg.create_viewport(decorated=False, resizable=False, width=500, height=400)
     
-    with dpg.window(label="Commands", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=500, height=400):
+    with dpg.window(label="MainWindow", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=500, height=400):
         dpg.add_separator(label="Communication")
         with dpg.group(horizontal=True):
             dpg.add_button(label="Connect", callback=delegate.connection_cb, tag="connection_button")
             dpg.add_text("Status: Unknown", tag="connection_status")
+            dpg.add_input_text(label="Device port:", tag="device_port_input")
         
         dpg.add_separator(label="Mode Selection")
         with dpg.group(horizontal=True):
@@ -113,7 +120,6 @@ def main():
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
-    dpg.show_imgui_demo()
 
     change_mode(None, "Auto") # Set default mode to auto
     
