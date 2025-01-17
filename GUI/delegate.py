@@ -1,9 +1,19 @@
+# System includes
+import serial, time, os, threading
+import onnxruntime as ort
+import numpy as np
+
+# Own includes
 import window
-import serial, time
 
 connection_status = False
 actuation_status = False
 ser = serial.Serial()
+auto_model_path = "Undefined"
+onnx_model = None
+actuators_command = np.zeros((1, 8)).astype(np.float32)
+continuous_run = False
+one_time_run = False
 
 def connection_cb():
     """
@@ -55,16 +65,56 @@ def send_actuators_command():
     commands_txt = ''.join(['1' if x else '0' for x in commands])
     serial_send(commands_txt)
 
+def inference_task():
+    global actuators_command, onnx_model, one_time_run
+    if not onnx_model:
+        print("Error, onnx InferenceSession not valid!")
+        return
+
+    while True:
+        if continuous_run or one_time_run:
+            window.set_running_state(True)
+            window.set_running_state(True)
+            if one_time_run:
+                one_time_run = False
+            zaxis_obs=np.array([[0, 0, 1]]).astype(np.float32)
+            obs = np.concatenate((zaxis_obs, actuators_command), axis=1)
+
+            actuators_command = onnx_model.run(None, {'input': obs})[0]
+            print("commands: ")
+            print(actuators_command)
+        else:
+            window.set_running_state(False)
+
+        time.sleep(1)
+
 def auto_init():
-    onnx_path = window.get_auto_path()
-    ort_sess = ort.InferenceSession(onnx_path)
-    
+    global onnx_model
+    if not os.path.isfile(auto_model_path):
+        print("Following file is not existing: " + auto_model_path)
+        return
+
+    onnx_model = ort.InferenceSession(auto_model_path)
+    if onnx_model == None:
+        print("Failed to init model")
+        return
+    thread = threading.Thread(name="Inference", target=inference_task, args=(), daemon=True)
+    thread.start()
+    if thread:
+        print("Inference thread successfully started")
+        window.enable_inference_gui()
 def one_step():
-    print("one_step not implemented")
+    """
+    Run one step / one inference of the onnnx model
+    """
+    global one_time_run
+    one_time_run = True
 
-def toggle_continuous_run():
-    global actuation_status
-    actuation_status = not actuation_status
-    window.update_actuation_auto(actuation_status)
+def toggle_continuous_run(state):
+    """
+    Run continuously, step after step, one inference at a time, of the onnnx model
+    """
+    global continuous_run
+    continuous_run = state
 
-    print("toggle_continuous_run not implemented")
+    
