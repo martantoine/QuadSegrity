@@ -2,7 +2,9 @@ mujoco/
 mujoco-dev/
 Gymnasium/
 logs/
-rl/
+rl/log/
+rl/log/**
+Mujoco/rl/log/**
 build/
 MUJOCO_LOG.TXT
 leg_parametric.xml

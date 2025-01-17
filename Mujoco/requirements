@@ -14,3 +14,4 @@ onnxruntime
 onnx
 pyserial
 scikit.learn
+dearpygui
