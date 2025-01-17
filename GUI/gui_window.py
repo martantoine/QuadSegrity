@@ -24,6 +24,12 @@ def update_connection(state):
     dpg.configure_item(item="connection_button", label=button_txt)
     dpg.set_value("connection_status", "Status: " + label_txt)
 
+def get_jog_commands():
+    commands = []
+    for i in range(10):
+        commands.append(dpg.get_value("valve_" + str(i)))
+    return commands
+    
 def main():
     global drawlists
     dpg.create_viewport(decorated=False, resizable=False, width=1000, height=800)
@@ -70,21 +76,21 @@ def main():
                     dpg.add_text("Hip Joints")
                     with dpg.group(horizontal=True):
                         with dpg.group(horizontal=False):
-                            dpg.add_checkbox(label="Valve 0", default_value=True, tag=20001)
-                            dpg.add_checkbox(label="Valve 1", default_value=True, tag=20002)
-                            dpg.add_checkbox(label="Valve 2", default_value=True, tag=20003)
-                            dpg.add_checkbox(label="Valve 3", default_value=True, tag=20004)
-                            dpg.add_checkbox(label="Valve 4", default_value=True, tag=20005)
+                            dpg.add_checkbox(label="Valve 0", default_value=True, tag="valve_0")
+                            dpg.add_checkbox(label="Valve 1", default_value=True, tag="valve_1")
+                            dpg.add_checkbox(label="Valve 2", default_value=True, tag="valve_2")
+                            dpg.add_checkbox(label="Valve 3", default_value=True, tag="valve_3")
+                            dpg.add_checkbox(label="Valve 4", default_value=True, tag="valve_4")
                 with dpg.group(horizontal=False):
                     dpg.add_text("Knee Joints")
                     with dpg.group(horizontal=True):
                         with dpg.group(horizontal=False):
-                            dpg.add_checkbox(label="Valve 5", default_value=True, tag=20007)
-                            dpg.add_checkbox(label="Valve 6", default_value=True, tag=20008)
-                            dpg.add_checkbox(label="Valve 7", default_value=True, tag=20009)
-                            dpg.add_checkbox(label="Valve 8", default_value=True, tag=20010)
-                            dpg.add_checkbox(label="Valve 9", default_value=True, tag=20011)
-            dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_actuators_state)
+                            dpg.add_checkbox(label="Valve 5", default_value=True, tag="valve_5")
+                            dpg.add_checkbox(label="Valve 6", default_value=True, tag="valve_6")
+                            dpg.add_checkbox(label="Valve 7", default_value=True, tag="valve_7")
+                            dpg.add_checkbox(label="Valve 8", default_value=True, tag="valve_8")
+                            dpg.add_checkbox(label="Valve 9", default_value=True, tag="valve_9")
+            dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_actuators_command)
 
     # with dpg.window(label="Sensors", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, pos=(500, 0), width=500, height=800):
     #     with dpg.collapsing_header(label="IMU", default_open=True):
