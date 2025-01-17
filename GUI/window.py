@@ -75,22 +75,49 @@ def get_device_port():
     """
     return dpg.get_value("device_port_input")
 
+def get_auto_path():
+    """
+    Returns the device port string (e.g COM3, /dev/usb1)
+    """
+    return dpg.get_value("auto_model_input")
+
+def file_dialog_cb(send, app_data):
+    """
+    Update the UI label to show to the user the file was indeed selected
+    """
+    dpg.set_value("select_label", "Path: " + app_data["file_path_name"])
+
 def main():
-    dpg.create_viewport(decorated=False, resizable=False, width=500, height=400)
+    dpg.create_viewport(decorated=False, resizable=False, width=700, height=400)
     
-    with dpg.window(label="MainWindow", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=500, height=400):
+    with dpg.window(label="MainWindow", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=700, height=400):
         dpg.add_separator(label="Communication")
-        with dpg.group(horizontal=True):
-            dpg.add_button(label="Connect", callback=delegate.connection_cb, tag="connection_button")
-            dpg.add_text("Status: Unknown", tag="connection_status")
-            dpg.add_input_text(label="Device port:", tag="device_port_input")
+        with dpg.group(horizontal=False):
+            dpg.add_input_text(label=": Device Port", tag="device_port_input")
+            with dpg.tooltip(parent="device_port_input"):
+                dpg.add_text("Example for Windows: COM7, for Linux/Mac: /dev/ttyUSB0")
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Connect", callback=delegate.connection_cb, tag="connection_button")
+                dpg.add_text("Status: Unknown", tag="connection_status")
         
         dpg.add_separator(label="Mode Selection")
         with dpg.group(horizontal=True):
             dpg.add_radio_button(items=["Auto", "Manual"], callback=change_mode, tag="mode_selection_radio_button")
             
         dpg.add_separator(label="Auto Mode")
-        with dpg.group(horizontal=True, tag="auto_group"):
+        with dpg.group(horizontal=False, tag="auto_group"):
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Init", callback=delegate.auto_init, tag="auto_init_button")
+                with dpg.file_dialog(directory_selector=False,
+                                     show=False,
+                                     callback=file_dialog_cb,
+                                     tag="file_dialog",
+                                     height=300,
+                                     default_path="../Mujoco/rl/model/"):                 
+                    dpg.add_file_extension(".zip", color=(244, 10, 10, 255))
+                dpg.add_button(label="Select model", callback=lambda:dpg.show_item("file_dialog"), tag="select_model_button")
+                dpg.add_text("Path: Undefined", tag="select_label")
+
             dpg.add_button(label="One Step", callback=delegate.one_step, tag="one_step_button")
             dpg.add_button(label="Run Continuously", callback=delegate.toggle_continuous_run, tag="toggle_continuous_button")
             dpg.add_text("Status: Idle", tag="actuation_status")
