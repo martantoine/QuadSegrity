@@ -61,11 +61,19 @@ def serial_send(msg):
         print("Exception when trying to serial send following msg: " + msg)
 
 def send_actuators_command():
+    """
+    Function transforming the checkboxes' states representing the actuaotors' status,
+    into a string order passed to the MCU through serial
+    """
     commands = window.get_jog_commands()
     commands_txt = ''.join(['1' if x else '0' for x in commands])
     serial_send(commands_txt)
 
 def inference_task():
+    """
+    Thread taking care of the inference
+    Receives "orders" through global variables: one_time_run and continuous_run
+    """
     global actuators_command, onnx_model, one_time_run
     if not onnx_model:
         print("Error, onnx InferenceSession not valid!")
@@ -81,14 +89,20 @@ def inference_task():
             obs = np.concatenate((zaxis_obs, actuators_command), axis=1)
 
             actuators_command = onnx_model.run(None, {'input': obs})[0]
-            print("commands: ")
-            print(actuators_command)
+            commands_txt = ''.join(['1' if round(-x) else '0' for x in actuators_command[0]])
+            print("commands: " + commands_txt)
+            serial_send(commands_txt)  
         else:
             window.set_running_state(False)
 
         time.sleep(1)
 
 def auto_init():
+    """
+    Create the onnx inference environment, and the inference thread
+    A separate thread is required for inference because inference can happens continuously
+    which would block the rest of the GUI otherwise
+    """
     global onnx_model
     if not os.path.isfile(auto_model_path):
         print("Following file is not existing: " + auto_model_path)
@@ -103,6 +117,7 @@ def auto_init():
     if thread:
         print("Inference thread successfully started")
         window.enable_inference_gui()
+
 def one_step():
     """
     Run one step / one inference of the onnnx model

@@ -20,9 +20,11 @@ def update_connection(state):
     if state:
         button_txt="Disconnect"
         label_txt = "connected"
+        dpg.enable_item("all_modes")
     else:
         button_txt = "Connect"
         label_txt = "disconnected"
+        dpg.disable_item("all_modes")
     dpg.configure_item(item="connection_button", label=button_txt)
     dpg.set_value("connection_status", "Status: " + label_txt)
 
@@ -145,58 +147,60 @@ def main():
                 dpg.add_text("Example for Windows: COM7, for Linux/Mac: /dev/ttyUSB0")
             with dpg.group(horizontal=True):
                 dpg.add_button(label="Connect", callback=delegate.connection_cb, tag="connection_button")
-                dpg.add_text("Status: Unknown", tag="connection_status")
+                dpg.add_text("Status: disconnected", tag="connection_status")
         
-        dpg.add_separator(label="Mode Selection")
-        with dpg.group(horizontal=True):
-            dpg.add_radio_button(items=["Auto", "Manual"], callback=change_mode, tag="mode_selection_radio_button")
-            
-        dpg.add_separator(label="Auto Mode")
-        with dpg.group(horizontal=False, tag="auto_group"):
+        with dpg.group(tag="all_modes"):
+            dpg.add_separator(label="Mode Selection")
             with dpg.group(horizontal=True):
-                dpg.add_button(label="Init", callback=delegate.auto_init, tag="auto_init_button")
-                with dpg.file_dialog(directory_selector=False,
-                                     show=False,
-                                     callback=file_dialog_cb,
-                                     tag="file_dialog",
-                                     height=300,
-                                     default_path="../Mujoco/rl/model/"):                 
-                    dpg.add_file_extension(".onnx", color=(244, 10, 10, 255))
-                dpg.add_button(label="Select model", callback=lambda:dpg.show_item("file_dialog"), tag="select_model_button")
-                dpg.add_text("Path: Undefined", tag="select_label")
+                dpg.add_radio_button(items=["Auto", "Manual"], callback=change_mode, tag="mode_selection_radio_button")
+                
+            dpg.add_separator(label="Auto Mode")
+            with dpg.group(horizontal=False, tag="auto_group"):
+                with dpg.group(horizontal=True):
+                    dpg.add_button(label="Init", callback=delegate.auto_init, tag="auto_init_button")
+                    with dpg.file_dialog(directory_selector=False,
+                                        show=False,
+                                        callback=file_dialog_cb,
+                                        tag="file_dialog",
+                                        height=300,
+                                        default_path="../Mujoco/rl/model/"):                 
+                        dpg.add_file_extension(".onnx", color=(244, 10, 10, 255))
+                    dpg.add_button(label="Select model", callback=lambda:dpg.show_item("file_dialog"), tag="select_model_button")
+                    dpg.add_text("Path: Undefined", tag="select_label")
 
-            with dpg.group(tag="inference_group"):
-                dpg.add_button(label="One Step", callback=delegate.one_step, tag="one_step_button")
-                dpg.add_button(label="Run Continuously", callback=toggle_continuous_cb, tag="toggle_continuous_button")
-                dpg.add_text("Status: Idling", tag="actuation_status")
-            dpg.disable_item("inference_group") # inference buttons inacessible if the model is not initialized
+                with dpg.group(tag="inference_group"):
+                    dpg.add_button(label="One Step", callback=delegate.one_step, tag="one_step_button")
+                    dpg.add_button(label="Run Continuously", callback=toggle_continuous_cb, tag="toggle_continuous_button")
+                    dpg.add_text("Status: Idling", tag="actuation_status")
+                dpg.disable_item("inference_group") # inference buttons inacessible if the model is not initialized
 
-        dpg.add_separator(label="Manual Mode")
-        with dpg.group(tag="manual_group"):
-            with dpg.group(horizontal=True, horizontal_spacing=200):
-                with dpg.group(horizontal=False):
-                    dpg.add_text("Hip Joints")
-                    with dpg.group(horizontal=True):
-                        with dpg.group(horizontal=False):
-                            dpg.add_checkbox(label="Valve 0", default_value=True, tag="valve_0_checkbox")
-                            dpg.add_checkbox(label="Valve 1", default_value=True, tag="valve_1_checkbox")
-                            dpg.add_checkbox(label="Valve 2", default_value=True, tag="valve_2_checkbox")
-                            dpg.add_checkbox(label="Valve 3", default_value=True, tag="valve_3_checkbox")
-                            dpg.add_checkbox(label="Valve 4", default_value=True, tag="valve_4_checkbox")
-                with dpg.group(horizontal=False):
-                    dpg.add_text("Knee Joints")
-                    with dpg.group(horizontal=True):
-                        with dpg.group(horizontal=False):
-                            dpg.add_checkbox(label="Valve 5", default_value=True, tag="valve_5_checkbox")
-                            dpg.add_checkbox(label="Valve 6", default_value=True, tag="valve_6_checkbox")
-                            dpg.add_checkbox(label="Valve 7", default_value=True, tag="valve_7_checkbox")
-                            dpg.add_checkbox(label="Valve 8", default_value=True, tag="valve_8_checkbox")
-                            dpg.add_checkbox(label="Valve 9", default_value=True, tag="valve_9_checkbox")
-            dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_actuators_command)
+            dpg.add_separator(label="Manual Mode")
+            with dpg.group(tag="manual_group"):
+                with dpg.group(horizontal=True, horizontal_spacing=200):
+                    with dpg.group(horizontal=False):
+                        dpg.add_text("Hip Joints")
+                        with dpg.group(horizontal=True):
+                            with dpg.group(horizontal=False):
+                                dpg.add_checkbox(label="Valve 0", default_value=True, tag="valve_0_checkbox")
+                                dpg.add_checkbox(label="Valve 1", default_value=True, tag="valve_1_checkbox")
+                                dpg.add_checkbox(label="Valve 2", default_value=True, tag="valve_2_checkbox")
+                                dpg.add_checkbox(label="Valve 3", default_value=True, tag="valve_3_checkbox")
+                                dpg.add_checkbox(label="Valve 4", default_value=True, tag="valve_4_checkbox")
+                    with dpg.group(horizontal=False):
+                        dpg.add_text("Knee Joints")
+                        with dpg.group(horizontal=True):
+                            with dpg.group(horizontal=False):
+                                dpg.add_checkbox(label="Valve 5", default_value=True, tag="valve_5_checkbox")
+                                dpg.add_checkbox(label="Valve 6", default_value=True, tag="valve_6_checkbox")
+                                dpg.add_checkbox(label="Valve 7", default_value=True, tag="valve_7_checkbox")
+                                dpg.add_checkbox(label="Valve 8", default_value=True, tag="valve_8_checkbox")
+                                dpg.add_checkbox(label="Valve 9", default_value=True, tag="valve_9_checkbox")
+                dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_actuators_command)
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
 
+    dpg.disable_item("all_modes") # all modes (manual and auto)'s interface is disabled by default since no serial communication is established by default
     change_mode(None, "Auto") # Set default mode to auto
     
     while dpg.is_dearpygui_running():
