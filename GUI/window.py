@@ -52,6 +52,7 @@ def change_mode(sender, app_data):
     elif app_data == "Manual":
         dpg.disable_item("auto_group")
         dpg.enable_item("manual_group")
+        delegate.toggle_continuous_run(False)
 
 
 #############################################################
@@ -65,7 +66,7 @@ def get_jog_commands():
         [bool]: vavles' state
     """
     commands = []
-    for i in range(10):
+    for i in range(8):
         commands.append(dpg.get_value("valve_" + str(i) + "_checkbox"))
     return commands
 
@@ -189,16 +190,14 @@ def main():
                                 dpg.add_checkbox(label="Valve 1", default_value=True, tag="valve_1_checkbox")
                                 dpg.add_checkbox(label="Valve 2", default_value=True, tag="valve_2_checkbox")
                                 dpg.add_checkbox(label="Valve 3", default_value=True, tag="valve_3_checkbox")
-                                dpg.add_checkbox(label="Valve 4", default_value=True, tag="valve_4_checkbox")
                     with dpg.group(horizontal=False):
                         dpg.add_text("Knee Joints")
                         with dpg.group(horizontal=True):
                             with dpg.group(horizontal=False):
+                                dpg.add_checkbox(label="Valve 4", default_value=True, tag="valve_4_checkbox")
                                 dpg.add_checkbox(label="Valve 5", default_value=True, tag="valve_5_checkbox")
                                 dpg.add_checkbox(label="Valve 6", default_value=True, tag="valve_6_checkbox")
                                 dpg.add_checkbox(label="Valve 7", default_value=True, tag="valve_7_checkbox")
-                                dpg.add_checkbox(label="Valve 8", default_value=True, tag="valve_8_checkbox")
-                                dpg.add_checkbox(label="Valve 9", default_value=True, tag="valve_9_checkbox")
                 dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_jog_actuators_command)
 
     dpg.setup_dearpygui()

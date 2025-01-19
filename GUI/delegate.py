@@ -83,6 +83,7 @@ def send_jog_actuators_command():
     global communication_order
     commands = window.get_jog_commands()
     commands_txt = ''.join(['1' if x else '0' for x in commands])
+    print("commands: " + commands_txt)
     communication_order = commands_txt
 
 def inference_task():
