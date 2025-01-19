@@ -6,75 +6,91 @@ import numpy as np
 # Own includes
 import window
 
-connection_status = False
-actuation_status = False
-ser = serial.Serial()
+# Global variables
 auto_model_path = "Undefined"
 onnx_model = None
-actuators_command = np.zeros((1, 8)).astype(np.float32)
+actuation_status = False
 continuous_run = False
 one_time_run = False
+actuators_command = np.zeros((1, 8)).astype(np.float32)
+
+connection_status = False
+communication_thread = threading.Thread()
+communication_order = ""
+
+#############################################################
+##                     COMMUNICATION                       ##
+#############################################################
+def communication_task(serial_port):    
+    """
+    Communication thread, receive orders through the global variable communication_order
+    No mutex because modifying this variable is atomic
+   
+    Params:
+        serial_port (string): serial port to start the serial communication with
+    """
+    global communication_order
+    try:
+        ser = serial.Serial(serial_port, baudrate=115200, timeout=2) #non-blocking reading because timeout=1
+        if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
+            print("Failed to sync with the MCU, closing serial port and communication thread")
+            ser.close()
+            return
+        
+        while ser.isOpen():
+            if communication_order == "close":
+                print("Closing serial port and communication thread")
+                communication_order = ""
+                ser.close()
+                return
+            elif communication_order != "":
+                communication_order += "\n"
+                ser.write(communication_order.encode("ascii"))
+                communication_order = ""
+    except:
+        print("Serial port failed to start or have just closed!")
+        return
+
+def communication_get_status():
+    """
+    Getter called by the main window's loop in order to update the communication port's dislayed state up to date
+    """
+    return communication_thread.is_alive()
 
 def connection_cb():
     """
     Connect or disconnect serial port
     """
-    global connection_status, ser
+    global communication_thread, communication_order
     
-    if not connection_status: # try opening the serial port 
-        try:
-            ser = serial.Serial(serial_port, baudrate=115200, timeout=1) #non-blocking reading because timeout=1
-            print("Opened port")
-            ser.read_until(b'Reset successful\n')
-            print("Communication established")
-            connection_status = True
-        except:
-            print("Failed to open port or establish communication!")
+    if communication_thread.is_alive():
+        communication_order = "close"
     else:
-        try:
-            if ser.is_open():
-                ser.close()
-                print("Port closed")
-        except:
-            print("Failed to close the port, port might have been already closed!")
+        communication_thread = threading.Thread(name="Communication", target=communication_task, args=(window.get_device_port(),), daemon=True)
+        print("Starting communication thread")
+        communication_thread.start()
+    window.update_connection(communication_thread.is_alive())
 
-    serial_port = window.update_connection(connection_status)
-    
-def serial_send(msg):
-    """
-    Send to serial port the msg, wait until 1sc are elapsed or less if the msg was send successfuly
 
-    Params:
-        msg (string): msg to send, no end of line required
+#############################################################
+##                         ACTUATION                       ##
+#############################################################
+def send_jog_actuators_command():
     """
-    try:
-        if ser.is_open():
-            ser.write_line(msg)
-            i = 0
-            while (i < 10) and (ser.out_waiting > 0):
-                time.sleep(0.1)
-            if ser.out_waiting > 0:
-                print("Failed to send msg: " + msg)
-        else:
-            print("Port not open, will not send msg: " + msg)
-    except:
-        print("Exception when trying to serial send following msg: " + msg)
-
-def send_actuators_command():
-    """
-    Function transforming the checkboxes' states representing the actuaotors' status,
+    Function transforming the checkboxes' states representing the actuators' status,
     into a string order passed to the MCU through serial
     """
+    global communication_order
     commands = window.get_jog_commands()
     commands_txt = ''.join(['1' if x else '0' for x in commands])
-    serial_send(commands_txt)
+    communication_order = commands_txt
 
 def inference_task():
     """
     Thread taking care of the inference
     Receives "orders" through global variables: one_time_run and continuous_run
     """
-    global actuators_command, onnx_model, one_time_run
+    global actuators_command, onnx_model, one_time_run, communication_order
     if not onnx_model:
         print("Error, onnx InferenceSession not valid!")
         return
@@ -91,7 +107,7 @@ def inference_task():
             actuators_command = onnx_model.run(None, {'input': obs})[0]
             commands_txt = ''.join(['1' if round(-x) else '0' for x in actuators_command[0]])
             print("commands: " + commands_txt)
-            serial_send(commands_txt)  
+            communication_order = commands_txt
         else:
             window.set_running_state(False)
 
@@ -131,5 +147,3 @@ def toggle_continuous_run(state):
     """
     global continuous_run
     continuous_run = state
-
-    

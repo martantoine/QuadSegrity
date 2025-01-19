@@ -1,3 +1,4 @@
+import time
 import dearpygui.dearpygui as dpg
 import delegate
 
@@ -137,6 +138,9 @@ def set_running_state(state):
         dpg.configure_item(item="toggle_continuous_button", label="Run Continuously")
     
 def main():
+    """
+    Function setting up the UI
+    """
     dpg.create_viewport(decorated=False, resizable=False, width=700, height=500)
     
     with dpg.window(label="MainWindow", no_title_bar=True, no_resize=True, no_collapse=True, no_move=True, no_background=False, no_scrollbar=True, width=700, height=500):
@@ -195,7 +199,7 @@ def main():
                                 dpg.add_checkbox(label="Valve 7", default_value=True, tag="valve_7_checkbox")
                                 dpg.add_checkbox(label="Valve 8", default_value=True, tag="valve_8_checkbox")
                                 dpg.add_checkbox(label="Valve 9", default_value=True, tag="valve_9_checkbox")
-                dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_actuators_command)
+                dpg.add_button(label="Send Command", width=500, height=50, callback=delegate.send_jog_actuators_command)
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
@@ -205,7 +209,9 @@ def main():
     
     while dpg.is_dearpygui_running():
         # Main GUI loop
+        update_connection(delegate.communication_get_status())
         dpg.render_dearpygui_frame()
+        time.sleep(1.0/60.0)
 
     dpg.destroy_context()
 
