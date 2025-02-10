@@ -10,6 +10,8 @@ from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box, Tuple
 from gymnasium.spaces.utils import flatten_space
 import mujoco as mj
+import matplotlib
+
 
 DEFAULT_CAMERA_CONFIG = {
     "distance": 4.0,
@@ -160,6 +162,11 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
 
         forces   = self.data.sensordata[3:].flatten() #force sensors for each muscle
         #dforces  = forces - self.old_forces
+        forces_history.append(self.data.sensordata[3:].flatten())
+        
+        plt.plot(forces_history.append(self.data.sensordata[3:].flatten()), self.time)
+        plt.savefig("force_sensor.png")
+
         self.old_forces = forces
 
         
