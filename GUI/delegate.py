@@ -32,10 +32,10 @@ def communication_task(serial_port):
     global communication_order
     try:
         ser = serial.Serial(serial_port, baudrate=115200, timeout=2) #non-blocking reading because timeout=1
-        if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
-            print("Failed to sync with the MCU, closing serial port and communication thread")
-            ser.close()
-            return
+        #if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
+        #    print("Failed to sync with the MCU, closing serial port and communication thread")
+        #    ser.close()
+        #    return
         
         while ser.isOpen():
             if communication_order == "close":
