@@ -107,7 +107,7 @@ def inference_task():
 
             actuators_command = onnx_model.run(None, {'input': obs})[0]
             commands_txt = ''.join(['1' if round(-x) else '0' for x in actuators_command[0]])
-            print("commands: " + commands_txt)
+            print("obs: " + str(obs) + ", commands: " + commands_txt)
             communication_order = commands_txt
         else:
             window.set_running_state(False)

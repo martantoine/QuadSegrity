@@ -98,7 +98,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
             low=-np.inf, high=np.inf, shape=(obs_size,), dtype=np.float64
         )
         
-        self.action_space = Box(low=0, high=force_max, shape=(8,), dtype=np.float32)
+        self.action_space = Box(low=0, high=1, shape=(8,), dtype=np.float32)
     
         self.old_forces = np.zeros(8)
         self.time = 0
@@ -110,15 +110,16 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
 
     def step(self, action):
         x_position_before = self.data.qpos[1]
-
+        
+        action_newton = np.array([self.force_max if action == 1 else 0.0])
         if self._mode == "train":
-            self.do_simulation(action, self.frame_skip)
+            self.do_simulation(action_newton, self.frame_skip)
             self.time += self.frame_skip
             if self.render_mode == "human":
                         self.render()
         else:
             for i in range(self.frame_skip):
-                self.do_simulation(action, 1)
+                self.do_simulation(action_newton, 1)
                 self.time += 1
                 if self.render_mode == "human":
                             self.render()
