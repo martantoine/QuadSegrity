@@ -61,7 +61,7 @@ if args.mode == 'train':
     env = QuadrupedGymEnv(**env_configs, xml_file=args.xml, mode="train") 
     env = Monitor(env, log_dir, info_keywords=('x_position', 'x_velocity', 'actions', 'reward_forward', 'reward_ctrl'))
     
-    model = SAC('MlpPolicy', env, device="auto", tensorboard_log=log_dir, verbose=1, learning_rate=0.003)
+    model = SAC('MlpPolicy', env, device="auto", tensorboard_log=log_dir, verbose=1, learning_rate=0.01)
 
     iter = 0
     while True:
