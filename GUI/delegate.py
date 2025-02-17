@@ -2,7 +2,6 @@
 import serial, time, os, threading
 import onnxruntime as ort
 import numpy as np
-import math
 
 # Own includes
 import window
@@ -18,8 +17,7 @@ actuators_command = np.zeros((1, 8)).astype(np.float32)
 connection_status = False
 communication_thread = threading.Thread()
 communication_order = ""
-sensor_reading = 0
-zaxis_o = np.zeros((1, 3)).astype(np.float32)
+sensor_reading = ""
 
 #############################################################
 ##                     COMMUNICATION                       ##
@@ -32,14 +30,13 @@ def communication_task(serial_port):
     Params:
         serial_port (string): serial port to start the serial communication with
     """
-    global communication_order, zaxis_o, sensor_reading
-
+    global communication_order, sensor_reading
     try:
         ser = serial.Serial(serial_port, baudrate=115200, timeout=2) #non-blocking reading because timeout=1
-        #if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
-        #    print("Failed to sync with the MCU, closing serial port and communication thread")
-        #    ser.close()
-        #    return
+        if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
+            print("Failed to sync with the MCU, closing serial port and communication thread")
+            ser.close()
+            return
         
         while ser.isOpen():
             if communication_order == "close":
@@ -48,16 +45,15 @@ def communication_task(serial_port):
                 ser.close()
                 return
             elif communication_order != "":
+                # Reading sensors reading
+                while ser.in_waiting > 0: #readline is blocking for the timeout, hence must check before reading
+                    sensor_reading = ser.readline().decode("ascii")
+                    print("sensor reading: " + sensor_reading)
+
+                # Sending Actuators commands
                 communication_order += "\n"
-                #ser.readline() #add
                 ser.write(communication_order.encode("ascii"))
                 communication_order = ""
-            sensor_reading = ser.readline()
-            #print(sensor_reading)
-            #zaxis_o=np.array([0, -np.sin(sensor_reading), np.cos(sensor_reading)]).astype(np.float32)
-            
-            
-            
     except:
         print("Serial port failed to start or have just closed!")
         return
@@ -93,58 +89,33 @@ def send_jog_actuators_command():
     """
     global communication_order
     commands = window.get_jog_commands()
-    #commands_txt = ''.join(['1' if x else '0' for x in commands])
     commands_txt = ''.join(['1' if x else '0' for x in commands])
     print("commands: " + commands_txt)
     communication_order = commands_txt
+
+def sensor_reading_conversion(string_format: str) -> list[float]:
+    """
+    Convert a tab-separated ASCII string of numbers into an array of floats.
+
+    Parameters:
+    ascii_string (str): A string containing numbers separated by tab characters.
+
+    Returns:
+    list[float]: A list of floating-point numbers parsed from the input string.
+    """
+    return [float(part) for part in string_format.split('\t')]
 
 def inference_task():
     """
     Thread taking care of the inference
     Receives "orders" through global variables: one_time_run and continuous_run
     """
-    global actuators_command, onnx_model, one_time_run, communication_order, zaxis_o, sensor_reading
-
-    #communication_task('COM7')
-    #ser = serial.Serial('COM7', baudrate=115200, timeout=2)
-    #sensor_reading = ser.readline()
-    
-    '''##add##
-    try:
-        ser = serial.Serial(serial_port, baudrate=115200, timeout=2)
-        while ser.isOpen():
-            if communication_order == "close":
-                print("Closing serial port and communication thread")
-                communication_order = ""
-                ser.close()
-                return
-            elif communication_order != "":
-                communication_order += "\n"
-                #ser.readline() #add
-                ser.write(communication_order.encode("ascii"))
-                communication_order = ""
-            sensor_reading = ser.readline()
-    ###'''
-
+    global actuators_command, onnx_model, one_time_run, communication_order
     if not onnx_model:
         print("Error, onnx InferenceSession not valid!")
         return
 
     while True:
-        '''###add###
-        if communication_order == "close":
-                print("Closing serial port and communication thread")
-                communication_order = ""
-                ser.close()
-                return
-        elif communication_order != "":
-                communication_order += "\n"
-                #ser.readline() #add
-                ser.write(communication_order.encode("ascii"))
-                communication_order = ""
-        sensor_reading = ser.readline()
-        ######'''
-
         if continuous_run or one_time_run:
             window.set_running_state(True)
             window.set_running_state(True)
@@ -152,38 +123,17 @@ def inference_task():
                 one_time_run = False
             
             #zaxis_obs=np.array([[0, 0, 1]]).astype(np.float32)
-            #print(zaxis_obs)
-            #zaxis_obs[0, 1] = sensor_reading
-            #zaxis_obs[0, 2] = sensor_reading
-            #zaxis_obs[1] = -math.sin(sensor_reading)
-            #zaxis_obs[2] = math.cos(sensor_reading)
-
-            #zaxis_obs=np.array([[0, 0, sensor_reading]]).astype(np.float32)
-            zaxis_obs=np.array([[0, sensor_reading, 0]]).astype(np.float32)
-            #a = -math.sin(sensor_reading)
-            #b =math.cos(sensor_reading)
-            #zaxis_obs=np.append([[0, a, b]]).astype(np.float32)
-            #zaxis_obs=np.array([[0, -math.sin(sensor_reading), math.cos(sensor_reading)]]).astype(np.float32)
-            #zaxis_obs=np.array([[0, 0, 1]]).astype(np.float32)
-            
-            ##add##
-            #communication_task('COM7')
-            #ser = serial.Serial('COM7', baudrate=115200, timeout=2)
-            #sensor_reading = ser.readline()
-            #zaxis_o=np.array([[0, -np.sin(sensor_reading), np.cos(sensor_reading)]]).astype(np.float32)
-            ##add##
+            zaxis_obs = sensor_reading_conversion(sensor_reading)
             obs = np.concatenate((zaxis_obs, actuators_command), axis=1)
-            
+
             actuators_command = onnx_model.run(None, {'input': obs})[0]
             commands_txt = ''.join(['1' if round(-x) else '0' for x in actuators_command[0]])
-            #commands_txt = ''.join([x if round(-x) else x for x in actuators_command[0]])
-            print("commands: " + commands_txt)
-            print(sensor_reading)
+            print("obs: " + str(obs) + ", commands: " + commands_txt)
             communication_order = commands_txt
         else:
             window.set_running_state(False)
 
-        time.sleep(0.25)
+        time.sleep(1)
 
 def auto_init():
     """
