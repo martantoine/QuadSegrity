@@ -17,7 +17,7 @@ import os
 COMMAND_BYTES_LEN = 4
 OBSERVATION_BYTES_LEN = 24
 VALVES_HISTORY_WIDTH = 400
-onnx_path = "remote_model.onnx"
+onnx_path = "actor.onnx"
 drawlists = []
 
 max_history_time_seconds = 10
