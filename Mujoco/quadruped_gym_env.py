@@ -13,6 +13,11 @@ import mujoco as mj
 import matplotlib
 
 
+import datetime
+import csv
+import pandas as pd
+
+
 DEFAULT_CAMERA_CONFIG = {
     "distance": 4.0,
 }
@@ -158,7 +163,7 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
 
     def _get_obs(self):
         #velocity = self.data.qvel[0:3].flatten() #velocity of the body
-
+        forces_history = [] #please don't delete it. you need this sentence if you use "forces_history.append()" 
         zaxis = self.data.sensordata[0:3].flatten() #zaxis
 
         forces   = self.data.sensordata[3:].flatten() #force sensors for each muscle
@@ -167,6 +172,24 @@ class QuadrupedGymEnv(MujocoEnv, utils.EzPickle):
         
         plt.plot(forces_history.append(self.data.sensordata[3:].flatten()), self.time)
         plt.savefig("force_sensor.png")
+
+        '''additional (make csv.file to output the data of the actuator force)''' 
+        
+        now = datetime.datetime.now()
+        filename = './rl/log_' + now.strftime('%Y%m%d_%H') + '.csv'
+        filename2 = './rl/log_new_' + now.strftime('%Y%m%d_%H%M%S') + '.csv'
+        with open(filename, 'a') as f:
+            writer = csv.writer(f)
+            #writer.writerow(['model', self.total_timesteps])
+        
+        while(1):
+            now_str = datetime.datetime.now().strftime('%H:%M:%S.%f') #+ str(now.timestamp() * 1000)
+
+            with open(filename, 'a', newline="") as f:
+                    writer = csv.writer(f)
+                    writer.writerow([self.time, forces_history, self.total_timesteps])
+            break
+        '''additional (make csv.file to output the data of the actuator force)'''
 
         self.old_forces = forces
 

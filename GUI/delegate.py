@@ -33,10 +33,10 @@ def communication_task(serial_port):
     global communication_order, sensor_reading
     try:
         ser = serial.Serial(serial_port, baudrate=115200, timeout=2) #non-blocking reading because timeout=1
-        if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
-            print("Failed to sync with the MCU, closing serial port and communication thread")
-            ser.close()
-            return
+        #if ser.read_until(b'Reset successful\n') != b'Reset successful\n':
+            #print("Failed to sync with the MCU, closing serial port and communication thread")
+            #ser.close()
+            #return
         
         while ser.isOpen():
             if communication_order == "close":
@@ -93,7 +93,7 @@ def send_jog_actuators_command():
     print("commands: " + commands_txt)
     communication_order = commands_txt
 
-def sensor_reading_conversion(string_format: str) -> list[float]:
+def sensor_reading_conversion(string_format: str):# -> list[float]:
     """
     Convert a tab-separated ASCII string of numbers into an array of floats.
 
@@ -129,6 +129,7 @@ def inference_task():
             actuators_command = onnx_model.run(None, {'input': obs})[0]
             commands_txt = ''.join(['1' if round(-x) else '0' for x in actuators_command[0]])
             print("obs: " + str(obs) + ", commands: " + commands_txt)
+            
             communication_order = commands_txt
         else:
             window.set_running_state(False)
